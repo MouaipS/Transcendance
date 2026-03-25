@@ -1,0 +1,87 @@
+services:
+
+#---------------
+# BACKEND - Fastify - Nginx ???
+#---------------
+  #backend:
+  #  build:
+  #    context: ./app
+  #    dockerfile: ./backend/dockerfile_back
+  #    target: dev
+  #  container_name: backend
+  #  restart: unless-stopped
+  #  environment:
+  #    - 
+  #  ports:
+  #    - "3001:3001"
+  #  depends_on:
+  #    - db
+  #  volumes:
+  #    - data/backend
+  
+#---------------
+# FRONTEND - React - Vite???
+#---------------
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+      #target: dev
+    container_name: frontend
+    restart: unless-stopped
+    #environment:
+    ports:
+      - "5173:5173"
+    #depends_on:
+    #  - backend
+    volumes:
+      - frontend:/data
+
+#---------------
+# DB - 
+#---------------
+  db:
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+      #target: dev
+    container_name: db
+    restart: unless-stopped
+    #environment:
+    #  - DB_NAME = ${DB_NAME}
+    #  - DB_USER = ${DB_USER}
+    #  - DB_PSWD = ${DB_PSWD}
+    ports:
+      - "5432:5432"
+    #depends_on:
+    #  -  
+    volumes:
+      - db:/database
+  
+volumes: 
+  db:
+    name: db
+    driver: local                             #volume driver
+    driver_opts:            #volume options 
+      device: /home/adrouin/data/database      #path on the host
+      o: bind               #bind mount
+      type: none            #no specific filesystem type
+  frontend:
+    name: frontend
+    driver: local                             #volume driver
+    driver_opts:            #volume options 
+      device: /home/adrouin/data/frontend      #path on the host
+      o: bind               #bind mount
+      type: none            #no specific filesystem type
+  #backend:
+  #  name: backend
+  #  driver: local                             #volume driver
+  #  driver_opts:            #volume options 
+  #    device: /home/${USER}/data/backend      #path on the host
+  #    o: bind               #bind mount
+  #    type: none    
+      
+#networks:
+#  transcendance:
+#    name: transcendance 
+#    driver: bridge #network driver        #no specific filesystem type
