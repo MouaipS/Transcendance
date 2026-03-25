@@ -1,87 +1,123 @@
 services:
+#---------------
+# NGINX -  ATTENTION je sais pas comment configurer nginx, ou mettre son .conf et les certificats ssl
+#----------------
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "443:443"
+    volumes:
+      - nginx:/data/nginx
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - transcendance
 
 #---------------
-# BACKEND - Fastify - Nginx ???
+# BACKEND - Fastify
 #---------------
-  #backend:
-  #  build:
-  #    context: ./app
-  #    dockerfile: ./backend/dockerfile_back
-  #    target: dev
-  #  container_name: backend
-  #  restart: unless-stopped
-  #  environment:
-  #    - 
-  #  ports:
-  #    - "3001:3001"
-  #  depends_on:
-  #    - db
-  #  volumes:
-  #    - data/backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: dev
+    container_name: backend
+    restart: unless-stopped
+    environment:
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PSWD=${DB_PSWD}
+    expose:
+      - "3001"
+    depends_on:
+      - db
+    volumes:
+      - backend:/data/backend
+    networks:
+      - transcendance
   
 #---------------
-# FRONTEND - React - Vite???
+# FRONTEND - React/Vite
 #---------------
   frontend:
     build: 
       context: ./frontend
       dockerfile: Dockerfile
-      #target: dev
+      target: dev
     container_name: frontend
     restart: unless-stopped
     #environment:
-    ports:
-      - "5173:5173"
-    #depends_on:
-    #  - backend
+    expose:
+      - "5173"
+    depends_on:
+      - backend
     volumes:
-      - frontend:/data
+      - frontend:/data/frontend
+    networks:
+      - transcendance
 
 #---------------
 # DB - 
 #---------------
   db:
+  #peut etre moyen d'appeler directement l'image postgresql
     build:
       context: ./db
       dockerfile: Dockerfile
-      #target: dev
+      target: dev
     container_name: db
     restart: unless-stopped
-    #environment:
-    #  - DB_NAME = ${DB_NAME}
-    #  - DB_USER = ${DB_USER}
-    #  - DB_PSWD = ${DB_PSWD}
-    ports:
-      - "5432:5432"
+    environment:
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PSWD=${DB_PSWD}
+    expose:
+      - "5432"
     #depends_on:
     #  -  
     volumes:
-      - db:/database
-  
+      - db:/data/database
+    networks:
+      - transcendance
+
+
+
+
+#__________________________VOLUMES 
 volumes: 
+  nginx:
+    name: nginx
+    driver: local
+    driver_opts:
+      device: ${DATA_PATH}/nginx
+      o: ${DATA_PATH}/nginx
+      type: none
   db:
     name: db
     driver: local                             #volume driver
     driver_opts:            #volume options 
-      device: /home/adrouin/data/database      #path on the host
+      device: ${DATA_PATH}/database      #path on the host
       o: bind               #bind mount
       type: none            #no specific filesystem type
   frontend:
     name: frontend
     driver: local                             #volume driver
     driver_opts:            #volume options 
-      device: /home/adrouin/data/frontend      #path on the host
+      device: ${DATA_PATH}/frontend      #path on the host
       o: bind               #bind mount
       type: none            #no specific filesystem type
-  #backend:
-  #  name: backend
-  #  driver: local                             #volume driver
-  #  driver_opts:            #volume options 
-  #    device: /home/${USER}/data/backend      #path on the host
-  #    o: bind               #bind mount
-  #    type: none    
+  backend:
+    name: backend
+    driver: local                             #volume driver
+    driver_opts:            #volume options 
+      device: ${DATA_PATH}/backend      #path on the host
+      o: bind               #bind mount
+      type: none    
       
-#networks:
-#  transcendance:
-#    name: transcendance 
-#    driver: bridge #network driver        #no specific filesystem type
+networks:
+  transcendance:
+    name: transcendance 
+    driver: bridge #network driver        #no specific filesystem type
