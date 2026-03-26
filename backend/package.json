@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "start": "fastify start server.js"
+  }
+}

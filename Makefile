@@ -1,18 +1,20 @@
+include .env
+
 all: up
 
 up: 
-	@mkdir -p /home/adrouin/data/frontend
-	@mkdir -p /home/adrouin/data
-	@mkdir -p /home/adrouin/data/backend
-	@mkdir -p /home/adrouin/data/nginx
-	@mkdir -p /home/adrouin/data/database
+	@mkdir -p ${DATA_PATH}
+	@mkdir -p ${DATA_PATH}/frontend
+	@mkdir -p ${DATA_PATH}/backend
+	@mkdir -p ${DATA_PATH}/nginx
+	@mkdir -p ${DATA_PATH}/database
 	@docker compose -f ./docker-compose.yml up -d
 
 down:
 	@docker compose -f ./docker-compose.yml down -v
 
 clean: down
-	@rm -rf /home/adrouin/data
+	@rm -rf ${DATA_PATH}
 
 fclean: clean
 	@docker system prune -af
