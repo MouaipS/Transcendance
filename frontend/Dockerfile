@@ -2,7 +2,7 @@
 # 	Base
 #-------------
 
-FROM node:trixie
+FROM node:trixie AS dev
 
 WORKDIR /app
 

@@ -2,5 +2,5 @@
 # 	Base
 #-------------
 
-FROM mcp/sqlite:latest
+FROM mcp/sqlite:latest AS dev
 

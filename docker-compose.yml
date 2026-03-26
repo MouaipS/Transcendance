@@ -93,7 +93,7 @@ volumes:
     driver: local
     driver_opts:
       device: ${DATA_PATH}/nginx
-      o: ${DATA_PATH}/nginx
+      o: bind
       type: none
   db:
     name: db
