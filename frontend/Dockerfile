@@ -6,13 +6,8 @@ FROM node:trixie AS dev
 
 WORKDIR /app
 
-COPY package*.json .
+COPY . .
 
 RUN npm install
 
-COPY . .
-
-EXPOSE 5173
-
-CMD ["npx", "vite", "--host"]
-
+CMD ["npm", "run", "dev"]
