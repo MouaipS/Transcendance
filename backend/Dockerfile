@@ -1,12 +1,10 @@
 FROM node:trixie AS dev
 
-COPY server.js .
-COPY package*.json .
-
 WORKDIR /app
 
-# RUN npm install fastify-cli
+COPY server.js /app
+ 
+RUN npm install fastify
+RUN npm i 
 
-# CMD ["npm", "start"]
-
-
+CMD ["npm", "start"]

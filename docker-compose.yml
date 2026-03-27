@@ -30,8 +30,8 @@ services:
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PSWD=${DB_PSWD}
-    expose:
-      - "3001"
+    ports:
+      - "3001:3001"
     depends_on:
       - db
     volumes:

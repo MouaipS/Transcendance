@@ -1,8 +1,16 @@
-// server.js
-'use strict'
+import Fastify from 'fastify'
 
-module.exports = async function (fastify, opts) {
-  fastify.get('/', async (request, reply) => {
-    return { hello: 'world' }
-  })
-}
+const fastify = Fastify({
+  logger: true
+})
+
+// Declare a route
+fastify.get('/', (request, reply) => {
+  reply.send({ hello: 'world' })
+})
+
+// Run the server!
+fastify.listen({ port: 3001, host: '0.0.0.0' }, (err, address) => {
+  if (err) throw err
+	// Server is now listening on ${address}
+})
