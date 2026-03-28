@@ -1,15 +1,17 @@
 services:
 #---------------
-# NGINX -  ATTENTION je sais pas comment configurer nginx, ou mettre son .conf et les certificats ssl
+# NGINX - 
 #----------------
   nginx:
     image: nginx:alpine
     container_name: nginx
     restart: unless-stopped
     ports:
-      - "443:443"
+      - "8443:443"
+      - "8080:80"
     volumes:
-      - nginx:/data/nginx
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/ssl:/etc/nginx/ssl:ro #ro c'est pour read-only
     depends_on:
       - frontend
       - backend
@@ -27,15 +29,16 @@ services:
     container_name: backend
     restart: unless-stopped
     environment:
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PSWD=${DB_PSWD}
-    ports:
-      - "3001:3001"
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    expose:
+      - "3001"
     depends_on:
       - db
     volumes:
-      - backend:/data/backend
+      - ./backend/src:/app/src
+      - ./backend/server.js:/app/server.js
     networks:
       - transcendance
   
@@ -49,13 +52,11 @@ services:
       target: dev
     container_name: frontend
     restart: unless-stopped
-    #environment:
-    ports:
-      - "5173:5173"
-    depends_on:
-      - backend
+    expose:
+      - "5173"
     volumes:
-      - frontend:/data/frontend
+      - ./frontend/src:/app/src
+      - ./frontend/index.html:/app/index.html
     networks:
       - transcendance
 
@@ -63,60 +64,24 @@ services:
 # DB - 
 #---------------
   db:
-  #peut etre moyen d'appeler directement l'image postgresql
-    build:
-      context: ./db
-      dockerfile: Dockerfile
-      target: dev
+    image: postgres:16-alpine
     container_name: db
     restart: unless-stopped
     environment:
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PSWD=${DB_PSWD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     expose:
       - "5432"
-    #depends_on:
-    #  -  
     volumes:
-      - db:/data/database
+      - db-data:/var/lib/postgresql/data
     networks:
       - transcendance
 
-
-
-
 #__________________________VOLUMES 
-volumes: 
-  nginx:
-    name: nginx
-    driver: local
-    driver_opts:
-      device: ${DATA_PATH}/nginx
-      o: bind
-      type: none
-  db:
-    name: db
-    driver: local                             #volume driver
-    driver_opts:            #volume options 
-      device: ${DATA_PATH}/database      #path on the host
-      o: bind               #bind mount
-      type: none            #no specific filesystem type
-  frontend:
-    name: frontend
-    driver: local                             #volume driver
-    driver_opts:            #volume options 
-      device: ${DATA_PATH}/frontend      #path on the host
-      o: bind               #bind mount
-      type: none            #no specific filesystem type
-  backend:
-    name: backend
-    driver: local                             #volume driver
-    driver_opts:            #volume options 
-      device: ${DATA_PATH}/backend      #path on the host
-      o: bind               #bind mount
-      type: none    
-      
+volumes:   
+  db-data:
+  
 networks:
   transcendance:
     name: transcendance 
