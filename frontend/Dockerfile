@@ -1,13 +1,13 @@
-#--------------
-# 	Base
-#-------------
-
 FROM node:trixie AS dev
 
 WORKDIR /app
 
-COPY . .
+COPY package*.json
 
 RUN npm install
 
-CMD ["npm", "run", "dev"]
+COPY . .
+
+EXPOSE 5173
+
+CMD [ "npm", "run", "dev"]
