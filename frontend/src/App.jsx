@@ -4,7 +4,7 @@
 function App() {
     return (
         <div>
-            <h1>Transcendance</h1>
+            <h1 class="font-serif text-7xl text-center text-bold">Transcendance</h1>
         </div>
     );
 }
