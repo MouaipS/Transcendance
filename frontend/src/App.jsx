@@ -1,12 +1,31 @@
-//import Profile from './pages/Profile.jsx';
+import { createBrowserRouter, RouterProvider, Link } from "react-router-dom";
+import { Login } from "./components/pages/Login.jsx"
+import { Register } from "./components/pages/Register.jsx"
+
+
+const router = createBrowserRouter([
+	{
+		path: '/',
+		element: <div>
+			<Login/>
+		</div>
+	},
+	{
+		path: '/register',
+		element: <div>
+			<Register/>
+		</div>
+	}
+])
 
 
 function App() {
-    return (
-        <div>
-            <h1 class="font-serif text-7xl text-center text-bold">Transcendance</h1>
-        </div>
-    );
+
+	return <>
+	<RouterProvider router={router}/>
+    </>
 }
 
-export default App;
+
+
+export default App
