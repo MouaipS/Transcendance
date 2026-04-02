@@ -32,7 +32,7 @@ export function Register() {
 			return
 		}
 
-		fetch('http://localhost:3001/register',
+		fetch('https://localhost:8443/api/register',
 		{
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },

@@ -4,11 +4,6 @@ import  db  from "./db.js";
 
 const server = fastify()
 
-server.delete('/*', async(request, reply) => 
-{
-	console.log(request.url)
-})
-
 server.get('/*', async(request, reply) => {
 	console.log("headers get", request.headers);
 	console.log("body get", request.body);
@@ -21,7 +16,7 @@ server.get('/*', async(request, reply) => {
 	return;
 })
 
-server.post('/login', async(request, reply) => {
+server.post('/api/login', async(request, reply) => {
 	console.log("headers login", request.headers);
 	console.log("body login", request.body);
 	console.log("url login", request.url);
@@ -34,7 +29,7 @@ server.post('/login', async(request, reply) => {
 	return;
 })
 
-server.post('/register', async(request, reply) => {
+server.post('/api/register', async(request, reply) => {
 	console.log("headers register", request.headers);
 	console.log("body register", request.body);
 	console.log("url register", request.url);
