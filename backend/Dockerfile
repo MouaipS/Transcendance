@@ -5,7 +5,10 @@ WORKDIR /app
 COPY package*.json .
 
 RUN npm install
+RUN npm install @prisma/client
 
 COPY . .
 
-CMD ["npm", "start"]
+RUN npx prisma generate
+
+CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
