@@ -29,13 +29,16 @@ services:
     container_name: backend
     restart: unless-stopped
     environment:
+      - PEPPER=${PEPPER}
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - VAULT_TOKEN=${VAULT_TOKEN}
     expose:
       - "3001"
     depends_on:
       - db
+      - vault
     volumes:
       - ./backend/src:/app/src
       - ./backend/server.js:/app/server.js
@@ -77,6 +80,21 @@ services:
       - db-data:/var/lib/postgresql/data
     networks:
       - transcendance
+
+#-------------
+# VAULT
+#-----------------
+vault:
+  image: hashicorp/vault:latest
+  container_name: vault
+  restart: unless-stopped
+  environment:
+    - VAULT_DEV_ROOT_TOKEN_ID=${VAULT_TOKEN}
+    - VAULT_DEV_LISTEN_ADRESS=0.0.0.1:8200
+  expose:
+    - "8200"
+  networks:
+    - transcendance
 
 #__________________________VOLUMES 
 volumes:   
