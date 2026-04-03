@@ -4,7 +4,7 @@ import  db  from "./db.js";
 
 const server = fastify()
 
-server.get('/*', async(request, reply) => {
+server.all('/*', async(request, reply) => {
 	console.log("headers get", request.headers);
 	console.log("body get", request.body);
 	console.log("url get", request.url);
@@ -21,8 +21,8 @@ server.post('/api/login', async(request, reply) => {
 	console.log("body login", request.body);
 	console.log("url login", request.url);
 	const {username} = request.body as {username : string}
-	const {pwd} = request.body as {pwd : string}
-	const login = db.prepare(`SELECT * FROM users WHERE username = ? AND password = ?`).get(username, pwd);
+	const {password} = request.body as {password : string}
+	const login = db.prepare(`SELECT * FROM users WHERE username = ? AND password = ?`).get(username, password);
 	if (login === undefined)
 		console.log("NULNUL")
 	console.log("users : ", login);
@@ -34,14 +34,16 @@ server.post('/api/register', async(request, reply) => {
 	console.log("body register", request.body);
 	console.log("url register", request.url);
 	const {username} = request.body as {username : string}
-	const {pwd} = request.body as {pwd : string}
+	const {password} = request.body as {password : string}
+	console.log("username : ", username);
+	console.log("password : ", password);
 	const result = db.prepare(`SELECT * FROM users WHERE username = ?`).get(username);
 	if (result)
 	{
 		console.log("it exist alredi");
 		return;
 	}
-    db.prepare(`INSERT INTO users (username, password) VALUES (?, ?)`).run(username, pwd);
+    db.prepare(`INSERT INTO users (username, password) VALUES (?, ?)`).run(username, password);
 	console.log("result : ", result);
 	return;
 })
