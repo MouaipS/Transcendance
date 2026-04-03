@@ -3,6 +3,7 @@ import bataille from "../images/bataille.jpg";
 import macron from "../images/Macron.jpg";
 import theo from "../images/thbosvie.jpg"
 import { useNavigate } from "react-router-dom";
+import { fetchLogin } from "../tools/fetchs";
 //import { motion } from "framer-motion";
 
 
@@ -19,6 +20,8 @@ export function Login() {
 
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
+
+	const [isLogged, setIsLogged] = useState(false)
 	
 	const [showMacron, setShowMacron] = useState(false)
 	const [showTheo, setShowTheo] = useState(false)
@@ -37,7 +40,7 @@ export function Login() {
 			return
 		}
 		
-		fetch('http://localhost:3001/login',
+		fetch('http://localhost:3000/login',
 		{
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -50,6 +53,9 @@ export function Login() {
 		setUsername('')
 		setPassword('')
 		setAlert('')
+
+		if (isLogged)
+			navigate('/home')
 	}
 
 
@@ -85,13 +91,10 @@ export function Login() {
 		</div>
 	}
 
-	const navigateToRegister = () => {
-		navigate('/register')
-	}
 
 	return <>
 	<img src={bataille} width="400" heigth="100" alt="Deuxième guerre de Corse"/>
-    <Title color="green">Annonce aux français</Title>
+    <h1 id="title" className="title">Login</h1>
 	<p style={{color: 'red'}}>{alert}</p>
 	<form onSubmit={handleSubmitLogin}>
 		<input
@@ -109,13 +112,8 @@ export function Login() {
 		<button>Login</button>
 	</form>
 	<ul/>
-	<button onClick={navigateToRegister}>Create Account</button>
-    <p>
-      Ouais salut les djeuns c'est Macron et chui ô Japon. Voilà ma liste de choses à faire en rentrant :
-    </p>
-    <ul>
-      {todos.map(todo => (<li key={todo}>{todo}</li>))}
-    </ul>
+	<a href="/register">Create Account</a>
+	<ul/>
 	<button onClick={handleMacron}>Macron explosion</button>
 	<Macron />
 	<ul/>
@@ -123,19 +121,4 @@ export function Login() {
 	<Theo />
 	<ul/>
     </>
-}
-
-/*
-*/
-
-function Title ({color, children, hidden}) {
-	if (hidden) {
-    	return null
-  	}
-
-  	const handleClickTitle = () => {
-    	alert("For sure !")
-  	}
-
-  	return <h1 onClick={handleClickTitle} style={{color: color}}>{children}</h1>
 }

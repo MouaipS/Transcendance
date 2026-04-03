@@ -11,6 +11,7 @@ export function Register() {
 
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
+	const [confirmPassword, setConfirmPassword] = useState('')
 	const [email, setEmail] = useState('')
 	const [nickname, setNickname] = useState('')
 
@@ -26,13 +27,23 @@ export function Register() {
 		if (username === '' || password === '' || email === '' || nickname === '') {
 			setUsername('')
 			setPassword('')
+			setConfirmPassword('')
 			setEmail('')
 			setNickname('')
 			setAlert("Veuillez remplir tous les champs")
 			return
 		}
+		else if (password !== confirmPassword) {
+			setUsername('')
+			setPassword('')
+			setConfirmPassword('')
+			setEmail('')
+			setNickname('')
+			setAlert("Les mots de passe ne sont pas identiques")
+			return
+		}
 
-		fetch('http://localhost:3001/register',
+		fetch('http://localhost:3000/register',
 		{
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -44,9 +55,12 @@ export function Register() {
 
 		setUsername('')
 		setPassword('')
+		setConfirmPassword('')
 		setEmail('')
 		setNickname('')
 		setAlert('')
+
+		navigate('/home')
 	}
 
 	const FetchName = () => {
@@ -56,7 +70,7 @@ export function Register() {
 		const { data, error, isLoading } = useQuery({
 			queryKey: ['username'],
 			queryFn: () => 
-				fetch('http://localhost:3001/users')
+				fetch('http://localhost:3000/users')
 				.then(res => res.json())
 		})
 		if (isLoading) return <div>Chargement...</div>
@@ -68,7 +82,7 @@ export function Register() {
 			datas[i] = data[i].username
 		}
 
-		return <div>{datas.map(todo => (<li key={todo}>{todo}</li>))}</div>
+		return <ul>{datas.map(todo => (<li key={todo}>{todo}</li>))}</ul>
 	}
 
 	const handleClick = (e) => {
@@ -83,19 +97,13 @@ export function Register() {
 
 
 	return <>
-    <Title color="green">Annonce aux français</Title>
+    <h1 id="title" className="title">Register</h1>
 	<p style={{color: 'red'}}>{alert}</p>
     <form onSubmit={handleSubmitRegister}>
 		<input
 			value={username}
 			placeholder="Username"
 			onChange={(e) => setUsername(e.target.value)}
-		/>
-		<ul/>
-		<input
-			value={password}
-			placeholder="Password"
-			onChange={(e) => setPassword(e.target.value)}
 		/>
 		<ul/>
 		<input
@@ -110,26 +118,28 @@ export function Register() {
 			onChange={(e) => setNickname(e.target.value)}
 		/>
 		<ul/>
+		<input
+			value={password}
+			placeholder="Password"
+			onChange={(e) => setPassword(e.target.value)}
+		/>
+		<ul/>
+		<input
+			value={confirmPassword}
+			placeholder="Confirm Password"
+			onChange={(e) => setConfirmPassword(e.target.value)}
+		/>
+		<ul/>
 		<button>Register</button>
 	</form>
 	<ul/>
 	<form>
-		<button onClick={handleClick}>Récupérer</button>
+		<button onClick={handleClick}>Récupérer les infos de la Database</button>
 	</form>
 	<QueryClientProvider client={queryClient}>
 		<FetchName />
 	</QueryClientProvider>
 	<ul/>
 	<button onClick={navigateLogin}>Retour à la page de connexion</button>
-    </>
-}
-
-
-function Title ({color, children}) {
-
-  	const handleClickTitle = () => {
-    	alert("For sure !")
-  	}
-
-  	return <h1 onClick={handleClickTitle} id="title" className="title" style={{color: color}}>{children}</h1>
+	</>
 }
