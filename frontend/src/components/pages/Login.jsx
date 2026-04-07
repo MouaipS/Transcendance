@@ -90,38 +90,78 @@ export function Login() {
 	}
 
 	return <>
-	<img src={bataille} width="400" heigth="100" alt="Deuxième guerre de Corse"/>
-    <Title color="green">Annonce aux français</Title>
 	<p style={{color: 'red'}}>{alert}</p>
-	<form onSubmit={handleSubmitLogin}>
-		<input
-			value={username}
-			placeholder="Username"
-			onChange={(e) => setUsername(e.target.value)}
-		/>
-		<ul/>
-		<input
-			value={password}
-			placeholder="Password"
-			onChange={(e) => setPassword(e.target.value)}
-		/>
-		<ul/>
-		<button>Login</button>
-	</form>
-	<ul/>
-	<button onClick={navigateToRegister}>Create Account</button>
-    <p>
-      Ouais salut les djeuns c'est Macron et chui ô Japon. Voilà ma liste de choses à faire en rentrant :
-    </p>
-    <ul>
-      {todos.map(todo => (<li key={todo}>{todo}</li>))}
-    </ul>
-	<button onClick={handleMacron}>Macron explosion</button>
-	<Macron />
-	<ul/>
-	<button onClick={handleTheo}>Le GOAT</button>
-	<Theo />
-	<ul/>
+
+	<div className="absolute inset-y-0 left-15 flex flex-col min-h-full justify-center px-6 py-12 lg:px-8 border-l-1 border-r-1 bg-amber-100">
+		<div className="sm:mx-auto sm:w-full sm:max-w-sm">
+			<img
+				alt="logo"
+				src="src/components/images/legumes.png"
+				className="mx-auto h-35 w-auto"
+			/>
+			<h2 className="font-serif italic mt-10 text-center text-2xl/9 font-bold tracking-tight text-black">. . . Sign in to your account . . .</h2>
+		</div>
+
+        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+          <form action="#" method="POST" className="space-y-6">
+            <div>
+              <label htmlFor="email" className="font-serif italic block text-lg/6 font-medium text-black">
+                Email address . . . . . . . . . . . . . . . . . . . . . . . . . .
+              </label>
+              <div className="mt-2">
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  className="block w-full rounded-md bg-black/5 px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-black/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-yellow-400 sm:text-sm/6"
+                />
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between">
+                <label htmlFor="password" className="font-serif italic block text-lg/6 font-medium text-black">
+                  Password . . . . . . . . . . . .
+                </label>
+                <div className="text-sm">
+                  <a href="#" className="font-serif italic font-semibold text-base/6 hover:text-black/50">
+                    Forgot password?
+                  </a>
+                </div>
+              </div>
+              <div className="mt-2">
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  autoComplete="current-password"
+                  className="block w-full rounded-md bg-black/5 px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-black/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-yellow-400 sm:text-sm/6"
+                />
+              </div>
+            </div>
+
+            <div>
+              <button
+                type="submit"
+                className="flex w-full justify-center rounded-md bg-yellow-400 px-3 py-1.5 text-sm/6 font-semibold hover:bg-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 border-1 border-black shadow-md hover:shadow-none hover:inset-shadow-xs hover:inset-shadow-black/50"
+              >
+                Sign in
+              </button>
+            </div>
+          </form>
+
+          <p className="mt-10 text-center text-sm/6 text-gray-500">
+            Not a member?{' '}
+            <a href="#" className="font-serif italic text-base font-semibold hover:text-gray-500/50">
+              Register
+            </a>
+          </p>
+		</div>
+      </div>
+
     </>
 }
 
