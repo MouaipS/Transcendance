@@ -12,29 +12,73 @@ export function Rules () {
 	
 
 	return <>
-	<h1>RÈGLES DU JEU</h1>
+	<div className="absolute flex flex-col left-60 right-60 min-h-full px-6 py-12 lg:px-8 border-l-1 border-r-1 bg-amber-100">
+		<div className="relative sm:mx-auto sm:w-full sm:max-w-sm">
+			<h1 className="font-serif italic mt-10 text-center text-2xl/9 font-bold tracking-tight text-black">. . . . . . . . . . RÈGLES DU JEU . . . . . . . . . .</h1>
+		</div>
+	
 	<button onClick={navigateHome}>Home</button>
 	<ul/>
-	<h2>Bienvenus jeunes commis !</h2>
-	<p>
+
+	<div className="mt-8 mb-8">
+		<h2 className="font-serif text-center text-2xl">Bienvenus jeunes commis !</h2>
+	</div>
+
+	<div className="mb-8">
+	<p className="font-serif text-xl text-center">
 		"Nom du jeu" est un jeu de cartes dans lequel vous incarnez des cuisiniers et 
 		cuisinières en plein rush. Vous devez récupérer des ingrédients et confectionner 
 		des plats pour marquer le plus de points possible. Mais en cuisine, le rythme est 
 		soutenu ! Seuls les plus rapides pourront accéder au rang tant convoité de Grand Chef.
 	</p>
-	<h2>BUT DU JEU</h2>
-	<p>
+	</div>
+
+	<div className="mb-8">
+		<h2 className="font-serif text-xl text-center">BUT DU JEU</h2>
+	</div>
+
+	<div className="mb-8">
+	<p className="text-center">
 		Les joueurs s'affrontent au cours de plis qu'ils doivent remporter pour marquer
 		des points. À la fin du temps imparti, la personne ayant marqué le plus de 
 		points est déclarée vainqueur.
 	</p>
-	<h2>MATÉRIEL</h2>
-	<p>Le jeu se compose de 3 types de cartes :</p>
-	<ul>
-			<li>Les cartes Ingrédients</li>
-    		<li>Les cartes Ingrédients Périmés</li>
-    		<li>Les cartes Récipients</li>
-	</ul>
+	</div>
+
+	<div className="mb-5">
+		<h2 className="font-serif text-xl text-center">MATÉRIEL</h2>
+	</div>
+
+	<div className="mb-5">
+		<h1 className="text-center font-bold">. . . Le jeu se compose de 3 types de cartes . . .</h1>
+	</div>
+
+	<div className="flex flex-row mb-8">
+		<div className="basis-1/3">
+			<p className="text-center">Les cartes Ingrédients</p>
+			<img
+				alt="logo"
+				src="src/components/images/carte.png"
+				className="mx-auto h-35 w-auto"
+			/>
+		</div>
+		<div className="basis-1/3">
+			<p className="text-center">Les cartes Ingrédients Périmés</p>
+			<img
+				alt="logo"
+				src="src/components/images/carte.png"
+				className="mx-auto h-35 w-auto"
+			/>
+		</div>
+		<div className="basis-1/3">
+			<p className="text-center">Les cartes Récipients</p>
+			<img
+				alt="logo"
+				src="src/components/images/carte.png"
+				className="mx-auto h-35 w-auto"
+			/>
+		</div>
+	</div>
 	<p>
 		Chaque joueur commence la partie avec un paquet identique de cartes, 
 		mélangé aléatoirement.
@@ -142,5 +186,6 @@ export function Rules () {
 		NB 2 : Attention aux ingrédients périmés ! (à faire)
 	</p>
 	<button onClick={navigateHome}>Home</button>
+	</div>
 	</>
 }
