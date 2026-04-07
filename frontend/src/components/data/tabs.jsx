@@ -8,7 +8,7 @@ const FetchName = () => {
 	const { data, error, isLoading } = useQuery({
 		queryKey: ['username'],
 		queryFn: () => 
-			fetch('http://localhost:3000/users')
+			fetch('http://localhost:3001/users')
 			.then(res => res.json())
 	})
 	if (isLoading) return <div>Chargement...</div>

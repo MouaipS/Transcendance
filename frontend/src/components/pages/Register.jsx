@@ -43,7 +43,7 @@ export function Register() {
 			return
 		}
 
-		fetch('http://localhost:3000/register',
+		fetch('http://localhost:3001/register',
 		{
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -74,7 +74,7 @@ export function Register() {
 				.then(res => res.json())
 		})
 		if (isLoading) return <div>Chargement...</div>
-		if (error) return <div>Erreur : {erreur.message}</div>
+		if (error) return <div>Erreur : {error.message}</div>
 
 		const datas = []
 
@@ -97,7 +97,7 @@ export function Register() {
 
 
 	return <>
-    <h1 id="title" className="title">Register</h1>
+    <h1 className="font-serif text-2xl" >Register</h1>
 	<p style={{color: 'red'}}>{alert}</p>
     <form onSubmit={handleSubmitRegister}>
 		<input
