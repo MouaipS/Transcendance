@@ -24,15 +24,7 @@ export function Register() {
 
 		const registration = { username, password, email, nickname }
 		
-		// if (username === '' || password === '' || email === '' || nickname === '') {
-		// 	setUsername('')
-		// 	setPassword('')
-		// 	setConfirmPassword('')
-		// 	setEmail('')
-		// 	setNickname('')
-		// 	setAlert("Veuillez remplir tous les champs")
-		// 	return
-		// }
+
 		if (password !== confirmPassword) {
 			setUsername('')
 			setPassword('')
@@ -100,6 +92,11 @@ export function Register() {
 	<div className="absolute inset-y-0 left-15 flex flex-col min-h-full 
 		justify-center px-6 py-12 lg:px-8 border-l border-r bg-amber-100">
 		<div className="sm:mx-auto sm:w-full sm:max-w-sm">
+			<img
+				alt="logo"
+				src="src/components/images/entrecôte.png"
+				className="mx-auto h-35 w-auto"
+			/>
 			<h2 className="font-serif italic mt-10 text-center text-2xl/9 font-bold tracking-tight text-black">. . . Create your account . . .</h2>
 		</div>
 		<div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -107,7 +104,7 @@ export function Register() {
 				<div>
 					<label htmlFor="username" className="font-serif italic 
 						block text-lg/6 font-medium text-black">
-						Username . . . . . . . . . . . . . . . . . . . . . . . . . .
+						Username . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 					</label>
 					<div className="mt-2">
 						<input
@@ -128,7 +125,7 @@ export function Register() {
 				<div>
 					<label htmlFor="email" className="font-serif italic 
 						block text-lg/6 font-medium text-black">
-						Email address . . . . . . . . . . . . . . . . . . . . . . . . . .
+						Email address . . . . . . . . . . . . . . . . . . . . . . . .
 					</label>
 					<div className="mt-2">
 						<input
@@ -150,7 +147,7 @@ export function Register() {
 				<div>
 					<label htmlFor="nickname" className="font-serif italic 
 						block text-lg/6 font-medium text-black">
-						Nickname . . . . . . . . . . . . . . . . . . . . . . . . . .
+						Nickname . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 					</label>
 					<div className="mt-2">
 						<input
@@ -171,7 +168,7 @@ export function Register() {
 				<div>
 					<label htmlFor="password" className="font-serif italic 
 						block text-lg/6 font-medium text-black">
-						Password . . . . . . . . . . . . . . . . . . . . . . . . . .
+						Password . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 					</label>
 					<div className="mt-2">
 						<input
@@ -193,7 +190,7 @@ export function Register() {
 				<div>
 					<label htmlFor="password" className="font-serif italic 
 						block text-lg/6 font-medium text-black">
-						Confirm Password . . . . . . . . . . . . . . . . . . . . . . . . . .
+						Confirm Password . . . . . . . . . . . . . . . . . . . . .
 					</label>
 					<div className="mt-2">
 						<input

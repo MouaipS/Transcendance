@@ -5,20 +5,20 @@ const queryClient = new QueryClient()
 
 const FetchName = () => {
 	
-	const { data, error, isLoading } = useQuery({
-		queryKey: ['username'],
-		queryFn: () => 
-			fetch('http://localhost:3001/users')
-			.then(res => res.json())
-	})
-	if (isLoading) return <div>Chargement...</div>
-	if (error) return <div>Erreur : {error.message}</div>
+	// const { data, error, isLoading } = useQuery({
+	// 	queryKey: ['username'],
+	// 	queryFn: () => 
+	// 		fetch('http://localhost:3001/users')
+	// 		.then(res => res.json())
+	// })
+	// if (isLoading) return <div>Chargement...</div>
+	// if (error) return <div>Erreur : {error.message}</div>
 
 	const datas = []
 
-	for (let i = 0; i < data.length; i++) {
-		datas[i] = data[i].username
-	}
+	// for (let i = 0; i < data.length; i++) {
+	// 	datas[i] = data[i].username
+	// }
 
 	return <div>{datas.map(todo => (<li key={todo}>{todo}</li>))}</div>
 }
@@ -26,7 +26,11 @@ const FetchName = () => {
 
 const tabsData = [
 	{
-		tabTitle: "Statistiques",
+		tabTitle: <img
+					alt="logo"
+					src="src/components/images/stats.png"
+					className="mx-auto h-auto w-auto"
+					/>,
 		tabHeading: "oui les stats",
 		txt: <QueryClientProvider client={queryClient}>
 				<FetchName />
@@ -34,7 +38,11 @@ const tabsData = [
 		url: "/statistics"
 	},
 	{
-		tabTitle: "Paramètres",
+		tabTitle: <img
+					alt="logo"
+					src="src/components/images/params.png"
+					className="mx-auto h-auto w-auto"
+					/>,
 		tabHeading: "oui les paramètres",
 		txt: <>
 			<li>Changer difficulté de jeu</li>
@@ -44,15 +52,30 @@ const tabsData = [
 		url: "/parameters"
 	},
 	{
-		tabTitle: "Recettes",
+		tabTitle: <img
+					alt="logo"
+					src="src/components/images/recipes.png"
+					className="mx-auto h-auto w-auto"
+					/>,
 		tabHeading: "oui les recettes",
 		txt: "Ceci être le placeholder des recettes",
 		url: "/recipes"
 	},
 	{
-		tabTitle: "Règles du jeu",
-		tabHeading: "oui les règles",
-		txt: "Ceci être le placeholder des règles",
+		tabTitle: <img
+					alt="logo"
+					src="src/components/images/rules.png"
+					className="mx-auto h-auto w-auto"
+					/>,
+		tabHeading: "Règles du jeu (en vif)",
+		txt: <>
+			<p>Le but du jeu est d'obtenir le plus de points possibles. Les joueurs obtiennent des points en remportant des plis. 
+				Il existe plusieurs façons de remporter un pli :
+				<li>Taper en cas de paire</li>
+				<li>Taper en cas de sandwich</li>
+				<li>Remplir son récipient</li>
+			</p>
+		</>,
 		url: "/rules"
 	}
 ]

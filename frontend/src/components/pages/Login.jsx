@@ -1,29 +1,12 @@
 import { useState, useEffect } from "react";
-import bataille from "../images/bataille.jpg";
-import macron from "../images/Macron.jpg";
-import theo from "../images/thbosvie.jpg"
 import { useNavigate } from "react-router-dom";
-//import { fetchLogin } from "../tools/fetchs";
-//import { motion } from "framer-motion";
 
-
-const todos = [
-  'Nommer un Premier Ministre',
-  'Accepter la démission du Premier Ministre',
-  'Nommer le même Premier Ministre',
-  'Dissoudre l\'Assemblée Nationale'
-]
 
 export function Login() {
-
-	const [alert, setAlert] = useState('')
 
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
 	const [isLogged, setIsLogged] = useState(false)
-	
-	const [showMacron, setShowMacron] = useState(false)
-	const [showTheo, setShowTheo] = useState(false)
 
 	const navigate = useNavigate()
 
@@ -31,13 +14,6 @@ export function Login() {
 		e.preventDefault()
 
 		const login = { username, password }
-		
-		if (username === '' || password === '') {
-			setUsername('')
-			setPassword('')
-			setAlert("Veuillez remplir tous les champs")
-			return
-		}
 		
 		fetch('http://localhost:3001/login',
 		{
@@ -51,53 +27,14 @@ export function Login() {
 
 		setUsername('')
 		setPassword('')
-		setAlert('')
 
 		if (isLogged)
 			navigate('/home')
 	}
 
 
-	const handleMacron = (e) => {
-		e.preventDefault()
-
-		setShowMacron(!showMacron)
-	}
-
-	const Macron = () => {
-
-		if (!showMacron)
-			return null
-
-		return <div>
-			<img src={macron} width="200" alt="Qu'il est beau notre président"/>
-		</div>
-	}
-
-	const handleTheo = (e) => {
-		e.preventDefault()
-
-		setShowTheo(!showTheo)
-	}
-
-	const Theo = () => {
-
-		if (!showTheo)
-			return null
-
-		return <div>
-			<img src={theo} width="200" alt="Qu'il est beau notre Théo"/>
-		</div>
-	}
-
-	const navigateToRegister = () => {
-		navigate('/register')
-	}
-
 	return <>
-	<p style={{color: 'red'}}>{alert}</p>
-
-	<div className="absolute inset-y-0 left-15 flex flex-col min-h-full justify-center px-6 py-12 lg:px-8 border-l-1 border-r-1 bg-amber-100">
+	<div className="absolute inset-y-0 left-15 flex flex-col min-h-full justify-center px-6 py-12 lg:px-8 border-l border-r bg-amber-100">
 		<div className="sm:mx-auto sm:w-full sm:max-w-sm">
 			<img
 				alt="logo"
@@ -110,16 +47,16 @@ export function Login() {
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form action="#" method="POST" className="space-y-6">
             <div>
-              <label htmlFor="email" className="font-serif italic block text-lg/6 font-medium text-black">
-                Email address . . . . . . . . . . . . . . . . . . . . . . . . . .
+              <label htmlFor="username" className="font-serif italic block text-lg/6 font-medium text-black">
+                Username . . . . . . . . . . . . . . . . . . . . . . . . . .
               </label>
               <div className="mt-2">
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
+                  id="username"
+                  name="username"
                   required
-                  autoComplete="email"
+                  autoComplete="username"
+				  placeholder="Philippe Etchebest"
                   className="block w-full rounded-md bg-black/5 px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-black/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-yellow-400 sm:text-sm/6"
                 />
               </div>
@@ -143,6 +80,7 @@ export function Login() {
                   type="password"
                   required
                   autoComplete="current-password"
+				  placeholder="CauchemarEnCuisine"
                   className="block w-full rounded-md bg-black/5 px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-black/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-yellow-400 sm:text-sm/6"
                 />
               </div>
@@ -151,7 +89,7 @@ export function Login() {
             <div>
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-yellow-400 px-3 py-1.5 text-sm/6 font-semibold hover:bg-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 border-1 border-black shadow-md hover:shadow-none hover:inset-shadow-xs hover:inset-shadow-black/50"
+                className="flex w-full justify-center rounded-md bg-yellow-400 px-3 py-1.5 text-sm/6 font-semibold hover:bg-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 border border-black shadow-md hover:shadow-none hover:inset-shadow-xs hover:inset-shadow-black/50"
               >
                 Sign in
               </button>
@@ -160,7 +98,7 @@ export function Login() {
 
           <p className="mt-10 text-center text-sm/6 text-gray-500">
             Not a member?{' '}
-            <a href="#" className="font-serif italic text-base font-semibold hover:text-gray-500/50">
+            <a href="/register" className="font-serif italic text-base font-semibold hover:text-gray-500/50">
               Register
             </a>
           </p>
@@ -168,19 +106,4 @@ export function Login() {
       </div>
 
     </>
-}
-
-/*
-*/
-
-function Title ({color, children, hidden}) {
-	if (hidden) {
-    	return null
-  	}
-
-  	const handleClickTitle = () => {
-    	alert("For sure !")
-  	}
-
-  	return <h1 onClick={handleClickTitle} style={{color: color}}>{children}</h1>
 }

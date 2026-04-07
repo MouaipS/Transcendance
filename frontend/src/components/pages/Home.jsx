@@ -21,13 +21,42 @@ export function Home () {
 	}
 
 	return <>
-	<h1>VegeBattle (pour Vegetable t'as compris (Nom sujet à changements parce qu'on utilise aussi de la viande (donc c'est plus juste Végé (Parce qu'il y a de la viande (et la viande c'est pas végé (c'est Lucien qui l'a dit (mais des fois il se trompe)))))))</h1>
+	<h2 className="font-serif italic mt-10 mb-10 text-center text-2xl/9 font-bold tracking-tight text-black">VegeBattle (pour Vegetable t'as compris (Nom sujet à changements parce qu'on utilise aussi de la viande (donc c'est plus juste Végé (Parce qu'il y a de la viande (et la viande c'est pas végé (c'est Lucien qui l'a dit (mais des fois il se trompe)))))))</h2>
+	<button 
+		className="flex justify-center rounded-md
+		 bg-blue-400 px-3 py-1.5 text-sm/6 font-semibold
+		 hover:bg-blue-300 focus-visible:outline-2 
+		 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 
+		 border border-black shadow-md hover:shadow-none 
+		 hover:inset-shadow-xs hover:inset-shadow-black/50 mt-4"
+		onClick={navigateRules}
+		>
+		Rulebook
+	</button>
 	<ul/>
-	<button onClick={navigateRules}>Rulebook</button>
+	<button 
+		className="flex justify-center rounded-md
+		 bg-blue-400 px-3 py-1.5 text-sm/6 font-semibold
+		 hover:bg-blue-300 focus-visible:outline-2 
+		 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 
+		 border border-black shadow-md hover:shadow-none 
+		 hover:inset-shadow-xs hover:inset-shadow-black/50"
+		onClick={navigateLogin}
+		>
+		Page de Login
+	</button>
 	<ul/>
-	<button onClick={navigateLogin}>Page de Login</button>
-	<ul/>
-	<button onClick={navigateRegister}>Page de Register</button>
+	<button 
+		className="flex justify-center rounded-md
+		 bg-blue-400 px-3 py-1.5 text-sm/6 font-semibold
+		 hover:bg-blue-300 focus-visible:outline-2 
+		 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 
+		 border border-black shadow-md hover:shadow-none 
+		 hover:inset-shadow-xs hover:inset-shadow-black/50"
+		onClick={navigateRegister}
+		>
+		Page de Register
+	</button>
 	<ul/>
 	<Tabs/>
 	</>
