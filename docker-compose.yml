@@ -29,11 +29,8 @@ services:
     container_name: backend
     restart: unless-stopped
     environment:
-      - PEPPER=${PEPPER}
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - VAULT_TOKEN=${VAULT_TOKEN}
+      - VAULT_ADDR=${VAULT_ADDR}
     expose:
       - "3001"
     depends_on:
