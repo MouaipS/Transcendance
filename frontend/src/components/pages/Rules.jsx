@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 
-
 export function Rules () {
 
 	const navigate = useNavigate()
@@ -13,28 +12,53 @@ export function Rules () {
 
 	return <>
 	<div className="absolute flex flex-col left-60 right-60 min-h-full px-6 py-12 lg:px-8 border-l-1 border-r-1 bg-amber-100">
-		<div className="relative sm:mx-auto sm:w-full sm:max-w-sm">
-			<h1 className="font-serif italic mt-10 text-center text-2xl/9 font-bold tracking-tight text-black">. . . . . . . . . . RÈGLES DU JEU . . . . . . . . . .</h1>
+		<div className="py-7 outline outline-1 -outline-offset-1 relative flex flex-col items-center bg-amber-50"> 
+			<div className="absolute top-0 left-0 w-8 h-8 rounded-br-full border-b border-r bg-amber-100"></div>
+			<div className="absolute top-0 right-0 w-8 h-8 rounded-bl-full border-b border-l bg-amber-100"></div>
+			<div className="absolute bottom-0 left-0 w-8 h-8 rounded-tr-full border-t border-r bg-amber-100"></div>
+			<div className="absolute bottom-0 right-0 w-8 h-8 rounded-tl-full border-t border-l bg-amber-100"></div>
+			<button className="absolute -bottom-8 font-bold rounded-full border-[3px] bg-amber-200 w-20 h-16 flex items-center justify-center hover:bg-amber-300" onClick={navigateHome}>HOME</button>
+			<h1 className="font-(family-name:--font-caprasimo) tracking-wide text-center text-8xl tracking-tight text-shadow-lg/20">. . . RÈGLES DU JEU . . .</h1>
 		</div>
 	
-	<button onClick={navigateHome}>Home</button>
-	<ul/>
 
-	<div className="mt-8 mb-8">
-		<h2 className="font-serif text-center text-2xl">Bienvenus jeunes commis !</h2>
+	<div className="flex flex-row mt-20 mb-20">
+
+		<div className="basis-1/3">
+		<img 
+			alt="poivron"
+			src="src/components/images/poivron.png"
+			className="rotate-y-180 mx-auto h-90 w-auto"
+		/>
+		<img 
+			alt="carot"
+			src="src/components/images/carot.png"
+			className="-translate-y-9/10 rotate-y-180 mx-auto h-110 w-auto"
+		/>
+		</div>
+
+		<div className="basis-1/3">
+			<h2 className="pb-10 font-(family-name:--font-caprasimo) text-center text-5xl">Bienvenus jeunes commis !</h2>
+			<p className="font-serif font-bold text-2xl text-justify">
+				"Nom du jeu" est un jeu de cartes dans lequel vous incarnez des cuisiniers et 
+				cuisinières en plein rush. Vous devez récupérer des ingrédients et confectionner 
+				des plats pour marquer le plus de points possible. Mais en cuisine, le rythme est 
+				soutenu ! Seuls les plus rapides pourront accéder au rang tant convoité de Grand Chef.
+			</p>
+		</div>
+		
+		<div className="basis-1/3">
+		<img 
+			alt="carot"
+			src="src/components/images/carot.png"
+			className="mx-auto h-110 w-auto"
+		/>
+		</div>
+
 	</div>
 
 	<div className="mb-8">
-	<p className="font-serif text-xl text-center">
-		"Nom du jeu" est un jeu de cartes dans lequel vous incarnez des cuisiniers et 
-		cuisinières en plein rush. Vous devez récupérer des ingrédients et confectionner 
-		des plats pour marquer le plus de points possible. Mais en cuisine, le rythme est 
-		soutenu ! Seuls les plus rapides pourront accéder au rang tant convoité de Grand Chef.
-	</p>
-	</div>
-
-	<div className="mb-8">
-		<h2 className="font-serif text-xl text-center">BUT DU JEU</h2>
+		<h2 className="font-serif text-xl text-center">. . . BUT DU JEU . . .</h2>
 	</div>
 
 	<div className="mb-8">
@@ -46,11 +70,11 @@ export function Rules () {
 	</div>
 
 	<div className="mb-5">
-		<h2 className="font-serif text-xl text-center">MATÉRIEL</h2>
+		<h2 className="font-serif text-xl text-center">. . . MATÉRIEL . . .</h2>
 	</div>
 
 	<div className="mb-5">
-		<h1 className="text-center font-bold">. . . Le jeu se compose de 3 types de cartes . . .</h1>
+		<h1 className="text-center font-bold">Le jeu se compose de 3 types de cartes:</h1>
 	</div>
 
 	<div className="flex flex-row mb-8">
