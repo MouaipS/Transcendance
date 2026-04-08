@@ -1,14 +1,17 @@
 {
 	"compilerOptions": {
-		"target": "ES2020",	//Javascript version
-		"module": "NodeNext", //Module manager 
+		"target": "es2022",	//Javascript version
+		"module": "nodenext", //Module manager 
 		"moduleResolution": "NodeNext", //How ts finds files with import
-		"outDir": "./object", //transpiled scripts location
-		"rootDir": "./src", //typescripts files location
+		// "outDir": "./object", //transpiled scripts location
+		// "rootDir": "./src", //typescripts files location
 		"strict": true, //like wall werror wextra
 		"esModuleInterop": true, //compatibility between JS and ecmascript
-		"skipLibCheck": true//skip type check
+		"skipLibCheck": true,//skip type check
+		"paths": {
+			"@prisma/client": ["./generated/prisma"]
+		}
 	},
-	"include": ["src/**/*"],//which files to compile
+	"include": ["src/**/*", "generated/**/*"],//which files to compile
   	//"exclude": ["node_modules", "dist"]//which folder to ignore
 }
