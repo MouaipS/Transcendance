@@ -84,17 +84,17 @@ services:
 #-------------
 # VAULT
 #-----------------
-vault:
-  image: hashicorp/vault:latest
-  container_name: vault
-  restart: unless-stopped
-  environment:
-    - VAULT_DEV_ROOT_TOKEN_ID=${VAULT_TOKEN}
-    - VAULT_DEV_LISTEN_ADRESS=0.0.0.1:8200
-  expose:
-    - "8200"
-  networks:
-    - transcendance
+  vault:
+    image: hashicorp/vault:latest
+    container_name: vault
+    restart: unless-stopped
+    environment:
+      - VAULT_DEV_ROOT_TOKEN_ID=${VAULT_TOKEN}
+      - VAULT_DEV_LISTEN_ADRESS=0.0.0.1:8200
+    expose:
+      - "8200"
+    networks:
+      - transcendance
 
 #__________________________VOLUMES 
 volumes:   

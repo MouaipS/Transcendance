@@ -4,7 +4,7 @@ set -e #pour recup toutes les erreurs
 
 #TODO Retirer les commentaires en fr
 # -Pour verifier que Vault demarre bien avant de pouvoir utiliser le back : petit ping"
-    until curl "${VAULT_ADD}/sys/health" > /dev/null
+    until curl "${VAULT_ADD}/sys/health" > /dev/null; do
         sleep 1
     done
 
@@ -38,8 +38,8 @@ until node -e "
         socket.destroy();
         process.exit(1);
     });
-" 2> /dev/null; do 
-sleep 1
+" 2>/dev/null; do 
+    sleep 1
 
 #on demande à Vault de donner les infos au back
 #on va recuperer la table  

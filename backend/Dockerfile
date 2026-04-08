@@ -1,5 +1,8 @@
 FROM node:trixie AS dev
 
+RUN apt-get update 
+RUN apt-get install -y curl
+
 WORKDIR /app
 
 COPY package*.json .
