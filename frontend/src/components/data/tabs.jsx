@@ -1,8 +1,11 @@
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 
-
+// Utilisé pour fetch depuis le back,
+// oui c'est encore un autre plug-in...
 const queryClient = new QueryClient()
 
+// Requête GET pour récupérer les infos depuis la DB afin
+// d'afficher les statistiques de l'utilisateur dans l'onglet stats
 const FetchName = () => {
 	
 	// const { data, error, isLoading } = useQuery({
@@ -23,7 +26,7 @@ const FetchName = () => {
 	return <div>{datas.map(todo => (<li key={todo}>{todo}</li>))}</div>
 }
 
-
+// Tableau contenant les différents onglets de Home
 const tabsData = [
 	{
 		tabTitle: <img

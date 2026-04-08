@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 
@@ -7,8 +7,12 @@ const queryClient = new QueryClient()
 
 export function Register() {
 
+	// Sert pour afficher une erreur si l'utilisateur
+	// n'entre pas les 2 mêmes mots de passe
 	const [alert, setAlert] = useState('')
 
+	// Variable utilisées pour l'authentification et leurs
+ 	// setters, qui permettent de modifier leurs valeurs
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
 	const [confirmPassword, setConfirmPassword] = useState('')
@@ -17,13 +21,17 @@ export function Register() {
 
 	const [showGet, setShowGet] = useState(false)
 
+	// Permet de naviguer vers une autre page 
+  	// en appelant la fonction navigate
 	const navigate = useNavigate()
 
+	// Fonction appelée en soumettant le form de register,
+  	// envoie une requête au back pour créer un nouvel
+	// utilisateur dans la DB
 	const handleSubmitRegister = (e) => {
 		e.preventDefault()
 
 		const registration = { username, password, email, nickname }
-		
 
 		if (password !== confirmPassword) {
 			setUsername('')
@@ -39,7 +47,7 @@ export function Register() {
 		{
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({username})
+			body: JSON.stringify(registration)
 		}	
 		).then( () => {
 			console.log("Success")
@@ -55,6 +63,8 @@ export function Register() {
 		navigate('/home')
 	}
 
+	// Requête GET pour récupérer les infos depuis la DB afin
+	// de vérifier si les requêtes fonctionnent bien, ne restera pas
 	const FetchName = () => {
 	
 		if (!showGet)
@@ -62,7 +72,7 @@ export function Register() {
 		const { data, error, isLoading } = useQuery({
 			queryKey: ['username'],
 			queryFn: () => 
-				fetch('http://localhost:3000/users')
+				fetch('http://localhost:3001/users')
 				.then(res => res.json())
 		})
 		if (isLoading) return <div>Chargement...</div>
@@ -77,6 +87,8 @@ export function Register() {
 		return <ul>{datas.map(todo => (<li key={todo}>{todo}</li>))}</ul>
 	}
 
+	// Fonction pour empêcher l'appel de FetchName tant que 
+	// le bouton associé n'a pas été cliqué
 	const handleClick = (e) => {
 		e.preventDefault()
 
@@ -100,6 +112,7 @@ export function Register() {
 			<h2 className="font-serif italic mt-10 text-center text-2xl/9 font-bold tracking-tight text-black">. . . Create your account . . .</h2>
 		</div>
 		<div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+			<p style={{color: 'red'}}>{alert}</p>
 			<form onSubmit={handleSubmitRegister} className="space-y-6">
 				<div>
 					<label htmlFor="username" className="font-serif italic 

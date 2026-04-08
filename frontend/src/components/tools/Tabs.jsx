@@ -3,8 +3,13 @@ import { tabsData } from "../data/tabs.jsx"
 import { useNavigate } from "react-router-dom"
 
 
+// Fonction permettant de créer le panneau d'onglets
+// dans la page Home
 export default function tabs () {
 	
+	// On crée un index qui chqnge en fonction du bouton d'onglet
+	// sur lequel on clique, ce qui affiche les éléments du tableau 
+	// correspondants à cet index
 	const [selectedTab, setSelectedTab] = useState(0)
 	const navigate = useNavigate()
 
@@ -28,11 +33,11 @@ export default function tabs () {
 			<p className="text-2xl font-semibold mb-2">
 				{tabsData[selectedTab].tabHeading}
 			</p>
-			<div>
+			<div className="text-justify">
 				{tabsData[selectedTab].txt}
 			</div>
 			<button 
-				className="mt-10 flex justify-center rounded-md
+				className="mt-10 flex mx-auto rounded-md
 				bg-blue-400 px-3 py-1.5 text-sm/6 font-semibold
 				hover:bg-blue-300 focus-visible:outline-2 
 				focus-visible:outline-offset-2 focus-visible:outline-indigo-500 

@@ -6,8 +6,11 @@ import { Rules } from "./components/pages/Rules.jsx"
 import { Statistics } from "./components/pages/Statistics.jsx"
 import { Parameters } from "./components/pages/Parameters.jsx"
 import { Recipes } from "./components/pages/Recipes.jsx"
+import { ResetPassword } from "./components/pages/ResetPassword.jsx";
 
 
+// Architecture du site avec les différentes pages, 
+// leur URL et leur contenu
 const router = createBrowserRouter([
 	{
 		path: '/',
@@ -65,6 +68,16 @@ const router = createBrowserRouter([
 		path: '/recipes',
 		element: <div>
 			<Recipes/>
+			<ul/>
+			<nav>
+				<Link to="/home">Home</Link>
+			</nav>
+		</div>
+	},
+	{
+		path: '/password_reset',
+		element: <div>
+			<ResetPassword/>
 			<ul/>
 			<nav>
 				<Link to="/home">Home</Link>
