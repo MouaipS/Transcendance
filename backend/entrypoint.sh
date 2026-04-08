@@ -4,15 +4,15 @@ set -e #pour recup toutes les erreurs
 
 #TODO Retirer les commentaires en fr
 # -Pour verifier que Vault demarre bien avant de pouvoir utiliser le back : petit ping"
-    until curl "${VAULT_ADD}/sys/health" > /dev/null; do
+    until curl "${VAULT_ADDR}/v1/sys/health" > /dev/null; do
         sleep 1
     done
 
 #je remplis le Vault avec les informations d'auth puis de la db
 #en 2 partie pour avoir une sorte d'historique des "commits"
 curl -sf -X POST \
-    -H "X-Token_Vault: ${VAULT_TOKEN}"\
-    -H "Content-type: application:json" \
+    -H "X-Vault-Token: ${VAULT_TOKEN}"\
+    -H "Content-type: application/json" \
     -d "{\"data\": {\"pepper\": \"$PEPPER\", \"jwt_secret\": \"$JWT_SECRET\"}}" \
     "${VAULT_ADDR}/v1/secret/data/auth" > /dev/null
 
@@ -40,11 +40,12 @@ until node -e "
     });
 " 2>/dev/null; do 
     sleep 1
+done
 
 #on demande à Vault de donner les infos au back
 #on va recuperer la table  
 DB_INFO=$(curl -sf \
-    -H "X-Token_Vault: ${VAULT_TOKEN}" \
+    -H "X-Vault-Token: ${VAULT_TOKEN}" \
     "$VAULT_ADDR/v1/secret/data/database")
 
 
@@ -60,14 +61,14 @@ eval $(echo "$DB_INFO" | node -e "
     });
 
     process.stdin.on('end', () => {
-        let db_bloc = JSON.parse(raw).data.data;
+        let db_bloc = JSON.parse(content).data.data;
         console.log('DB_USER=' + db_bloc.db_user);
         console.log('DB_PASSWORD=' + db_bloc.db_password);
         console.log('DB_NAME=' + db_bloc.db_name);
     });
-s")
+")
 
-export DATABASE_URL='postgresql://'${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}?schema=public"
+export DATABASE_URL="postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}?schema=public"
 
 npx prisma migrate deploy
 
