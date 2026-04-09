@@ -34,8 +34,6 @@ services:
       - "3001"
     depends_on:
       - db
-    volumes:
-      - ./backend/src:/app/src
     networks:
       - transcendance
   

@@ -31,7 +31,7 @@ export function Register() {
 	const handleSubmitRegister = (e) => {
 		e.preventDefault()
 
-		const registration = { username, password, email, nickname }
+		const registration = { username, password }
 
 		if (password !== confirmPassword) {
 			setUsername('')
@@ -72,7 +72,7 @@ export function Register() {
 		const { data, error, isLoading } = useQuery({
 			queryKey: ['username'],
 			queryFn: () => 
-				fetch('http://localhost:3001/users')
+				fetch('http://localhost:3001/api/users')
 				.then(res => res.json())
 		})
 		if (isLoading) return <div>Chargement...</div>

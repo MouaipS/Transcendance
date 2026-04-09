@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "start": "node src/server/index.js",
+    "start": "node object/src/server/index.js",
     "clean": "rm -rf object ; rm -rf node_modules"
   },
   "keywords": [],
