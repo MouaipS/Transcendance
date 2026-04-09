@@ -1,4 +1,7 @@
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
+import DropdownDifficulty from '../tools/DropdownDifficulty';
+import DropdownLanguage from '../tools/DropdownLanguage';
+
 
 // Utilisé pour fetch depuis le back,
 // oui c'est encore un autre plug-in...
@@ -46,12 +49,11 @@ const tabsData = [
 					src="src/components/images/params.png"
 					className="mx-auto h-auto w-auto"
 					/>,
-		tabHeading: "oui les paramètres",
-		txt: <>
-			<li>Changer difficulté de jeu</li>
-			<li>Changer langue de jeu</li>
-			<li>Trouver de nouveaux paramètres à modifier</li>
-		</>,
+		tabHeading: "",
+		txt: <div>
+			<DropdownDifficulty/>
+			<DropdownLanguage/>
+		</div>,
 		url: "/parameters"
 	},
 	{

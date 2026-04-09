@@ -36,17 +36,19 @@ export default function tabs () {
 			<div className="text-justify">
 				{tabsData[selectedTab].txt}
 			</div>
-			<button 
-				className="mt-10 flex mx-auto rounded-md
-				bg-blue-400 px-3 py-1.5 text-sm/6 font-semibold
-				hover:bg-blue-300 focus-visible:outline-2 
-				focus-visible:outline-offset-2 focus-visible:outline-indigo-500 
-				border border-black shadow-md hover:shadow-none 
-				hover:inset-shadow-xs hover:inset-shadow-black/50"
-				onClick={navigateTabs}
-				>
-				Voir plus
-			</button>
+			{(selectedTab === 0 || selectedTab === 3) && (
+				<button 
+					className="mt-10 flex mx-auto rounded-md
+					bg-blue-400 px-3 py-1.5 text-sm/6 font-semibold
+					hover:bg-blue-300 focus-visible:outline-2 
+					focus-visible:outline-offset-2 focus-visible:outline-indigo-500 
+					border border-black shadow-md hover:shadow-none 
+					hover:inset-shadow-xs hover:inset-shadow-black/50"
+					onClick={navigateTabs}
+					>
+					Voir plus
+				</button>
+			)}
 		</div>
 	</div>
 }

@@ -20,7 +20,7 @@ export function Home () {
 	}
 
 	return <>
-	<h2 className="font-serif italic mt-10 mb-10 text-center text-2xl/9 font-bold tracking-tight text-black">VegeBattle (pour Vegetable t'as compris (Nom sujet à changements parce qu'on utilise aussi de la viande (donc c'est plus juste Végé (Parce qu'il y a de la viande (et la viande c'est pas végé (c'est Lucien qui l'a dit (mais des fois il se trompe (c'est rare (mais ça arrive)))))))))</h2>
+	<h2 className="font-serif italic mt-10 mb-10 text-center text-2xl/9 font-bold tracking-tight text-black">VegeBattle (pour Vegetable t'as capté (Nom sujet à changements parce qu'on utilise aussi de la viande (donc c'est plus juste Végé (Parce qu'il y a de la viande (et la viande c'est pas végé (c'est Lucien qui l'a dit (mais des fois il se trompe (c'est rare (mais ça arrive)))))))))</h2>
 	<button 
 		className="flex justify-center rounded-md
 		 bg-blue-400 px-3 py-1.5 text-sm/6 font-semibold
