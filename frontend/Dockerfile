@@ -1,4 +1,4 @@
-FROM node:trixie AS dev
+FROM public.ecr.aws/docker/library/node:trixie AS dev
 
 WORKDIR /app
 

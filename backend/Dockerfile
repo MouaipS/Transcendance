@@ -1,4 +1,4 @@
-FROM node:trixie AS dev
+FROM public.ecr.aws/docker/library/node:trixie AS dev
 
 WORKDIR /app
 
@@ -8,6 +8,8 @@ RUN npm install
 
 COPY . .
 
-RUN npm run build
+RUN chmod +x entrypoint.sh
+
+ENTRYPOINT ["./entrypoint.sh"]
 
 CMD ["npm", "start"]
