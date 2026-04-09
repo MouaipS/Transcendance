@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 
-
 export function Rules () {
 
 	const navigate = useNavigate()
@@ -12,29 +11,94 @@ export function Rules () {
 	
 
 	return <>
-	<h1>RÈGLES DU JEU</h1>
-	<button onClick={navigateHome}>Home</button>
-	<ul/>
-	<h2>Bienvenus jeunes commis !</h2>
-	<p>
-		"Nom du jeu" est un jeu de cartes dans lequel vous incarnez des cuisiniers et 
-		cuisinières en plein rush. Vous devez récupérer des ingrédients et confectionner 
-		des plats pour marquer le plus de points possible. Mais en cuisine, le rythme est 
-		soutenu ! Seuls les plus rapides pourront accéder au rang tant convoité de Grand Chef.
-	</p>
-	<h2>BUT DU JEU</h2>
-	<p>
+	<div className="absolute flex flex-col left-60 right-60 min-h-full px-6 py-12 lg:px-8 border-l-1 border-r-1 bg-amber-100">
+		<div className="py-7 outline outline-1 -outline-offset-1 relative flex flex-col items-center bg-amber-50 mb-20"> 
+			<div className="absolute top-0 left-0 w-8 h-8 rounded-br-full border-b border-r bg-amber-100"></div>
+			<div className="absolute top-0 right-0 w-8 h-8 rounded-bl-full border-b border-l bg-amber-100"></div>
+			<div className="absolute bottom-0 left-0 w-8 h-8 rounded-tr-full border-t border-r bg-amber-100"></div>
+			<div className="absolute bottom-0 right-0 w-8 h-8 rounded-tl-full border-t border-l bg-amber-100"></div>
+			<button className="absolute -bottom-8 font-bold rounded-full border-[3px] bg-amber-200 w-20 h-16 flex items-center justify-center hover:bg-amber-300" onClick={navigateHome}>HOME</button>
+			<h1 className="font-(family-name:--font-caprasimo) tracking-wide text-center text-8xl text-shadow-lg/20">. . . RÈGLES DU JEU . . .</h1>
+		</div>
+	
+		<h2 className="pt-10 pb-30 font-(family-name:--font-caprasimo) tracking-wide text-shadow-amber-200 text-shadow-2xs text-center text-6xl">Bienvenus jeunes commis !</h2>
+
+	<div className="bg-[url(/src/components/images/cuttingboard.png)] scale-110 h-160 place-content-center">
+	<div className="flex flex-row ">
+		<div className="basis-1/3 -translate-x-10">
+		<img 
+			alt="carot"
+			src="src/components/images/carot.png"
+			className=" rotate-y-180 mx-auto h-110 w-auto"
+		/>
+		</div>
+
+		<div className="basis-1/3">
+			<p className="font-(family-name:--font-caprasimo) text-shadow-lg/30 -rotate-10 -translate-x-10 translate-y-3 text-3xl text-white text-justify">
+				"Nom du jeu" est un jeu de cartes dans lequel vous incarnez des cuisiniers et 
+				cuisinières en plein rush. Vous devez récupérer des ingrédients et confectionner 
+				des plats pour marquer le plus de points possible. Mais en cuisine, le rythme est 
+				soutenu ! Seuls les plus rapides pourront accéder au rang tant convoité de Grand Chef.
+			</p>
+		</div>
+		
+		<div className="basis-1/3 translate-x-10">
+		<img 
+			alt="carot"
+			src="src/components/images/carot.png"
+			className="mx-auto h-110 w-auto"
+		/>
+		</div>
+		</div>
+
+	</div>
+
+	<div className="pt-30 pb-30">
+		<h2 className="font-(family-name:--font-caprasimo) tracking-wide text-shadow-amber-200 text-shadow-2xs text-center text-6xl">. . . BUT DU JEU . . .</h2>
+	</div>
+
+	<div className="mb-8">
+	<p className="text-center">
 		Les joueurs s'affrontent au cours de plis qu'ils doivent remporter pour marquer
 		des points. À la fin du temps imparti, la personne ayant marqué le plus de 
 		points est déclarée vainqueur.
 	</p>
-	<h2>MATÉRIEL</h2>
-	<p>Le jeu se compose de 3 types de cartes :</p>
-	<ul>
-			<li>Les cartes Ingrédients</li>
-    		<li>Les cartes Ingrédients Périmés</li>
-    		<li>Les cartes Récipients</li>
-	</ul>
+	</div>
+
+	<div className="mb-5">
+		<h2 className="font-serif text-xl text-center">. . . MATÉRIEL . . .</h2>
+	</div>
+
+	<div className="mb-5">
+		<h1 className="text-center font-bold">Le jeu se compose de 3 types de cartes:</h1>
+	</div>
+
+	<div className="flex flex-row mb-8">
+		<div className="basis-1/3">
+			<p className="text-center">Les cartes Ingrédients</p>
+			<img
+				alt="logo"
+				src="src/components/images/carte.png"
+				className="mx-auto h-35 w-auto"
+			/>
+		</div>
+		<div className="basis-1/3">
+			<p className="text-center">Les cartes Ingrédients Périmés</p>
+			<img
+				alt="logo"
+				src="src/components/images/carte.png"
+				className="mx-auto h-35 w-auto"
+			/>
+		</div>
+		<div className="basis-1/3">
+			<p className="text-center">Les cartes Récipients</p>
+			<img
+				alt="logo"
+				src="src/components/images/carte.png"
+				className="mx-auto h-35 w-auto"
+			/>
+		</div>
+	</div>
 	<p>
 		Chaque joueur commence la partie avec un paquet identique de cartes, 
 		mélangé aléatoirement.
@@ -142,5 +206,6 @@ export function Rules () {
 		NB 2 : Attention aux ingrédients périmés ! (à faire)
 	</p>
 	<button onClick={navigateHome}>Home</button>
+	</div>
 	</>
 }
