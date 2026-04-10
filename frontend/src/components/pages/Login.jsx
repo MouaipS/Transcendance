@@ -28,15 +28,28 @@ export function Login() {
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(login)
 		}	
-		).then( (res) => {
-			console.log(res)
+		)
+		.then( (Response) => {
+
+			if (Response.status === 401) {
+				console.log("non", Response.status)
+				throw "Erreur retourne en enfer"
+			}
+
+			console.log("oui")
+			const data = Response.json()
+			return data
 		})
-
-		setUsername('')
-		setPassword('')
-
-		if (isLogged)
-			navigate('/home')
+		.then( (data) =>
+			{
+				console.log(data.message)
+				console.log(data.user)
+				setUsername('')
+				setPassword('')
+				navigate('/home')
+			}
+		)
+		.catch((err) => console.error("error:", err))
 	}
 
 

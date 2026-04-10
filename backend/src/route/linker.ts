@@ -6,8 +6,8 @@ import {registerRoute} from "../route/authentication/register.js"//same but for 
 export async function linker(server: FastifyInstance)
 {
 	//server.post('/api/login', async(request, reply) => { loginRoute(request, reply);}) //these are the shorthand route declaration that execute the actual route
-	server.post('/api/login', async (request, reply) => { loginRoute(request, reply)});
-	server.post<{Body: any}>('/api/register', async (request, reply) => { registerRoute(request, reply)});
+	server.post('/api/login', async (request, reply) => { return loginRoute(request, reply)});
+	server.post<{Body: any}>('/api/register', async (request, reply) => { return registerRoute(request, reply)});
 }
 
 //REQUETES TEST 
