@@ -1,11 +1,30 @@
 {
-	"name": "backend",
-	"version": "1.0.0",
-	"type": "module",
-	"scripts": {
-    "start": "node server.js"
-	},
-	"dependencies": {
-    "fastify": "^5.3.3"
-	}
+  "name": "back",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node object/src/server/index.js",
+    "clean": "rm -rf object ; rm -rf node_modules"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@prisma/adapter-pg": "7.7.0",
+    "@prisma/client": "7.7.0",
+    "dotenv": "17.4.1",
+    "fastify": "5.8.4",
+    "fastify-plugin": "5.1.0",
+    "pg": "8.20.0"
+  },
+  "devDependencies": {
+    "@types/node": "25.5.0",
+    "@types/pg": "8.20.0",
+    "typescript": "6.0.2",
+    "prisma": "7.7.0",
+    "ts-node": "10.9.2"
+  }
 }

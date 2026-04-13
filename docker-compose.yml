@@ -3,7 +3,7 @@ services:
 # NGINX - 
 #----------------
   nginx:
-    image: nginx:alpine
+    image: public.ecr.aws/nginx/nginx:1.29-alpine
     container_name: nginx
     restart: unless-stopped
     ports:
@@ -29,16 +29,11 @@ services:
     container_name: backend
     restart: unless-stopped
     environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}
     expose:
       - "3001"
     depends_on:
       - db
-    volumes:
-      - ./backend/src:/app/src
-      - ./backend/server.js:/app/server.js
     networks:
       - transcendance
   
@@ -64,15 +59,15 @@ services:
 # DB - 
 #---------------
   db:
-    image: postgres:16-alpine
+    image: public.ecr.aws/docker/library/postgres:16.13-alpine3.23
+    ports:
+      - ${POSTGRES_PORT}:5432 
     container_name: db
     restart: unless-stopped
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    expose:
-      - "5432"
     volumes:
       - db-data:/var/lib/postgresql/data
     networks:
@@ -81,6 +76,7 @@ services:
 #__________________________VOLUMES 
 volumes:   
   db-data:
+  node_modules:
   
 networks:
   transcendance:
