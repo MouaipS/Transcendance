@@ -1,5 +1,8 @@
 FROM public.ecr.aws/docker/library/node:trixie AS dev
 
+RUN apt-get update 
+RUN apt-get install -y curl
+
 WORKDIR /app
 
 COPY package*.json .
@@ -8,6 +11,9 @@ RUN npm install
 
 COPY . .
 
-RUN chmod +x entrypoint.sh
+RUN npx prisma generate
 
-ENTRYPOINT ["./entrypoint.sh"]
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT [ "/entrypoint.sh" ]

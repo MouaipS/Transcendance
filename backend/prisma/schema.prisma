@@ -16,7 +16,6 @@ model User {
 	id						String		@id @default(uuid())
 	username				String		@unique
 	password				String
-	// salt					String  	@unique
 	// inscription_date		DateTime 	@default(now())
 	// status					Int			@default(0)
 
