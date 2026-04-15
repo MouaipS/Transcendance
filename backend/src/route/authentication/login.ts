@@ -1,34 +1,38 @@
 import {FastifyInstance, FastifyRequest, FastifyReply} from 'fastify'
 import { prisma } from "../../server/prisma.js"
+import { compare } from "bcrypt" //imports the compare prisma function
 
+interface LoginBody { //this is used to type the request body this prevents from error is types are not respected
+  username: string; //like username = request.body.username as string
+  password: string;
+}
 
-export async function loginRoute(request : FastifyRequest, reply : FastifyReply)
+export async function loginRoute(request : FastifyRequest<{Body: LoginBody}>, reply : FastifyReply)
 {
-	const {username, password} = request.body as any;
+	const {username, password} = request.body;
 	const user = await prisma.user.findUnique({
 		where: {
-			username: username,
+			username : username, //can also put username only
 		},
 	});
-
-	if (!user || user.password !== password)
+	if (!user) //Cant make the comparison in the same if because the user can be false and types script says gngngngn tro nul le prgrammeur
 	{
-		console.log("Invalid Login")
+		console.log("User doesn't exist")
 		return reply.code(401).send({
-			error: "Invalid login"
+			error: "User doesn't exist"
 		})
 	}
-	else
+	const pswdComp = await compare(password, user.password);//bcrypt function to check the hased password
+	if (!pswdComp)
 	{
-		console.log("Connexion Succeeded")
-		return reply.code(200).send({
-			message: "Connexion suceeded",
-			user: { id: user.id, username: user.username }
+		console.log("Invalid password")
+		return reply.code(401).send({
+			error: "invalid password"
 		})
 	}
-	
-	// console.log("headers login", request.headers);
-	// console.log("body login", request.body);
-	// console.log("url login", request.url);
-	return
+	console.log("Connexion Succeeded")
+	return reply.code(200).send({
+		message: "Connexion suceeded",
+		user: { id: user.id, username: user.username }
+	})
 }
