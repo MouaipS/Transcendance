@@ -61,18 +61,18 @@ export function Home () {
 	</button>
 	<ul/>
 
-	<div>
+	<div dir="ltr">
 		<button
 			onClick={() => navigate('/statistics')}
-			className="inline-flex items-center rounded-md 
-			border border-gray-300 shadow-sm px-2 py-2 bg-white 
+			className="flex items-center rounded-md 
+			border border-black shadow-md bg-white 
 			text-sm font-medium text-gray-700 hover:bg-gray-50 
-			focus:outline-none mt-5"
+			focus:outline-none mt-5 pe-8"
 		>
 			<img
 					alt="avatar par défaut"
 					src="src/components/images/default_avatar.webp"
-					className="mx-10 h-10 w-10"
+					className="mx-15 h-15 w-15 "
 			/>
 			{username}
 		</button>
