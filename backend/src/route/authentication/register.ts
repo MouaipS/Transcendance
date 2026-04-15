@@ -14,7 +14,7 @@ export async function registerRoute(request : FastifyRequest<{Body: RegisterBody
 	const user = await prisma.user.create({
 		data: {
 			username : request.body.username,
-			password: hashedPassword
+			password: hashedPassword,
 			stats: {
 				create: {}
 			}
