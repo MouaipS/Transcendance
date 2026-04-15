@@ -46,19 +46,6 @@ const tabsData = [
 	{
 		tabTitle: <img
 					alt="logo"
-					src="src/components/images/params.png"
-					className="mx-auto h-auto w-auto"
-					/>,
-		tabHeading: "",
-		txt: <div>
-			<DropdownDifficulty/>
-			<DropdownLanguage/>
-		</div>,
-		url: "/parameters"
-	},
-	{
-		tabTitle: <img
-					alt="logo"
 					src="src/components/images/recipes.png"
 					className="mx-auto h-auto w-auto"
 					/>,

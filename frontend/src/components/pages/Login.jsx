@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { setter } from '../data/tokenSlice.jsx';
 
 
 export function Login() {
+  
+  const token = useSelector((state) => state.token.value)
+  const dispatch = useDispatch()
 
   // Variable utilisées pour l'authentification et leurs
   // setters, qui permettent de modifier leurs valeurs
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
-	const [isLogged, setIsLogged] = useState(false)
 
   // Permet de naviguer vers une autre page 
   // en appelant la fonction navigate
@@ -50,8 +54,25 @@ export function Login() {
 			}
 		)
 		.catch((err) => console.error("error:", err))
-	}
-
+  }
+    /*
+    fetch('https://localhost:8443/api/login',
+		{
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(login)
+		})
+		.then(Response => Response.json())
+    .then(json => {
+      console.log(json)
+      if (json?.token) {
+        dispatch(setter(json.token))
+      }
+    })
+    .catch((err) => console.error("error:", err))
+    */
+  
+  //navigate('/home')
 
 	return <>
 	<div className="absolute inset-y-0 left-15 flex flex-col min-h-full justify-center px-6 py-12 lg:px-8 border-l border-r bg-amber-100">

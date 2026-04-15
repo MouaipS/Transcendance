@@ -17,7 +17,7 @@ export default function tabs () {
 		navigate(tabsData[selectedTab].url)
 	}
 	
-	return	<div className="max-w-[350px] min-h-[250px] rounded border border-slate-400 mt-4">
+	return	<div className="max-w-87.5 min-h-62.5 rounded border border-slate-400 mt-4">
 		<div className="flex divide-x divide-slate-700">
 			{tabsData.map((obj, index) => (
 				<button 
@@ -36,11 +36,11 @@ export default function tabs () {
 			<div className="text-justify">
 				{tabsData[selectedTab].txt}
 			</div>
-			{(selectedTab === 0 || selectedTab === 3) && (
+			{selectedTab !== 1 && (
 				<button 
 					className="mt-10 flex mx-auto rounded-md
-					bg-blue-400 px-3 py-1.5 text-sm/6 font-semibold
-					hover:bg-blue-300 focus-visible:outline-2 
+					bg-yellow-400 px-3 py-1.5 text-sm/6 font-semibold
+					hover:bg-yellow-300 focus-visible:outline-2 
 					focus-visible:outline-offset-2 focus-visible:outline-indigo-500 
 					border border-black shadow-md hover:shadow-none 
 					hover:inset-shadow-xs hover:inset-shadow-black/50"
