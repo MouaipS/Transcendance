@@ -12,7 +12,10 @@ export async function registerRoute(request : FastifyRequest<{Body: RegisterBody
 	const user = await prisma.user.create({
 		data: {
 			username,
-			password
+			password,
+			stats: {
+				create: {}
+			}
 		},
 	});
 	console.log("headers register", request.headers);

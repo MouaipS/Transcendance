@@ -20,33 +20,33 @@ model User {
 	// inscription_date		DateTime 	@default(now())
 	// status					Int			@default(0)
 
-	// stats					StatsUser?
+	stats					StatsUser?
 	// gamesWon				Game[]		@relation("GameWinner")
 	// gamesPlayed				GamePlayer[]
 	// friendships				Friend[]	@relation("FriendPlayer")
 	// friendOf				Friend[]	@relation("FriendTarget")
 }
 
-// model StatsUser	{
-// 	player						User	@relation(fields: [player_id], references: [id])
-// 	player_id					String	@id
-// 	nb_games					Int		@default(0)
-// 	nb_victories				Int		@default(0)
-// 	nb_defeats					Int		@default(0)
-// 	rank						Int		@default(0)
-// 	rank_max					Int		@default(0)
-// 	favorite_card				String	@default("None")
-// 	avg_reaction_ms				BigInt	@default(0)
-// 	most_smashed_card			String	@default("None")
-// 	most_combo_smash			String	@default("None")
-// 	nb_smash					Int		@default(0)
-// 	nb_smash_success			Int		@default(0)
-// 	max_win_streak				Int		@default(0)
-// 	max_loose_streak			Int		@default(0)
-// 	max_smash_success_streak	Int		@default(0)
-// 	hours_played				Int		@default(0)
-// 	nb_bonus_played				Int		@default(0)
-// }
+model StatsUser	{
+	player						User	@relation(fields: [player_id], references: [id])
+	player_id					String	@id
+	nb_games					Int		@default(0)
+	nb_victories				Int		@default(0)
+	nb_defeats					Int		@default(0)
+	// rank						Int		@default(0)
+	// rank_max					Int		@default(0)
+	// favorite_card				String	@default("None")
+	// avg_reaction_ms				BigInt	@default(0)
+	// most_smashed_card			String	@default("None")
+	// most_combo_smash			String	@default("None")
+	// nb_smash					Int		@default(0)
+	// nb_smash_success			Int		@default(0)
+	// max_win_streak				Int		@default(0)
+	// max_loose_streak			Int		@default(0)
+	// max_smash_success_streak	Int		@default(0)
+	// hours_played				Int		@default(0)
+	// nb_bonus_played				Int		@default(0)
+}
 
 
 // model Game {
