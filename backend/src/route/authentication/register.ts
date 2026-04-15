@@ -13,9 +13,11 @@ export async function registerRoute(request : FastifyRequest<{Body: RegisterBody
 	const hashedPassword = await hash(request.body.password, 10);
 	const user = await prisma.user.create({
 		data: {
-			//...request.body is also valid
 			username : request.body.username,
 			password: hashedPassword
+			stats: {
+				create: {}
+			}
 		},
 	});
 	console.log("hashed : ",hashedPassword);
