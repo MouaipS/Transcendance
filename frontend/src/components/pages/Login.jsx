@@ -75,15 +75,21 @@ export function Login() {
   //navigate('/home')
 
 	return <>
-	<div className="absolute inset-y-0 left-15 flex flex-col min-h-full justify-center px-6 py-12 lg:px-8 border-l border-r bg-amber-100">
-		<div className="sm:mx-auto sm:w-full sm:max-w-sm">
-			<img
-				alt="logo"
-				src="src/components/images/legumes.png"
-				className="mx-auto h-35 w-auto"
-			/>
-			<h2 className="font-serif italic mt-10 text-center text-2xl/9 font-bold tracking-tight text-black">. . . Sign in to your account . . .</h2>
-		</div>
+  <img 
+    alt="Le grand chef cuisinier Michel Dumas"
+    src="src/components/images/michel.jpg"
+    className="w-full h-screen absolute inset-0 object-cover"
+    onClick={() => navigate('/home')}
+  />
+  <div className="absolute inset-y-0 left-15 flex flex-col min-h-full justify-center px-6 py-12 lg:px-8 border-l border-r bg-amber-100">
+    <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+      <img
+        alt="logo"
+        src="src/components/images/legumes.png"
+        className="mx-auto h-35 w-auto"
+      />
+      <h2 className="font-serif italic mt-10 text-center text-2xl/9 font-bold tracking-tight text-black">. . . Sign in to your account . . .</h2>
+    </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form action="#" method="POST" className="space-y-6" onSubmit={handleSubmitLogin}>
@@ -98,8 +104,8 @@ export function Login() {
                   required
                   autoComplete="username"
                   value={username}
-			            onChange={(e) => setUsername(e.target.value)}
-				          placeholder="Philippe Etchebest"
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Philippe Etchebest"
                   className="block w-full rounded-md bg-black/5 px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-black/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-yellow-400 sm:text-sm/6"
                 />
               </div>
@@ -123,9 +129,9 @@ export function Login() {
                   type="password"
                   required
                   value={password}
-			            onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   autoComplete="current-password"
-				          placeholder="CauchemarEnCuisine"
+                  placeholder="CauchemarEnCuisine"
                   className="block w-full rounded-md bg-black/5 px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-black/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-yellow-400 sm:text-sm/6"
                 />
               </div>
@@ -147,8 +153,7 @@ export function Login() {
               Register
             </a>
           </p>
-		</div>
-      </div>
-
-    </>
+    </div>
+  </div>
+  </>
 }

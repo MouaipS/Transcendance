@@ -1,6 +1,4 @@
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
-import DropdownDifficulty from '../tools/DropdownDifficulty';
-import DropdownLanguage from '../tools/DropdownLanguage';
 
 
 // Utilisé pour fetch depuis le back,
@@ -11,22 +9,24 @@ const queryClient = new QueryClient()
 // d'afficher les statistiques de l'utilisateur dans l'onglet stats
 const FetchName = () => {
 	
-	// const { data, error, isLoading } = useQuery({
-	// 	queryKey: ['username'],
-	// 	queryFn: () => 
-	// 		fetch('http://localhost:3001/users')
-	// 		.then(res => res.json())
-	// })
-	// if (isLoading) return <div>Chargement...</div>
-	// if (error) return <div>Erreur : {error.message}</div>
+	const { data, error, isLoading } = useQuery({
+		queryKey: ['stats'],
+		queryFn: () => 
+			fetch('https://localhost:8443/api/home?username=oui')
+			.then(res => res.json())
+	})
+	if (isLoading) return <div>Chargement...</div>
+	if (error) return <div>Erreur : {error.message}</div>
 
-	const datas = []
+	if (!data) return <div>Aucune donnée trouvée.</div>
 
-	// for (let i = 0; i < data.length; i++) {
-	// 	datas[i] = data[i].username
-	// }
-
-	return <div>{datas.map(todo => (<li key={todo}>{todo}</li>))}</div>
+	return <div>
+		<ul>
+			<li>Matchs joués : {data.stats.nb_games}</li>
+			<li>Victoires : {data.stats.nb_victories}</li>
+			<li>Défaites : {data.stats.nb_defeats}</li>
+        </ul>
+	</div>
 }
 
 // Tableau contenant les différents onglets de Home

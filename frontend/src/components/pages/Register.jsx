@@ -107,12 +107,14 @@ export function Register() {
 		setShowGet(!showGet)
 	}
 
-	const navigateLogin = () => {
-		navigate('/')
-	}
-
 
 	return <>
+	<img 
+		alt="Le grand chef cuisinier Philippe Etchebest"
+		src="src/components/images/philippe.jpg"
+		className="w-full h-screen absolute inset-0 object-cover object-top"
+		onClick={() => navigate('/home')}
+	/>
 	<div className="absolute inset-y-0 left-15 flex flex-col min-h-full 
 		justify-center px-6 py-12 lg:px-8 border-l border-r bg-amber-100">
 		<div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -271,7 +273,7 @@ export function Register() {
 					focus-visible:outline-offset-2 focus-visible:outline-indigo-500 
 					border border-black shadow-md hover:shadow-none 
 					hover:inset-shadow-xs hover:inset-shadow-black/50"
-					onClick={navigateLogin}>Retour à la page de connexion
+					onClick={() => navigate('/')}>Retour à la page de connexion
 				</button>
 			</div>
 		</div>
