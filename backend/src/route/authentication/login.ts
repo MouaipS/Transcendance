@@ -1,6 +1,7 @@
 import {FastifyInstance, FastifyRequest, FastifyReply} from 'fastify'
 import { prisma } from "../../server/prisma.js"
 import { compare } from "bcrypt" //imports the compare prisma function
+import '@fastify/jwt'
 
 interface LoginBody { //this is used to type the request body this prevents from error is types are not respected
   username: string; //like username = request.body.username as string
@@ -30,9 +31,12 @@ export async function loginRoute(request : FastifyRequest<{Body: LoginBody}>, re
 			error: "invalid password"
 		})
 	}
+	const token = await reply.jwtSign({id:user.id, username: user.username}, {expiresIn: '1h' });
+	console.log("token : ", token);
 	console.log("Connexion Succeeded")
 	return reply.code(200).send({
 		message: "Connexion suceeded",
-		user: { id: user.id, username: user.username }
+		token : token,
+		user: { id: user.id, username: user.username}
 	})
 }
