@@ -12,6 +12,12 @@ datasource db {
   provider = "postgresql"
 }
 
+enum GameStatus {
+  WAITING
+  IN_PROGRESS
+  FINISHED
+}
+
 model User {
 	id						String		@id @default(uuid())
 	username				String		@unique
@@ -20,11 +26,48 @@ model User {
 	// inscription_date		DateTime 	@default(now())
 	// status					Int			@default(0)
 
+	player					Player?
 	stats					StatsUser?
 	// gamesWon				Game[]		@relation("GameWinner")
 	// gamesPlayed				GamePlayer[]
 	// friendships				Friend[]	@relation("FriendPlayer")
 	// friendOf				Friend[]	@relation("FriendTarget")
+}
+
+model Game {
+	id							String		@id @default(uuid())
+	status						GameStatus	@default(WAITING)
+	players						Player[]
+	//rounds					Round[]		???
+	// winner_id					String
+	// winner						User	@relation("GameWinner", fields: [winner_id], references: [id])
+	// played_at					DateTime
+	// times_ms					BigInt
+	// score_total					Int
+	// nb_total_played_cards		Int
+}
+
+model Player {
+	id							Int		@id @default(autoincrement())
+
+	game_id						String
+	game						Game	@relation(fields: [game_id], references: [id])
+
+	user_id						String	@unique
+	user						User	@relation(fields: [user_id], references: [id])
+
+	score						Int		@default(0)
+	deck						Card[]
+	nb_stack_cards				Int		@default(0)
+	// nb_cards_played				Int		@default(0)
+}
+
+model Card {
+	id							String	@id @default(uuid())
+	name						String	
+
+	owner_id					Int
+	owner						Player	@relation(fields: [owner_id], references: [id])
 }
 
 model StatsUser	{
@@ -49,27 +92,7 @@ model StatsUser	{
 }
 
 
-// model Game {
-// 	id							Int		@id @default(autoincrement())
-// 	winner_id					String
-// 	winner						User	@relation("GameWinner", fields: [winner_id], references: [id])
-// 	played_at					DateTime
-// 	times_ms					BigInt
-// 	score_total					Int
-// 	nb_total_played_cards		Int
-// 	players						GamePlayer[]
-// }
 
-// model GamePlayer {
-// 	id							Int		@id @default(autoincrement())
-// 	game_id						Int
-// 	game						Game	@relation(fields: [game_id], references: [id])
-// 	player_id					String	
-// 	player						User	@relation(fields: [player_id], references: [id])
-// 	nb_cards_played				Int		@default(0)
-// 	score						Int		@default(0)
-// 	nb_stack_cards				Int		@default(0)
-// }
 
 // model Friend {
 // 	id							Int		@id @default(autoincrement())
