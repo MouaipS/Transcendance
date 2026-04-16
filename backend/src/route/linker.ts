@@ -9,16 +9,18 @@ export async function linker(server: FastifyInstance)
 {
 	
 	const authenticate = async (request: FastifyRequest, reply: FastifyReply) => { //authenticate token function that is called at on request hook
-	  try {
+	  try 
+	  {
 		await request.jwtVerify();
-	  } catch (err) {
+	  } 
+	  catch (err) 
+	  {
 		return reply.code(401).send({ error: "Authentication required" });
 	  }
 	};
 	server.decorate("authenticate", authenticate);
 
-	//server.post('/api/login', async(request, reply) => { loginRoute(request, reply);}) //these are the shorthand route declaration that execute the actual route
-	server.post<{Body: any}>('/api/login', async (request, reply) => { return loginRoute(request, reply)});
+	server.post<{Body: any}>('/api/login', async (request, reply) => { return loginRoute(request, reply)});//these are the shorthand route declaration that execute the actual route
 	server.post<{Body: any}>('/api/register', async (request, reply) => { return registerRoute(request, reply)});
 	server.get('/api/home', {onRequest : [authenticate]}, async (request, reply) => { return homePageRoute(request, reply)});
 }
