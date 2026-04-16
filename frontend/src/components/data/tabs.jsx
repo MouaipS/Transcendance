@@ -18,9 +18,7 @@ const FetchName = () => {
 	if (isLoading) return <div>Chargement...</div>
 	if (error) return <div>Erreur : {error.message}</div>
 
-	if (!data) return <div>Aucune donnée trouvée.</div>;
-
-	console.log("data = ", data)
+	if (!data) return <div>Aucune donnée trouvée.</div>
 
 	return <div>
 		<ul>

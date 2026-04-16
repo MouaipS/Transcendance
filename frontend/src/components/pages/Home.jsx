@@ -2,6 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Tabs from "../tools/Tabs";
 import { useSelector } from "react-redux";
+import michelImg from '../images/michel.jpg';
+import { NavigateButtons } from "../tools/NavigateButtons";
+import { Game } from "../tools/Game";
 
 
 export function Home () {
@@ -14,69 +17,45 @@ export function Home () {
 	const [username, setUsername] = useState('login ?')
 	
 	return <>
-	<h2 className="font-serif italic mt-10 mb-10 text-center text-2xl/9 font-bold tracking-tight text-black">VegeBattle FruitFight bagarre</h2>
-	
-	{/* le username doit s'actualiser quand on sera log et afficher le nom d'utilisateur*/}
-	<div>
-		<h2 className="font-serif text-xl">{username}</h2>
+	<div className="relative w-full h-screen overflow-hidden">
+		<div
+			className="absolute inset-0 bg-cover bg-center"
+			//style={{ backgroundImage: `url(${michelImg})` }}
+		>
+			<div className="gap-50 flex">
+				<div className="absolute flex flex-col left-4">
+					<h2 className="font-serif italic mt-10 mb-2 text-center text-2xl/9 font-bold tracking-tight text-black">VegeBattle FruitFight bagarre</h2>
+
+					<div dir="ltr">
+						<button
+							onClick={() => navigate('/statistics')}
+							className="flex items-center gap-6 rounded-md 
+							border border-black shadow-md bg-white 
+							text-sm font-medium text-gray-700 hover:bg-gray-50 
+							focus:outline-none mt-5 min-w-40"
+						>
+							<img
+								alt="avatar par défaut"
+								src="src/components/images/default_avatar.webp"
+								className="h-14 w-14 object-cover rounded-s-lg"
+							/>
+							<span className="pr-4 text-2xl">{username}</span>
+						</button>
+					</div>
+
+					<Tabs/>
+				
+					<NavigateButtons/>
+
+				</div>
+
+				<div className="absolute min-w-340 min-h-200 rounded border border-slate-400 mt-4 
+							flex flex-col left-120 top-10">
+					<Game/>
+				</div>
+
+			</div>
+		</div>
 	</div>
-
-	<br />
-	Token: {token}
-
-	<button 
-		className="flex justify-center rounded-md
-		 bg-yellow-400 px-3 py-1.5 text-sm/6 font-semibold
-		 hover:bg-yellow-300 focus-visible:outline-2 
-		 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 
-		 border border-black shadow-md hover:shadow-none 
-		 hover:inset-shadow-xs hover:inset-shadow-black/50 mt-4"
-		onClick={() => navigate('/rules')}
-		>
-		Rulebook
-	</button>
-	<ul/>
-	<button 
-		className="flex justify-center rounded-md
-		 bg-yellow-400 px-3 py-1.5 text-sm/6 font-semibold
-		 hover:bg-yellow-300 focus-visible:outline-2 
-		 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 
-		 border border-black shadow-md hover:shadow-none 
-		 hover:inset-shadow-xs hover:inset-shadow-black/50"
-		onClick={() => navigate('/')}
-		>
-		Page de Login
-	</button>
-	<ul/>
-	<button 
-		className="flex justify-center rounded-md
-		 bg-yellow-400 px-3 py-1.5 text-sm/6 font-semibold
-		 hover:bg-yellow-300 focus-visible:outline-2 
-		 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 
-		 border border-black shadow-md hover:shadow-none 
-		 hover:inset-shadow-xs hover:inset-shadow-black/50"
-		onClick={() => navigate('/register')}
-		>
-		Page de Register
-	</button>
-	<ul/>
-
-	<div dir="ltr">
-		<button
-			onClick={() => navigate('/statistics')}
-			className="flex items-center rounded-md 
-			border border-black shadow-md bg-white 
-			text-sm font-medium text-gray-700 hover:bg-gray-50 
-			focus:outline-none mt-5 pe-8"
-		>
-			<img
-					alt="avatar par défaut"
-					src="src/components/images/default_avatar.webp"
-					className="mx-15 h-15 w-15 "
-			/>
-			{username}
-		</button>
-	</div>
-	<Tabs/>
 	</>
 }

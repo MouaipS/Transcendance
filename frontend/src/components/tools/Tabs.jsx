@@ -17,7 +17,7 @@ export default function tabs () {
 		navigate(tabsData[selectedTab].url)
 	}
 	
-	return	<div className="max-w-87.5 min-h-62.5 rounded border border-slate-400 mt-4">
+	return	<div className="max-w-87.5 min-h-62.5 border border-slate-400 mt-4">
 		<div className="flex divide-x divide-slate-700">
 			{tabsData.map((obj, index) => (
 				<button 
