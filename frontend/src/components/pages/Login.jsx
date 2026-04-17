@@ -44,14 +44,13 @@ export function Login() {
 			const data = Response.json()
 			return data
 		})
-		.then( (data) =>
-			{
-				console.log(data.message)
-				console.log(data.user)
-				setUsername('')
-				setPassword('')
-				navigate('/home')
-			}
+		.then( (data) => {
+      console.log(data.message)
+      console.log(data.user)
+      setUsername('')
+      setPassword('')
+      navigate('/home')
+    }
 		)
 		.catch((err) => console.error("error:", err))
   }
