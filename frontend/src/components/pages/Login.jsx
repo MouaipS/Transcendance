@@ -1,13 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
 import { setter } from '../data/tokenSlice.jsx';
 
 
 export function Login() {
-  
-  const token = useSelector((state) => state.token.value)
-  const dispatch = useDispatch()
 
   // Variable utilisées pour l'authentification et leurs
   // setters, qui permettent de modifier leurs valeurs
@@ -54,24 +50,7 @@ export function Login() {
 		)
 		.catch((err) => console.error("error:", err))
   }
-    /*
-    fetch('https://localhost:8443/api/login',
-		{
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(login)
-		})
-		.then(Response => Response.json())
-    .then(json => {
-      console.log(json)
-      if (json?.token) {
-        dispatch(setter(json.token))
-      }
-    })
-    .catch((err) => console.error("error:", err))
-    */
   
-  //navigate('/home')
 
 	return <>
   <img 

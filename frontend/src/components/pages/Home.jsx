@@ -1,16 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Tabs from "../tools/Tabs";
-import { useSelector } from "react-redux";
 import michelImg from '../images/michel.jpg';
 import { NavigateButtons } from "../tools/NavigateButtons";
 import { Game } from "../tools/Game";
 
 
 export function Home () {
-
-	const token = useSelector((state) => state.token.value)
-	console.log('token = ', token)
 
 	const navigate = useNavigate()
 	

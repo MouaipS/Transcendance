@@ -1,5 +1,4 @@
 import { useState } from "react";
-import restaurantImg from "../images/restaurant.webp"
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 
 
@@ -8,6 +7,7 @@ const queryClient = new QueryClient()
 export function Game () {
 	
 	const [page, setPage] = useState(0)
+  const [create, setCreate] = useState(false)
 	const [code, setCode] = useState()
   const [username, setUsername] = useState('Michel')
   const [number, setNumber] = useState(0)
@@ -39,7 +39,7 @@ export function Game () {
 		}
 		)
 		.catch((err) => console.error("error:", err))
-  	}
+  }
 
 	const FetchRooms = () => {
 	
@@ -88,17 +88,34 @@ export function Game () {
 				JOIN GAME
 			</button>
 
-			<button 
+			{create === false && 
+      <button 
 				className="flex justify-center rounded-md mt-10 min-h-20
 				bg-yellow-400 font-semibold text-4xl items-center
 				hover:bg-yellow-300 focus-visible:outline-2 
 				focus-visible:outline-offset-2 focus-visible:outline-indigo-500 
 				border border-black shadow-md hover:shadow-none 
 				hover:inset-shadow-xs hover:inset-shadow-black/50"
-				onClick={() => setPage(2)}>
+				onClick={() => setCreate(!create)}>
 				CREATE GAME
 			</button>
-		</div>}
+      }
+
+      {create === true &&
+      <button 
+				className="flex flex-col justify-center rounded-md mt-10 min-h-40
+				bg-yellow-400 font-semibold text-3xl items-center
+				hover:bg-yellow-300 focus-visible:outline-2 
+				focus-visible:outline-offset-2 focus-visible:outline-indigo-500 
+				border border-black shadow-md hover:shadow-none 
+				hover:inset-shadow-xs hover:inset-shadow-black/50"
+				onClick={() => setCreate(!create)}>
+				<p className="mb-5" onClick={() => setPage(2)}>PRIVATE GAME</p>
+        <p>PUBLIC GAME</p>
+			</button>
+      }
+		</div>
+    }
 
 		{page === 1 && 
     <div className="flex flex-col items-center justify-center">
@@ -160,10 +177,5 @@ export function Game () {
 		</div>
 		}
 
-    {page === 2 && 
-    <div>
-        Bonjour
-    </div> 
-    }
 	</>
 }

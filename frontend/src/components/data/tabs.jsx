@@ -31,6 +31,30 @@ const FetchStats = () => {
 	</div>
 }
 
+const FetchRecipes = () => {
+	
+	const { data, error, isLoading } = useQuery({
+		queryKey: ['recipes'],
+		queryFn: () => 
+			fetch('https://localhost:8443/api/home?username=oui')
+			.then(res => res.json())
+	})
+	if (isLoading) return <div>Chargement...</div>
+	if (error) return <div>Erreur : {error.message}</div>
+
+	if (!data) return <div>Vous n'êtes pas actuellement dans une partie.</div>
+
+	console.log('data = ', data)
+	
+	return <div>
+		<ul>
+			{/* <li>Matchs joués : {data.recipes}</li>
+			<li>Victoires : {data.recipes}</li>
+			<li>Défaites : {data.recipes}</li> */}
+        </ul>
+	</div>
+}
+
 // Tableau contenant les différents onglets de Home
 const tabsData = [
 	{
@@ -52,7 +76,9 @@ const tabsData = [
 					className="mx-auto h-auto w-auto"
 					/>,
 		tabHeading: "oui les recettes",
-		txt: "Ceci être le placeholder des recettes",
+		txt: <QueryClientProvider client={queryClient}>
+				<FetchRecipes />
+			</QueryClientProvider>,
 		url: "/recipes"
 	},
 	{
