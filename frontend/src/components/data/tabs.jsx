@@ -22,9 +22,9 @@ const FetchName = () => {
 
 	return <div>
 		<ul>
-			<li>Matchs joués : {data.stats.nb_games}</li>
+			{/* <li>Matchs joués : {data.stats.nb_games}</li>
 			<li>Victoires : {data.stats.nb_victories}</li>
-			<li>Défaites : {data.stats.nb_defeats}</li>
+			<li>Défaites : {data.stats.nb_defeats}</li> */}
         </ul>
 	</div>
 }

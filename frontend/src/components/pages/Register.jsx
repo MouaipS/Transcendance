@@ -33,7 +33,7 @@ export function Register() {
 	// Fonction appelée en soumettant le form de register,
   	// envoie une requête au back pour créer un nouvel
 	// utilisateur dans la DB
-	const handleSubmitRegister = (e) => {
+	const handleSubmitRegister = async(e) => {
 		e.preventDefault()
 
 		const registration = { username, password }
@@ -52,27 +52,37 @@ export function Register() {
 		{
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(registration)
+			body: JSON.stringify(registration),
+			credentials: "include"
 		})
-		.then((response) => response.json())
-		.then(json => {
-			console.log(json)
-			if (json?.token) {
-				dispatch(setter(json.token))
+		.then( (Response) => {
+
+			if (Response.status === 401) {
+				setAlert("User already exist")
+				throw "Erreur retourne en enfer"
 			}
-		})
-		.catch(err => {
-			console.error(err)
-		})
 
-		setUsername('')
-		setPassword('')
-		setConfirmPassword('')
-		setEmail('')
-		setNickname('')
-		setAlert('')
+			console.log("Register successful")
+			setUsername('')
+			setPassword('')
+			setConfirmPassword('')
+			setEmail('')
+			setNickname('')
+			setAlert('')
+			navigate("/")		
+		})
+		.catch((err) => console.error("error:", err))
 
-		navigate('/home')
+		// .then((response) => response.json())
+		// .then(json => {
+		// 	console.log(json)
+		// 	if (json?.token) {
+		// 		dispatch(setter(json.token))
+		// 	}
+		// })
+		// .catch(err => {
+		// 	console.error(err)
+		// })
 	}
 
 	// Requête GET pour récupérer les infos depuis la DB afin
@@ -113,7 +123,7 @@ export function Register() {
 		alt="Le grand chef cuisinier Philippe Etchebest"
 		src="src/components/images/philippe.jpg"
 		className="w-full h-screen absolute inset-0 object-cover object-top"
-		onClick={() => navigate('/home')}
+		onClick={() => navigate('/')}
 	/>
 	<div className="absolute inset-y-0 left-15 flex flex-col min-h-full 
 		justify-center px-6 py-12 lg:px-8 border-l border-r bg-amber-100">
