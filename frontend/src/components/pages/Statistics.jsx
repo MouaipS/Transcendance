@@ -9,7 +9,7 @@ const queryClient = new QueryClient()
 
 // Requête GET pour récupérer les infos depuis la DB afin
 // d'afficher les statistiques de l'utilisateur dans l'onglet stats
-const FetchName = () => {
+const FetchStats = () => {
 	
 	const { data, error, isLoading } = useQuery({
 		queryKey: ['stats'],
@@ -24,9 +24,9 @@ const FetchName = () => {
 
 	return <div>
 		<ul>
-			<li>Matchs joués : {data.stats.nb_games}</li>
+			{/* <li>Matchs joués : {data.stats.nb_games}</li>
 			<li>Victoires : {data.stats.nb_victories}</li>
-			<li>Défaites : {data.stats.nb_defeats}</li>
+			<li>Défaites : {data.stats.nb_defeats}</li> */}
         </ul>
 	</div>
 }
@@ -37,7 +37,7 @@ export function Statistics () {
 
 	return <>
 		<QueryClientProvider client={queryClient}>
-			<FetchName />
+			<FetchStats />
 		</QueryClientProvider>
 	</>
 }

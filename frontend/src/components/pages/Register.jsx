@@ -1,16 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
-import { useSelector, useDispatch } from "react-redux";
 import { setter } from '../data/tokenSlice.jsx';
 
 
 const queryClient = new QueryClient()
 
 export function Register() {
-
-	const token = useSelector((state) => state.token.value)
-	const dispatch = useDispatch()
 
 	// Sert pour afficher une erreur si l'utilisateur
 	// n'entre pas les 2 mêmes mots de passe
