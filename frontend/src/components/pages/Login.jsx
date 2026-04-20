@@ -1,13 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { setter } from '../data/tokenSlice.jsx';
-
 
 export function Login() {
-  
-  const token = useSelector((state) => state.token.value)
-  const dispatch = useDispatch()
 
   // Variable utilisées pour l'authentification et leurs
   // setters, qui permettent de modifier leurs valeurs
@@ -22,57 +16,38 @@ export function Login() {
   // envoie une requête au back pour vérifier si l'utilisateur
   // est enregistré
 	const handleSubmitLogin = (e) => {
-		e.preventDefault()
+    e.preventDefault();
 
-		const login = { username, password }
+		const login = { username, password };
 		
-		fetch('https://localhost:8443/api/login',
+    fetch('https://localhost:8443/api/login',
 		{
-			method: 'POST',
+		  method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(login)
-		}	
-		)
+			body: JSON.stringify(login),
+      credentials: "include"
+		})
 		.then( (Response) => {
 
 			if (Response.status === 401) {
-				console.log("non", Response.status)
-				throw "Erreur retourne en enfer"
+				console.log("non", Response.status);
+				throw "Erreur retourne en enfer";
 			}
 
-			console.log("oui")
-			const data = Response.json()
-			return data
+			console.log("oui");
+			const data = Response.json();
+			return data;
 		})
-		.then( (data) =>
-			{
-				console.log(data.message)
-				console.log(data.user)
-				setUsername('')
-				setPassword('')
-				navigate('/home')
-			}
-		)
+		.then( (data) => {
+				console.log(data.message);
+				console.log(data.user);
+        console.log(data.token);
+				setUsername('');
+				setPassword('');
+				navigate('/');
+		})
 		.catch((err) => console.error("error:", err))
   }
-    /*
-    fetch('https://localhost:8443/api/login',
-		{
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(login)
-		})
-		.then(Response => Response.json())
-    .then(json => {
-      console.log(json)
-      if (json?.token) {
-        dispatch(setter(json.token))
-      }
-    })
-    .catch((err) => console.error("error:", err))
-    */
-  
-  //navigate('/home')
 
 	return <>
   <img 
@@ -95,7 +70,7 @@ export function Login() {
           <form action="#" method="POST" className="space-y-6" onSubmit={handleSubmitLogin}>
             <div>
               <label htmlFor="username" className="font-serif italic block text-lg/6 font-medium text-black">
-                Username . . . . . . . . . . . . . . . . . . . . . . . . . .
+                UsernameFrite . . . . . . . . . . . . . . . . . . . . . . . . . .
               </label>
               <div className="mt-2">
                 <input

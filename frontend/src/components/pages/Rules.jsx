@@ -5,7 +5,7 @@ export function Rules () {
 	const navigate = useNavigate()
 
 	const navigateHome = () => {
-		navigate("/home")
+		navigate("/")
 	}
 
 	
