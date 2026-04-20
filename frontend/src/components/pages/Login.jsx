@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { setter } from '../data/tokenSlice.jsx';
-
 
 export function Login() {
 
@@ -18,46 +16,45 @@ export function Login() {
   // envoie une requête au back pour vérifier si l'utilisateur
   // est enregistré
 	const handleSubmitLogin = (e) => {
-		e.preventDefault()
+    e.preventDefault();
 
-		const login = { username, password }
+		const login = { username, password };
 		
-		fetch('https://localhost:8443/api/login',
+    fetch('https://localhost:8443/api/login',
 		{
-			method: 'POST',
+		  method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(login)
-		}	
-		)
+			body: JSON.stringify(login),
+      credentials: "include"
+		})
 		.then( (Response) => {
 
 			if (Response.status === 401) {
-				console.log("non", Response.status)
-				throw "Erreur retourne en enfer"
+				console.log("non", Response.status);
+				throw "Erreur retourne en enfer";
 			}
 
-			console.log("oui")
-			const data = Response.json()
-			return data
+			console.log("oui");
+			const data = Response.json();
+			return data;
 		})
 		.then( (data) => {
-      console.log(data.message)
-      console.log(data.user)
-      setUsername('')
-      setPassword('')
-      navigate('/home')
-    }
-		)
+				console.log(data.message);
+				console.log(data.user);
+        console.log(data.token);
+				setUsername('');
+				setPassword('');
+				navigate('/');
+		})
 		.catch((err) => console.error("error:", err))
   }
-  
 
 	return <>
   <img 
     alt="Le grand chef cuisinier Michel Dumas"
     src="src/components/images/michel.jpg"
     className="w-full h-screen absolute inset-0 object-cover"
-    onClick={() => navigate('/home')}
+    onClick={() => navigate('/')}
   />
   <div className="absolute inset-y-0 left-15 flex flex-col min-h-full justify-center px-6 py-12 lg:px-8 border-l border-r bg-amber-100">
     <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -73,7 +70,7 @@ export function Login() {
           <form action="#" method="POST" className="space-y-6" onSubmit={handleSubmitLogin}>
             <div>
               <label htmlFor="username" className="font-serif italic block text-lg/6 font-medium text-black">
-                Username . . . . . . . . . . . . . . . . . . . . . . . . . .
+                UsernameFrite . . . . . . . . . . . . . . . . . . . . . . . . . .
               </label>
               <div className="mt-2">
                 <input

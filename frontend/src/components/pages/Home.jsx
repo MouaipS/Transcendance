@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Tabs from "../tools/Tabs";
 import michelImg from '../images/michel.jpg';
@@ -9,9 +9,53 @@ import { Game } from "../tools/Game";
 export function Home () {
 
 	const navigate = useNavigate()
-	
 	const [username, setUsername] = useState('login ?')
-	
+
+    const logout = async () => {
+        fetch("/api/logout", {
+            method: "POST",
+            credentials: "include",
+        })
+        .then((Response) => {
+            if (Response.status === 200)
+            {
+                console.log("logged out")
+                navigate("/login")
+            }
+        })
+    };
+
+    useEffect(() => {
+
+        const fetchProfile = async () => {
+
+            console.log("Profile - fetch")
+            fetch('/api/home',
+            {
+                method: "GET",
+                credentials: "include"
+            })
+            .then ((Response) => {
+                
+                if (Response.status === 401) {
+				    console.log("non ", Response.status);
+                    navigate("/login")
+                }
+                console.log("Profile - fetch ok");
+                const data = Response.json();
+                return data;           
+            })
+            .then ((data) => {
+				console.log("je suis pas defini")
+            })
+            .catch ((err) => { 
+                console.error("error:", err)
+                navigate("/login")
+            })
+        }
+        fetchProfile();
+    }, [navigate]);
+
 	return <>
 	<div className="relative w-full h-screen overflow-hidden">
 		<div
@@ -42,6 +86,12 @@ export function Home () {
 					<Tabs/>
 				
 					<NavigateButtons/>
+					<div>
+						<h2 className="font-serif text-xl">name: </h2>
+						<button className="bg-yellow-400 border border-black
+							shadow-md hover:shadow-none hover:inset-shadow-xs
+							hover:inset-shadow-black/50" onClick={logout}>Log out</button>
+					</div>
 
 				</div>
 

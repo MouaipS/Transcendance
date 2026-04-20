@@ -24,7 +24,7 @@ export function NavigateButtons () {
 			focus-visible:outline-offset-2 focus-visible:outline-indigo-500 
 			border border-black shadow-md hover:shadow-none 
 			hover:inset-shadow-xs hover:inset-shadow-black/50"
-			onClick={() => navigate('/')}
+			onClick={() => navigate('/login')}
 			>
 			Page de Login
 		</button>
