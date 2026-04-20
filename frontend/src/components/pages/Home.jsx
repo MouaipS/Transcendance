@@ -47,8 +47,7 @@ export function Home () {
                 return data;           
             })
             .then ((data) => {
-				console.log(data.stats)
-                setUser(data.stats)
+				console.log("je suis pas defini")
             })
             .catch ((err) => { 
                 console.error("error:", err)
@@ -89,7 +88,7 @@ export function Home () {
 				
 					<NavigateButtons/>
 					<div>
-						<h2 className="font-serif text-xl">name: {User.username}</h2>
+						<h2 className="font-serif text-xl">name: </h2>
 						<button className="bg-yellow-400 border border-black
 							shadow-md hover:shadow-none hover:inset-shadow-xs
 							hover:inset-shadow-black/50" onClick={logout}>Log out</button>

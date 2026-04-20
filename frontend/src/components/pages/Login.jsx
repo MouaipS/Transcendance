@@ -54,7 +54,7 @@ export function Login() {
     alt="Le grand chef cuisinier Michel Dumas"
     src="src/components/images/michel.jpg"
     className="w-full h-screen absolute inset-0 object-cover"
-    onClick={() => navigate('/home')}
+    onClick={() => navigate('/')}
   />
   <div className="absolute inset-y-0 left-15 flex flex-col min-h-full justify-center px-6 py-12 lg:px-8 border-l border-r bg-amber-100">
     <div className="sm:mx-auto sm:w-full sm:max-w-sm">
