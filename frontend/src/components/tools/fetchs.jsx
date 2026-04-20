@@ -18,5 +18,5 @@ export function fetchLogin (username) {
 	})
 
 	if (isLogged)
-		navigate('/home')
+		navigate('/')
 }

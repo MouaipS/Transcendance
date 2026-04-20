@@ -16,11 +16,8 @@ const router = createBrowserRouter([
 	{
 		path: '/',
 		element: <div>
-			<Login/>
+			<Home/>
 			<ul/>
-			<nav>
-				<Link to="/home">Home</Link>
-			</nav>
 		</div>
 	},
 	{
@@ -29,14 +26,14 @@ const router = createBrowserRouter([
 			<Register/>
 			<ul/>
 			<nav>
-				<Link to="/home">Home</Link>
+				<Link to="/">Home</Link>
 			</nav>
 		</div>
 	},
 	{
-		path: '/home',
+		path: '/login',
 		element: <div>
-			<Home/>
+			<Login/>
 		</div>
 	},
 	{
@@ -51,7 +48,7 @@ const router = createBrowserRouter([
 			<Statistics/>
 			<ul/>
 			<nav>
-				<Link to="/home">Home</Link>
+				<Link to="/">Home</Link>
 			</nav>
 		</div>
 	},
@@ -61,7 +58,7 @@ const router = createBrowserRouter([
 			<Recipes/>
 			<ul/>
 			<nav>
-				<Link to="/home">Home</Link>
+				<Link to="/">Home</Link>
 			</nav>
 		</div>
 	},
@@ -71,7 +68,7 @@ const router = createBrowserRouter([
 			<ResetPassword/>
 			<ul/>
 			<nav>
-				<Link to="/home">Home</Link>
+				<Link to="/">Home</Link>
 			</nav>
 		</div>
 	}
