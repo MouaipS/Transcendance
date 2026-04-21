@@ -69,8 +69,8 @@ services:
 #---------------
   db:
     image: public.ecr.aws/docker/library/postgres:16.13-alpine3.23
-    ports:
-      - ${POSTGRES_PORT}:5432 
+    expose:
+      - "5432"
     container_name: db
     restart: unless-stopped
     environment:
