@@ -19,7 +19,7 @@ services:
       - PARANOIA=2                  #level max des regles possibles
       - BLOCKING_PARANOIA=2         #level max des regles used - peut pas etre <PARANOIA
       #Pour savoir si on applique les regles, si on regarde juste ou pas du tout 
-      - MODSEC_RULE_ENGINE=On
+      - MODSEC_RULE_ENGINE=Off
       #- MODSEC_RULE_ENGINE = DetectionOnly
       #- MODSEC_RULE_ENGINE = Off
       - ANOMALY_INBOUND=5         #score max pour qualifier une requete entrante comme invalide
@@ -38,11 +38,13 @@ services:
     container_name: backend
     restart: unless-stopped
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB} 
+      - VAULT_TOKEN=${VAULT_TOKEN}
+      - VAULT_ADDR=${VAULT_ADDR}
     expose:
       - "3001"
     depends_on:
       - db
+      - vault
     networks:
       - transcendance
   
@@ -79,6 +81,29 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - db-data:/var/lib/postgresql/data
+    networks:
+      - transcendance
+
+
+  vault:
+    image: hashicorp/vault:latest
+    container_name: vault
+    restart: unless-stopped
+    environment:
+      - VAULT_DEV_ROOT_TOKEN_ID=${VAULT_TOKEN}
+      - VAULT_ADDR=http://127.0.0.1:8200
+      - VAULT_TOKEN=${VAULT_TOKEN}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PEPPER=${PEPPER}
+      - JWT_SECRET=${JWT_SECRET} 
+      - COOKIE_SECRET=${COOKIE_SECRET}
+    volumes:
+      - ./vault/entrypoint.sh:/entrypoint.sh:ro
+    entrypoint: ["sh", "/entrypoint.sh"]
+    expose:
+      - "8200"
     networks:
       - transcendance
 
