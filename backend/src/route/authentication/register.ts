@@ -2,6 +2,7 @@ import {FastifyInstance, FastifyRequest, FastifyReply} from 'fastify'
 import { prisma } from "../../server/prisma.js"
 import { hash } from "bcrypt"
 import '@fastify/jwt'
+import { getPepper } from '../../server/vault.js'
 
 interface RegisterBody {
   username: string;
@@ -28,7 +29,8 @@ export async function registerRoute(request : FastifyRequest<{Body: RegisterBody
 	}
 
 	// 2. Register User in database
-	const hashedPassword = await hash(request.body.password, 10);
+	const pepper = await getPepper();
+	const hashedPassword = await hash(pepper + request.body.password, 10);
 	const user = await prisma.user.create({
 		data: {
 			username : request.body.username,

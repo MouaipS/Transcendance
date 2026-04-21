@@ -2,6 +2,7 @@ import {FastifyInstance, FastifyRequest, FastifyReply} from 'fastify'
 import { prisma } from "../../server/prisma.js"
 import { compare } from "bcrypt" //imports the compare prisma function
 import '@fastify/jwt'
+import { getPepper } from '../../server/vault.js'
 
 interface LoginBody { //this is used to type the request body this prevents from error is types are not respected
   username: string; //like username = request.body.username as string
@@ -27,7 +28,8 @@ export async function loginRoute(request : FastifyRequest<{Body: LoginBody}>, re
 	}
 
 	//2. Check if Correct Password
-	const pswdComp = await compare(password, user.password);//bcrypt function to check the hased password
+	const pepper = await getPepper();
+	const pswdComp = await compare(pepper + password, user.password);//bcrypt function to check the hased password
 	if (!pswdComp)
 	{
 		console.log("Invalid password")
