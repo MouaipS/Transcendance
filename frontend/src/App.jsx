@@ -7,9 +7,6 @@ import { Statistics } from "./components/pages/Statistics.jsx"
 import { Recipes } from "./components/pages/Recipes.jsx"
 import { ResetPassword } from "./components/pages/ResetPassword.jsx";
 
-import { Provider } from 'react-redux'
-import store from './components/data/store.jsx'
-
 // Architecture du site avec les différentes pages, 
 // leur URL et leur contenu
 const router = createBrowserRouter([
@@ -25,9 +22,6 @@ const router = createBrowserRouter([
 		element: <div>
 			<Register/>
 			<ul/>
-			<nav>
-				<Link to="/">Home</Link>
-			</nav>
 		</div>
 	},
 	{
@@ -67,9 +61,6 @@ const router = createBrowserRouter([
 		element: <div>
 			<ResetPassword/>
 			<ul/>
-			<nav>
-				<Link to="/">Home</Link>
-			</nav>
 		</div>
 	}
 ])
@@ -78,9 +69,7 @@ const router = createBrowserRouter([
 function App() {
 
 	return <>
-		<Provider store={store}>
-			<RouterProvider router={router}/>
-		</Provider>
+		<RouterProvider router={router}/>
     </>
 }
 

@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
-import { setter } from '../data/tokenSlice.jsx';
-
 
 const queryClient = new QueryClient()
 
@@ -68,17 +66,6 @@ export function Register() {
 			navigate("/")		
 		})
 		.catch((err) => console.error("error:", err))
-
-		// .then((response) => response.json())
-		// .then(json => {
-		// 	console.log(json)
-		// 	if (json?.token) {
-		// 		dispatch(setter(json.token))
-		// 	}
-		// })
-		// .catch(err => {
-		// 	console.error(err)
-		// })
 	}
 
 	// Requête GET pour récupérer les infos depuis la DB afin

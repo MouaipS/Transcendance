@@ -7,19 +7,20 @@ const queryClient = new QueryClient()
 export function Game () {
 	
 	const [page, setPage] = useState(0)
-  const [create, setCreate] = useState(false)
-	const [code, setCode] = useState()
+	const [code, setCode] = useState('')
   const [username, setUsername] = useState('Michel')
   const [number, setNumber] = useState(0)
 
 	const handleSubmit = (e) => {
 		e.preventDefault()
-		
-		fetch('https://localhost:8443/api/code',
+
+    const body = { username, code }
+
+		fetch('https://localhost:8443/api/game/join',
 		{
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(code)
+			body: JSON.stringify(body)
 		}	
 		)
 		.then( (Response) => {
@@ -41,141 +42,62 @@ export function Game () {
 		.catch((err) => console.error("error:", err))
   }
 
-	const FetchRooms = () => {
-	
-		const { data, error, isLoading } = useQuery({
-			queryKey: ['rooms'],
-			queryFn: () => 
-				fetch('https://localhost:8443/api/rooms')
-				.then(res => res.json())
-		})
-		if (isLoading) return <div>Chargement...</div>
-		if (error) return <div>Erreur : {error.message}</div>
+  const handleCreate = (e) => {
 
-		if (!data) return <div>Aucune donnée trouvée.</div>
-
-		console.log('data = ', data)
-		
-		// return <div>
-    //   {data.rooms.map(() => (
-    //     <div className="flex flex-col px-20 max-w-150">
-    //       <button 
-    //         className="flex items-center justify-center rounded-md min-h-20
-    //         bg-blue-400 font-semibold text-2xl mb-8
-    //         hover:bg-blue-300 focus-visible:outline-2 
-    //         focus-visible:outline-offset-2 focus-visible:outline-indigo-500 
-    //         border border-black shadow-md hover:shadow-none 
-    //         hover:inset-shadow-xs hover:inset-shadow-black/50">
-    //         <p>Partie de {username}</p>
-    //         <p className="px-6">{number}/4</p>
-    //       </button>
-    //     </div>
-    //   ))}
-		// </div>
-	}
+    fetch('https://localhost:8443/api/game/create',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(username)
+    }
+    )
+    setPage(1)
+  }
 
 	return <>
 		{page === 0 && 
 		<div className="flex flex-col px-120 py-12">
 			<button 
-				className="flex justify-center rounded-md mt-50 min-h-20
-				bg-green-400 font-semibold text-4xl items-center
-				hover:bg-green-300 focus-visible:outline-2 
+				className="flex justify-center rounded-md mt-30 min-h-20
+				bg-green-400 font-semibold text-3xl items-center
+				hover:bg-green-300 focus-visible:outline-2 mb-10
 				focus-visible:outline-offset-2 focus-visible:outline-indigo-500 
 				border border-black shadow-md hover:shadow-none 
 				hover:inset-shadow-xs hover:inset-shadow-black/50"
 				onClick={() => setPage(1)}>
-				JOIN GAME
+				JOIN PUBLIC GAME
 			</button>
 
-			{create === false && 
-      <button 
+      <form 
+        className="items-center py-5 rounded-md text-3xl justify-center 
+        text-center border bg-yellow-300 font-semibold"
+        onSubmit={handleSubmit}>
+        JOIN PRIVATE GAME
+        <input
+          id="code"
+          name="code"
+          required
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          placeholder="XXXXXXXXX"
+          className="mt-4 block w-full text-center rounded-md bg-white mx-13
+            outline-1 -outline-offset-1 outline-black py-3 text-2xl max-w-70
+          placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2"
+        />
+      </form>
+
+			<button 
 				className="flex justify-center rounded-md mt-10 min-h-20
-				bg-yellow-400 font-semibold text-4xl items-center
-				hover:bg-yellow-300 focus-visible:outline-2 
-				focus-visible:outline-offset-2 focus-visible:outline-indigo-500 
-				border border-black shadow-md hover:shadow-none 
-				hover:inset-shadow-xs hover:inset-shadow-black/50"
-				onClick={() => setCreate(!create)}>
-				CREATE GAME
-			</button>
-      }
-
-      {create === true &&
-      <button 
-				className="flex flex-col justify-center rounded-md mt-10 min-h-40
 				bg-yellow-400 font-semibold text-3xl items-center
 				hover:bg-yellow-300 focus-visible:outline-2 
 				focus-visible:outline-offset-2 focus-visible:outline-indigo-500 
 				border border-black shadow-md hover:shadow-none 
 				hover:inset-shadow-xs hover:inset-shadow-black/50"
-				onClick={() => setCreate(!create)}>
-				<p className="mb-5" onClick={() => setPage(2)}>PRIVATE GAME</p>
-        <p>PUBLIC GAME</p>
+        onClick={handleCreate}>
+				CREATE GAME
 			</button>
-      }
 		</div>
     }
-
-		{page === 1 && 
-    <div className="flex flex-col items-center justify-center">
-      <div className="flex flex-col py-12">
-        <form 
-          className="items-center py-5 flex-col rounded-md text-3xl justify-center 
-          text-center px-30 border bg-yellow-300"
-          onSubmit={handleSubmit}>
-          JOIN WITH CODE
-          <input
-            id="code"
-            name="code"
-            required
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            placeholder="XXXXXXXXX"
-            className="mt-4 block w-full text-center rounded-md bg-white 
-             outline-1 -outline-offset-1 outline-black py-3 text-2xl
-            placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2"
-          />
-        </form>
-      </div>
-
-      <div className="flex flex-col">
-
-        <p className="px-40 text-3xl mb-10">AVAILABLE ROOMS</p>
-
-        <div className="flex flex-col px-20 max-w-150">
-          <button 
-            className="flex items-center justify-center rounded-md min-h-20
-            bg-blue-400 font-semibold text-2xl mb-8
-            hover:bg-blue-300 focus-visible:outline-2 
-            focus-visible:outline-offset-2 focus-visible:outline-indigo-500 
-            border border-black shadow-md hover:shadow-none 
-            hover:inset-shadow-xs hover:inset-shadow-black/50">
-            <p>Partie de {username}</p>
-            <p className="px-6">{number}/4</p>
-          </button>
-        </div>
-
-        <div className="flex flex-col px-20 max-w-150">
-          <button 
-            className="flex items-center justify-center rounded-md min-h-20
-            bg-blue-400 font-semibold text-2xl mb-8
-            hover:bg-blue-300 focus-visible:outline-2 
-            focus-visible:outline-offset-2 focus-visible:outline-indigo-500 
-            border border-black shadow-md hover:shadow-none 
-            hover:inset-shadow-xs hover:inset-shadow-black/50">
-            <p>Partie de {username}</p>
-            <p className="px-6">{number}/4</p>
-          </button>
-        </div>
-
-        <QueryClientProvider client={queryClient}>
-          <FetchRooms/>
-        </QueryClientProvider>
-
-      </div>
-		</div>
-		}
 
 	</>
 }
