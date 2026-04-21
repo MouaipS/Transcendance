@@ -16,6 +16,18 @@ up:
 		-subj "/CN=localhost"; \
 		chmod 644 ${DATA_PATH}/nginx/ssl/certificat_transcendence.key; \
 	fi
+	@mkdir -p ${DATA_PATH}/vault
+	@mkdir -p ${DATA_PATH}/vault/data
+	@mkdir -p ${DATA_PATH}/vault/tls
+	@mkdir -p ${DATA_PATH}/vault/init
+	@if [ ! -f  ${DATA_PATH}/vault/tls/vault.crt ]; then \
+		openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+		-keyout  ${DATA_PATH}/vault/tls/vault.key \
+		-out  ${DATA_PATH}/vault/tls/vault.crt \
+		-subj "/CN=vault"; \
+		-addext "subjectAltName=DNS:vault,DNS:localhost,IP:127.0.0.1"; \
+		chmod 644 ${DATA_PATH}/vault/tls/vault.key; \
+	fi
 	@docker compose -f ./docker-compose.yml up -d
 
 down:
