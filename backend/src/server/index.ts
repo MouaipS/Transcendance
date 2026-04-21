@@ -11,13 +11,6 @@ server.register(fastifyJwt, {secret : 'LeTeckelApoilDurEstUnFoutuClebard'})
 server.register(fastifyCookie, {secret: "AutmanMeRegardeFixement"})
 linker(server);
 
-//Creation of an empty public game
-prisma.game.create({
-	data: {
-		status: GameStatus.WAITING,
-	}
-});
-
 server.listen({ port: 3001, host: '0.0.0.0' }, (err, address) => 
 {
   if (err) 
