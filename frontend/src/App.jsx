@@ -4,10 +4,11 @@ import { Register } from "./components/pages/Register.jsx"
 import { Home } from "./components/pages/Home.jsx"
 import { Rules } from "./components/pages/Rules.jsx"
 import { Statistics } from "./components/pages/Statistics.jsx"
-import { Parameters } from "./components/pages/Parameters.jsx"
 import { Recipes } from "./components/pages/Recipes.jsx"
 import { ResetPassword } from "./components/pages/ResetPassword.jsx";
 
+import { Provider } from 'react-redux'
+import store from './components/data/store.jsx'
 
 // Architecture du site avec les différentes pages, 
 // leur URL et leur contenu
@@ -15,11 +16,8 @@ const router = createBrowserRouter([
 	{
 		path: '/',
 		element: <div>
-			<Login/>
+			<Home/>
 			<ul/>
-			<nav>
-				<Link to="/home">Home</Link>
-			</nav>
 		</div>
 	},
 	{
@@ -28,14 +26,14 @@ const router = createBrowserRouter([
 			<Register/>
 			<ul/>
 			<nav>
-				<Link to="/home">Home</Link>
+				<Link to="/">Home</Link>
 			</nav>
 		</div>
 	},
 	{
-		path: '/home',
+		path: '/login',
 		element: <div>
-			<Home/>
+			<Login/>
 		</div>
 	},
 	{
@@ -50,17 +48,7 @@ const router = createBrowserRouter([
 			<Statistics/>
 			<ul/>
 			<nav>
-				<Link to="/home">Home</Link>
-			</nav>
-		</div>
-	},
-	{
-		path: '/parameters',
-		element: <div>
-			<Parameters/>
-			<ul/>
-			<nav>
-				<Link to="/home">Home</Link>
+				<Link to="/">Home</Link>
 			</nav>
 		</div>
 	},
@@ -70,7 +58,7 @@ const router = createBrowserRouter([
 			<Recipes/>
 			<ul/>
 			<nav>
-				<Link to="/home">Home</Link>
+				<Link to="/">Home</Link>
 			</nav>
 		</div>
 	},
@@ -80,7 +68,7 @@ const router = createBrowserRouter([
 			<ResetPassword/>
 			<ul/>
 			<nav>
-				<Link to="/home">Home</Link>
+				<Link to="/">Home</Link>
 			</nav>
 		</div>
 	}
@@ -90,7 +78,9 @@ const router = createBrowserRouter([
 function App() {
 
 	return <>
-	<RouterProvider router={router}/>
+		<Provider store={store}>
+			<RouterProvider router={router}/>
+		</Provider>
     </>
 }
 

@@ -14,6 +14,7 @@ up:
 		-keyout  ${DATA_PATH}/nginx/ssl/certificat_transcendence.key \
 		-out  ${DATA_PATH}/nginx/ssl/certificat_transcendence.crt \
 		-subj "/CN=localhost"; \
+		chmod 644 ${DATA_PATH}/nginx/ssl/certificat_transcendence.key; \
 	fi
 	@docker compose -f ./docker-compose.yml up -d
 
