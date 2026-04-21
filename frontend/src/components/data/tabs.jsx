@@ -36,7 +36,7 @@ const FetchRecipes = () => {
 	const { data, error, isLoading } = useQuery({
 		queryKey: ['recipes'],
 		queryFn: () => 
-			fetch('https://localhost:8443/api/home?username=oui')
+			fetch('https://localhost:8443/api/home')
 			.then(res => res.json())
 	})
 	if (isLoading) return <div>Chargement...</div>

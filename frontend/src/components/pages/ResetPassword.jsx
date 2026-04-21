@@ -52,6 +52,12 @@ export function ResetPassword() {
 
 
 	return <>
+	<img 
+		alt="Le grand chef cuisinier Gordon Ramsay"
+		src="src/components/images/gordon.jpg"
+		className="w-full h-screen absolute inset-0 object-cover object-top"
+		onClick={() => navigate('/')}
+	/>
 	<div className="absolute inset-y-0 left-15 flex flex-col min-h-full justify-center px-6 py-12 lg:px-8 border-l border-r bg-amber-100">
 		<div className="sm:mx-auto sm:w-full sm:max-w-sm">
 			<img

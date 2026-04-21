@@ -31,6 +31,8 @@ export function Login() {
 
 			if (Response.status === 401) {
 				console.log("non", Response.status);
+				setUsername('');
+				setPassword('');
 				throw "Erreur retourne en enfer";
 			}
 
@@ -42,8 +44,6 @@ export function Login() {
 				console.log(data.message);
 				console.log(data.user);
         console.log(data.token);
-				setUsername('');
-				setPassword('');
 				navigate('/');
 		})
 		.catch((err) => console.error("error:", err))
@@ -70,7 +70,7 @@ export function Login() {
           <form action="#" method="POST" className="space-y-6" onSubmit={handleSubmitLogin}>
             <div>
               <label htmlFor="username" className="font-serif italic block text-lg/6 font-medium text-black">
-                UsernameFrite . . . . . . . . . . . . . . . . . . . . . . . . . .
+                Username . . . . . . . . . . . . . . . . . . . . . . . . . .
               </label>
               <div className="mt-2">
                 <input
