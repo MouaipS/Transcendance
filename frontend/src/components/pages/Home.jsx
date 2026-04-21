@@ -47,7 +47,7 @@ export function Home () {
         return data;           
       })
       .then ((data) => {
-        console.log("je suis pas defini")
+        setUsername(data.username)
       })
       .catch ((err) => { 
           console.error("error:", err)

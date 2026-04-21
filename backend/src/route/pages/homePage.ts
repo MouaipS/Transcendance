@@ -3,12 +3,13 @@ import { prisma } from "../../server/prisma.js"
 
 export async function homePageRoute(request : FastifyRequest, reply : FastifyReply) 
 {
-    const {username} = request.query as {username: string}; ///home?username=login
-	const stats = await prisma.user.findUnique({
+    const {username} = request.user as {username: string}
+    const stats = await prisma.user.findUnique({
 		where: {
 			username: username,
 		},
         select: {
+            username: true,
             stats: {
                 select: {
                     nb_games: true,
@@ -18,6 +19,5 @@ export async function homePageRoute(request : FastifyRequest, reply : FastifyRep
             }
         }
 	});
-    console.log("stats", stats);
 	return reply.status(200).send(stats);
 }
