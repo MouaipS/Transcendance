@@ -1,20 +1,16 @@
-import {FastifyInstance, FastifyRequest, FastifyReply} from 'fastify'
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import { prisma } from "../../server/prisma.js"
+import { startGame } from "./start-game.js"
 
 /**
  * Fonctionnement des Lobbies :
- * 
- * Les games sont stockées dans deux tableaux, Lobbies[] et Games[]
  * 
  * Lobbies[] stocke toutes les games en attente de lancement, la première
  * case Lobbies[0] est réservée a la Game publique qu'on rejoint en
  * cliquant sur le bouton Join Public Game. Le reste sont les Game créees
  * par les utilisateurs via la génération d'un code aléatoire. 
- * Dès qu'une game est ready (4 joueurs), elle est lancée et push dans
- * le tableau Games[]
- * 
- * Games[] stocke toutes les games en cours. Lorsqu'une game se termine,
- * un objet statistiques est envoyé a la base de données pour être stocké
+ * Dès qu'une game est ready (4 joueurs), elle est lancée via la fonction
+ * startGame().
  */
 
 
@@ -27,15 +23,10 @@ interface JoinRequestBody {
   code: string;
 }
 
-interface Lobby {
+export interface Lobby {
   owner: string;
   code: string;
   nb_players: number;
-  users: string[];
-}
-
-interface Game {
-  owner: string;
   users: string[];
 }
 
@@ -46,8 +37,6 @@ const lobbies: Lobby[] = [{
   nb_players: 0,
   users: ["Player1", "Player2", "Player3", "Player4"]
 }];
-
-const games: Game[] = []
 
 
 function generateGameCode(): string {
@@ -86,18 +75,11 @@ export async function createGameRoute(request : FastifyRequest<{Body: CreationRe
   const lobby: Lobby = {owner: username, code: code, nb_players: 1, users: [username, "Player2", "Player3", "Player4"]}
   lobbies.push(lobby)
   console.log("LOBBIES", lobbies)
-  console.log("GAMES", games)
   return reply.status(200).send(lobby);
 }
-
-
-function joinLobby(lobby: Lobby, username: string)
+function closeLobby(lobby: Lobby)
 {
-  lobby.nb_players += 1
-  lobby.users[lobby.nb_players - 1] = username
-  if (lobby.nb_players === 4)
-  {
-    const index = lobbies.findIndex(lob => lob === lobby)
+  const index = lobbies.findIndex(lob => lob === lobby)
     if (index === 0)
     {
       const newLobby: Lobby = {owner: "public", code: '', nb_players: 0, users: ["Player1", "Player2", "Player3", "Player4"]}
@@ -105,10 +87,18 @@ function joinLobby(lobby: Lobby, username: string)
     }
     else
       lobbies.splice(index, 1)
-    games.push(lobby)
-  }
+    startGame(lobby)
+    // games.push(lobby)
+
+}
+
+function joinLobby(lobby: Lobby, username: string)
+{
+  lobby.nb_players += 1
+  lobby.users[lobby.nb_players - 1] = username
+  if (lobby.nb_players === 4)
+    closeLobby(lobby)
   console.log("LOBBIES", lobbies)
-  console.log("GAMES", games)
 }
 
 
@@ -121,7 +111,7 @@ export async function joinGameRoute(request : FastifyRequest<{Body: JoinRequestB
   if(!code && lobbies[0].nb_players < 4)                //join public game
   {
     joinLobby(lobbies[0], username)
-    return reply.status(200).send(games[0]);
+    return reply.status(200).send(lobbies[0]);
   }
   const lobby = lobbies.find(lobby => lobby.code === code)
   if (!lobby)
