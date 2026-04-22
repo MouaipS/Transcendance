@@ -136,14 +136,15 @@ export function Game () {
     }
 
     {page === 1 && 
-    <div className="flex-col py-12">
+    <div className="flex flex-col">
       <p>{code}</p>
-      <div dir="ltr">
+    
+      <div dir="ltr" className="px-120 flex">
         <button
           className="flex items-center gap-6 rounded-md 
           border border-black shadow-md bg-white 
           text-sm font-medium text-gray-700 
-          focus:outline-none mt-5 min-w-40"
+          focus:outline-none min-w-40 max-h-14.5"
         >
           <img
             alt="avatar par défaut"
@@ -152,30 +153,85 @@ export function Game () {
           />
           <span className="pr-4 text-2xl">{players[0]}</span>
         </button>
-      </div>
 
-      <div dir="ltr">
-        <button
-          className="flex items-center gap-6 rounded-md 
-          border border-black shadow-md bg-white 
-          text-sm font-medium text-gray-700 
-          focus:outline-none mt-5 min-w-40"
-        >
+        <div className="relative flex items-center justify-center">
           <img
-            alt="avatar par défaut"
-            src="src/components/images/default_avatar.webp"
-            className="h-14 w-14 object-cover rounded-s-lg"
+            alt="paquet de cartes"
+            src="src/components/images/paquet_top.png"
+            className="h-30"
           />
-          <span className="pr-4 text-2xl">{players[1]}</span>
-        </button>
+          
+          <span className="absolute text-white font-bold text-2xl shadow-sm">
+            42
+          </span>
+        </div>
       </div>
 
-      <div dir="ltr">
+      <div dir="ltr" className="flex justify-between w-full px-4 mt-25">
+        <div>
+          <button
+            className="flex items-center gap-6 rounded-md 
+            border border-black shadow-md bg-white 
+            text-sm font-medium text-gray-700 
+            focus:outline-none mt-5 min-w-40 max-h-14.5"
+          >
+            <img
+              alt="avatar par défaut"
+              src="src/components/images/default_avatar.webp"
+              className="h-14 w-14 object-cover rounded-s-lg"
+            />
+            <span className="pr-4 text-2xl">{players[1]}</span>
+          </button>
+
+          <div className="relative flex items-center justify-center">
+            <img
+              alt="paquet de cartes"
+              src="src/components/images/paquet_left.png"
+              className="h-35"
+            />
+            
+            <span className="absolute text-white font-bold text-2xl shadow-sm">
+              42
+            </span>
+          </div>
+        </div>
+
+        <div className="">
+          <button
+            className="flex items-center gap-6 rounded-md 
+            border border-black shadow-md bg-white 
+            text-sm font-medium text-gray-700
+            focus:outline-none mt-5 min-w-40 max-h-14.5"
+          >
+            <img
+              alt="avatar par défaut"
+              src="src/components/images/default_avatar.webp"
+              className="h-14 w-14 object-cover rounded-s-lg"
+            />
+            <span className="pr-4 text-2xl">{players[3]}</span>
+          </button>
+
+          <div className="relative flex items-center justify-center">
+            <img
+              alt="paquet de cartes"
+              src="src/components/images/paquet_right.png"
+              className="h-35"
+            />
+            
+            <span className="absolute text-white font-bold text-2xl shadow-sm">
+              42
+            </span>
+          </div>
+
+        </div>
+      </div>
+
+      <div dir="ltr" className="px-120 flex mt-45">
         <button
           className="flex items-center gap-6 rounded-md 
           border border-black shadow-md bg-white 
           text-sm font-medium text-gray-700 
-          focus:outline-none mt-5 min-w-40"
+          focus:outline-none mt-15 min-w-40 max-h-14.5"
         >
           <img
             alt="avatar par défaut"
@@ -184,47 +240,20 @@ export function Game () {
           />
           <span className="pr-4 text-2xl">{players[2]}</span>
         </button>
-      </div>
 
-      <div dir="ltr">
-        <button
-          className="flex items-center gap-6 rounded-md 
-          border border-black shadow-md bg-white 
-          text-sm font-medium text-gray-700 
-          focus:outline-none mt-5 min-w-40"
-        >
+        <div className="relative flex items-center justify-center">
           <img
-            alt="avatar par défaut"
-            src="src/components/images/default_avatar.webp"
-            className="h-14 w-14 object-cover rounded-s-lg"
+            alt="paquet de cartes"
+            src="src/components/images/paquet_bottom.png"
+            className="h-30"
           />
-          <span className="pr-4 text-2xl">{players[3]}</span>
-        </button>
+          
+          <span className="absolute text-white font-bold text-2xl shadow-sm">
+            42
+          </span>
+        </div>
       </div>
 
-      <img
-        alt="paquet de cartes"
-        src="src/components/images/paquet_top.png"
-        className="h-50"
-      />
-
-      <img
-        alt="paquet de cartes"
-        src="src/components/images/paquet_left.png"
-        className="h-50 px-20"
-      />
-
-      <img
-        alt="paquet de cartes"
-        src="src/components/images/paquet_bottom.png"
-        className="h-50"
-      />
-
-      <img
-        alt="paquet de cartes"
-        src="src/components/images/paquet_right.png"
-        className="h-50 px-20"
-      />
 
     </div>
 
