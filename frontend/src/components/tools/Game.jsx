@@ -10,6 +10,7 @@ export function Game () {
 	const [code, setCode] = useState('')
   const [username, setUsername] = useState('Michel')
   const [number, setNumber] = useState(0)
+  const [players, setPlayers] = useState()
 
   useEffect(() => {
   
@@ -71,26 +72,21 @@ export function Game () {
 		.catch((err) => console.error("error:", err))
   }
 
-  const handleCreate = (e) => {
+  const handleCreate = async (e) => {
 
-    console.log("pseudal = ", username)
-
-    fetch('https://localhost:8443/api/game/create',
+    const response = await fetch('https://localhost:8443/api/game/create',
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({username})
-    }
-    )
-    .then( (Response) => {
-			const data = Response.json()
-			return data
-		})
-		.then( (data) => {
-			console.log(data)
-		}
-		)
-		.catch((err) => console.error("error:", err))
+    })
+
+    const data = await response.json()
+
+    console.log(data)
+
+    setCode(data.code)
+    setPlayers(data.users)	
     setPage(1)
   }
 
@@ -139,5 +135,99 @@ export function Game () {
 		</div>
     }
 
+    {page === 1 && 
+    <div className="flex-col py-12">
+      <p>{code}</p>
+      <div dir="ltr">
+        <button
+          className="flex items-center gap-6 rounded-md 
+          border border-black shadow-md bg-white 
+          text-sm font-medium text-gray-700 
+          focus:outline-none mt-5 min-w-40"
+        >
+          <img
+            alt="avatar par défaut"
+            src="src/components/images/default_avatar.webp"
+            className="h-14 w-14 object-cover rounded-s-lg"
+          />
+          <span className="pr-4 text-2xl">{players[0]}</span>
+        </button>
+      </div>
+
+      <div dir="ltr">
+        <button
+          className="flex items-center gap-6 rounded-md 
+          border border-black shadow-md bg-white 
+          text-sm font-medium text-gray-700 
+          focus:outline-none mt-5 min-w-40"
+        >
+          <img
+            alt="avatar par défaut"
+            src="src/components/images/default_avatar.webp"
+            className="h-14 w-14 object-cover rounded-s-lg"
+          />
+          <span className="pr-4 text-2xl">{players[1]}</span>
+        </button>
+      </div>
+
+      <div dir="ltr">
+        <button
+          className="flex items-center gap-6 rounded-md 
+          border border-black shadow-md bg-white 
+          text-sm font-medium text-gray-700 
+          focus:outline-none mt-5 min-w-40"
+        >
+          <img
+            alt="avatar par défaut"
+            src="src/components/images/default_avatar.webp"
+            className="h-14 w-14 object-cover rounded-s-lg"
+          />
+          <span className="pr-4 text-2xl">{players[2]}</span>
+        </button>
+      </div>
+
+      <div dir="ltr">
+        <button
+          className="flex items-center gap-6 rounded-md 
+          border border-black shadow-md bg-white 
+          text-sm font-medium text-gray-700 
+          focus:outline-none mt-5 min-w-40"
+        >
+          <img
+            alt="avatar par défaut"
+            src="src/components/images/default_avatar.webp"
+            className="h-14 w-14 object-cover rounded-s-lg"
+          />
+          <span className="pr-4 text-2xl">{players[3]}</span>
+        </button>
+      </div>
+
+      <img
+        alt="paquet de cartes"
+        src="src/components/images/paquet_top.png"
+        className="h-50"
+      />
+
+      <img
+        alt="paquet de cartes"
+        src="src/components/images/paquet_left.png"
+        className="h-50 px-20"
+      />
+
+      <img
+        alt="paquet de cartes"
+        src="src/components/images/paquet_bottom.png"
+        className="h-50"
+      />
+
+      <img
+        alt="paquet de cartes"
+        src="src/components/images/paquet_right.png"
+        className="h-50 px-20"
+      />
+
+    </div>
+
+    }
 	</>
 }
