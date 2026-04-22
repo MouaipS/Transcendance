@@ -68,38 +68,6 @@ export function Register() {
 		.catch((err) => console.error("error:", err))
 	}
 
-	// Requête GET pour récupérer les infos depuis la DB afin
-	// de vérifier si les requêtes fonctionnent bien, ne restera pas
-	const FetchName = () => {
-	
-		if (!showGet)
-			return null
-		const { data, error, isLoading } = useQuery({
-			queryKey: ['username'],
-			queryFn: () => 
-				fetch('http://localhost:3001/api/users')
-				.then(res => res.json())
-		})
-		if (isLoading) return <div>Chargement...</div>
-		if (error) return <div>Erreur : {error.message}</div>
-
-		const datas = []
-
-		for (let i = 0; i < data.length; i++) {
-			datas[i] = data[i].username
-		}
-
-		return <ul>{datas.map(todo => (<li key={todo}>{todo}</li>))}</ul>
-	}
-
-	// Fonction pour empêcher l'appel de FetchName tant que 
-	// le bouton associé n'a pas été cliqué
-	const handleClick = (e) => {
-		e.preventDefault()
-
-		setShowGet(!showGet)
-	}
-
 
 	return <>
 	<img 
@@ -132,7 +100,7 @@ export function Register() {
 							name="username"
 							required
 							value={username}
-							placeholder="Cedric Grolet"
+							placeholder="Cedric Grolard"
 							onChange={(e) => setUsername(e.target.value)}
 							className="block w-full rounded-md bg-black/5 px-3 
 									py-1.5 text-base outline-1 -outline-offset-1
@@ -154,29 +122,8 @@ export function Register() {
 							type="email"
 							required
 							value={email}
-							placeholder="cedriclebôgoss@cedricgrolet.com"
+							placeholder="cedriclebôgoss@grolard.com"
 							onChange={(e) => setEmail(e.target.value)}
-							className="block w-full rounded-md bg-black/5 px-3 
-								py-1.5 text-base outline-1 -outline-offset-1
-								outline-black/10 placeholder:text-gray-500 
-								focus:outline-2 focus:-outline-offset-2 
-								focus:outline-yellow-400 sm:text-sm/6"
-						/>
-					</div>
-				</div>
-				<div>
-					<label htmlFor="nickname" className="font-serif italic 
-						block text-lg/6 font-medium text-black">
-						Nickname . . . . . . . . . . . . . . . . . . . . . . . . . . . .
-					</label>
-					<div className="mt-2">
-						<input
-							id="nickname"
-							name="nickname"
-							required
-							value={nickname}
-							placeholder="Cedricdu86"
-							onChange={(e) => setNickname(e.target.value)}
 							className="block w-full rounded-md bg-black/5 px-3 
 								py-1.5 text-base outline-1 -outline-offset-1
 								outline-black/10 placeholder:text-gray-500 
@@ -242,21 +189,7 @@ export function Register() {
 					</button>
 				</div>
 			</form>
-			<div className="mt-2">
-				<button
-					type="submit"
-					className="flex w-full justify-center rounded-md
-					bg-yellow-400 px-3 py-1.5 text-sm/6 font-semibold
-					hover:bg-yellow-300 focus-visible:outline-2 
-					focus-visible:outline-offset-2 focus-visible:outline-indigo-500 
-					border border-black shadow-md hover:shadow-none 
-					hover:inset-shadow-xs hover:inset-shadow-black/50"
-					onClick={handleClick}>Récupérer les infos de la Database
-				</button>
-			</div>
-			<QueryClientProvider client={queryClient}>
-				<FetchName />
-			</QueryClientProvider>
+			
 			<div className="mt-2">	
 				<button
 					type="submit"
@@ -266,7 +199,7 @@ export function Register() {
 					focus-visible:outline-offset-2 focus-visible:outline-indigo-500 
 					border border-black shadow-md hover:shadow-none 
 					hover:inset-shadow-xs hover:inset-shadow-black/50"
-					onClick={() => navigate('/')}>Retour à la page de connexion
+					onClick={() => navigate('/login')}>Retour à la page de connexion
 				</button>
 			</div>
 		</div>
