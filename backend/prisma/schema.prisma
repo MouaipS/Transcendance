@@ -36,15 +36,14 @@ model User {
 
 model Game {
 	id							String		@id @default(uuid())
-	status						GameStatus	@default(WAITING)
 	players						Player[]
 	//rounds					Round[]		???
-	// winner_id					String
-	// winner						User	@relation("GameWinner", fields: [winner_id], references: [id])
-	// played_at					DateTime
+	// winner_id				String
+	// winner					User	@relation("GameWinner", fields: [winner_id], references: [id])
+	// played_at				DateTime
 	// times_ms					BigInt
-	// score_total					Int
-	// nb_total_played_cards		Int
+	// score_total				Int
+	// nb_total_played_cards	Int
 }
 
 model Player {
@@ -57,17 +56,8 @@ model Player {
 	user						User	@relation(fields: [user_id], references: [id])
 
 	score						Int		@default(0)
-	deck						Card[]
-	nb_stack_cards				Int		@default(0)
+	// nb_stack_cards				Int		@default(0)
 	// nb_cards_played				Int		@default(0)
-}
-
-model Card {
-	id							String	@id @default(uuid())
-	name						String	
-
-	owner_id					Int
-	owner						Player	@relation(fields: [owner_id], references: [id])
 }
 
 model StatsUser	{

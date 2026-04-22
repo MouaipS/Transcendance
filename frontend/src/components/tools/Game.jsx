@@ -73,13 +73,24 @@ export function Game () {
 
   const handleCreate = (e) => {
 
+    console.log("pseudal = ", username)
+
     fetch('https://localhost:8443/api/game/create',
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(username)
+      body: JSON.stringify({username})
     }
     )
+    .then( (Response) => {
+			const data = Response.json()
+			return data
+		})
+		.then( (data) => {
+			console.log(data)
+		}
+		)
+		.catch((err) => console.error("error:", err))
     setPage(1)
   }
 
