@@ -39,6 +39,7 @@ export function Game () {
     fetchProfile();
   }, []);
 
+
 	const handleSubmit = (e) => {
 		e.preventDefault()
 
@@ -127,7 +128,7 @@ export function Game () {
 
 			<button 
 				className="flex justify-center rounded-md mt-10 min-h-20
-				bg-yellow-400 font-semibold text-3xl items-center
+				bg-red-400 font-semibold text-3xl items-center
 				hover:bg-yellow-300 focus-visible:outline-2 
 				focus-visible:outline-offset-2 focus-visible:outline-indigo-500 
 				border border-black shadow-md hover:shadow-none 

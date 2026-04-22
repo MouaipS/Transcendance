@@ -12,21 +12,19 @@ const FetchStats = () => {
 	const { data, error, isLoading } = useQuery({
 		queryKey: ['stats'],
 		queryFn: () => 
-			fetch('https://localhost:8443/api/home?username=oui')
+			fetch('https://localhost:8443/api/home')
 			.then(res => res.json())
 	})
 	if (isLoading) return <div>Chargement...</div>
 	if (error) return <div>Erreur : {error.message}</div>
 
 	if (!data) return <div>Aucune donnée trouvée.</div>
-
-	console.log('data = ', data)
 	
 	return <div>
 		<ul>
-			{/* <li>Matchs joués : {data.stats.nb_games}</li>
+			<li>Matchs joués : {data.stats.nb_games}</li>
 			<li>Victoires : {data.stats.nb_victories}</li>
-			<li>Défaites : {data.stats.nb_defeats}</li> */}
+			<li>Défaites : {data.stats.nb_defeats}</li>
         </ul>
 	</div>
 }
@@ -43,8 +41,6 @@ const FetchRecipes = () => {
 	if (error) return <div>Erreur : {error.message}</div>
 
 	if (!data) return <div>Vous n'êtes pas actuellement dans une partie.</div>
-
-	console.log('data = ', data)
 	
 	return <div>
 		<ul>
