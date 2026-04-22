@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 
 
@@ -10,6 +10,34 @@ export function Game () {
 	const [code, setCode] = useState('')
   const [username, setUsername] = useState('Michel')
   const [number, setNumber] = useState(0)
+
+  useEffect(() => {
+  
+    const fetchProfile = async () => {
+
+      fetch('/api/home',
+      {
+        method: "GET",
+        credentials: "include"
+      })
+      .then ((Response) => {
+        if (Response.status === 401) 
+        {
+          console.log("non ", Response.status);
+        }
+        const data = Response.json();
+        return data;           
+      })
+      .then ((data) => {
+        setUsername(data.username)
+      })
+      .catch ((err) => { 
+        console.error("error:", err)
+      })
+    }
+
+    fetchProfile();
+  }, []);
 
 	const handleSubmit = (e) => {
 		e.preventDefault()
@@ -44,6 +72,8 @@ export function Game () {
 
   const handleCreate = (e) => {
 
+    console.log("pseudal = ", username)
+
     fetch('https://localhost:8443/api/game/create',
     {
       method: 'POST',
@@ -51,6 +81,15 @@ export function Game () {
       body: JSON.stringify(username)
     }
     )
+    .then( (Response) => {
+			const data = Response.json()
+			return data
+		})
+		.then( (data) => {
+			console.log(data)
+		}
+		)
+		.catch((err) => console.error("error:", err))
     setPage(1)
   }
 
