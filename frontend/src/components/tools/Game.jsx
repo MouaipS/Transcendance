@@ -2,6 +2,11 @@ import { useState, useEffect } from "react";
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 
 
+let cards = ["src/components/images/Dragon.webp",
+   "src/components/images/angel.jpg",
+   "src/components/images/varudras.png" 
+  ]
+
 const queryClient = new QueryClient()
 
 export function Game () {
@@ -11,6 +16,10 @@ export function Game () {
   const [username, setUsername] = useState('Michel')
   const [number, setNumber] = useState(0)
   const [players, setPlayers] = useState()
+  const [decks, setDecks] = useState([20, 20, 20, 20])
+  const [start, setStart] = useState(false)
+  const [timer, setTimer] = useState(0)
+  const [index, setIndex] = useState(0)
 
   useEffect(() => {
   
@@ -90,6 +99,35 @@ export function Game () {
     setPage(1)
   }
 
+  useEffect(()=> {
+
+    if (!start) return
+
+    const intervalId = setInterval(() => {
+      setDecks((prevDecks) => {
+        const newDecks = [...prevDecks]
+        newDecks[index % 4] = newDecks[index % 4] - 1
+        return newDecks
+      })
+
+      const card = cards[0]
+      cards.shift()
+      cards.push(card)
+
+      setIndex(prev => prev + 1)
+    }, 1000)
+
+    return () => clearInterval(intervalId)
+  }, [start, index])
+
+  const reverse = () => {
+      setStart(true)
+      console.log("cards[0]")
+      cards = cards.reverse()
+      console.log(cards[0])
+  }
+
+
 	return <>
 		{page === 0 && 
 		<div className="flex flex-col px-120 py-12">
@@ -137,13 +175,15 @@ export function Game () {
 
     {page === 1 && 
     <div className="flex flex-col">
-      <p>{code}</p>
-    
-      <div dir="ltr" className="px-120 flex">
+      <p className="px-5 py-5 absolute text-2xl font-semibold">{code}</p>
+
+      <p className="px-10 py-20 absolute" onClick={() => setStart(true)}>start</p>
+
+      <div dir="ltr" className="px-120 flex py-5">
         <button
           className="flex items-center gap-6 rounded-md 
           border border-black shadow-md bg-white 
-          text-sm font-medium text-gray-700 
+          text-sm font-medium text-gray-700 mt-6
           focus:outline-none min-w-40 max-h-14.5"
         >
           <img
@@ -162,13 +202,13 @@ export function Game () {
           />
           
           <span className="absolute text-white font-bold text-2xl shadow-sm">
-            42
+            {decks[0]}
           </span>
         </div>
       </div>
 
-      <div dir="ltr" className="flex justify-between w-full px-4 mt-25">
-        <div>
+      <div dir="ltr" className="flex justify-between w-full px-4 mt-15">
+        <div className="mt-15">
           <button
             className="flex items-center gap-6 rounded-md 
             border border-black shadow-md bg-white 
@@ -187,16 +227,31 @@ export function Game () {
             <img
               alt="paquet de cartes"
               src="src/components/images/paquet_left.png"
-              className="h-35"
+              className="h-20"
             />
             
             <span className="absolute text-white font-bold text-2xl shadow-sm">
-              42
+              {decks[1]}
             </span>
           </div>
         </div>
+        
+        <img
+          src={cards[0]}
+          className="h-80 rotate-45"
+        />
 
-        <div className="">
+        <img
+          src={cards[1]}
+          className="h-80 rotate-25 absolute px-140"
+        />
+
+        <img
+          src={cards[2]}
+          className="h-80 absolute px-140"
+        />
+
+        <div className="mt-15">
           <button
             className="flex items-center gap-6 rounded-md 
             border border-black shadow-md bg-white 
@@ -215,23 +270,23 @@ export function Game () {
             <img
               alt="paquet de cartes"
               src="src/components/images/paquet_right.png"
-              className="h-35"
+              className="h-20"
             />
             
             <span className="absolute text-white font-bold text-2xl shadow-sm">
-              42
+              {decks[3]}
             </span>
           </div>
 
         </div>
       </div>
 
-      <div dir="ltr" className="px-120 flex mt-45">
+      <div dir="ltr" className="px-120 flex mt-30">
         <button
           className="flex items-center gap-6 rounded-md 
           border border-black shadow-md bg-white 
           text-sm font-medium text-gray-700 
-          focus:outline-none mt-15 min-w-40 max-h-14.5"
+          focus:outline-none mt-10 min-w-40 max-h-14.5"
         >
           <img
             alt="avatar par défaut"
@@ -249,11 +304,11 @@ export function Game () {
           />
           
           <span className="absolute text-white font-bold text-2xl shadow-sm">
-            42
+            {decks[2]}
           </span>
         </div>
       </div>
-
+      
 
     </div>
 

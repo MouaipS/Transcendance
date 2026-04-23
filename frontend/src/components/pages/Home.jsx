@@ -100,7 +100,7 @@ export function Home () {
 					</div>
 
           <div className="absolute min-w-340 min-h-200 rounded border-4 border-black mt-4 
-                flex flex-col left-120 top-10">
+                flex flex-col left-120 top-10 max-h-200">
             <Game/>
           </div>
 
