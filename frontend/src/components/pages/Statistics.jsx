@@ -14,27 +14,29 @@ const FetchStats = () => {
 	const { data, error, isLoading } = useQuery({
 		queryKey: ['stats'],
 		queryFn: () => 
-			fetch('https://localhost:8443/api/home?username=oui')
-			.then(res => res.json())
+			fetch('api/home', {
+				method: 'GET',
+				credentials: 'include'
+			})
+			.then(res => {
+				if (res.status === 401) {
+					NavigateEvent('/login')
+					throw new Error('Not authentificate user')
+				}
+				return res.json()
+			})
 	})
-	if (isLoading) return <div>Chargement...</div>
-	if (error) return <div>Erreur : {error.message}</div>
 
-	if (!data) return <div>Aucune donnée trouvée.</div>
+	if (isLoading) return <div>Loading...</div>
+	if (error) return <div>Error : {error.message}</div>
+	if (!data || !data.stats) return <div>None data found</div>
 
 	return <div>
-		<ul>
-			<li>Matchs joués : {data.stats.nb_games}</li>
-			<li>Victoires : {data.stats.nb_victories}</li>
-			<li>Défaites : {data.stats.nb_defeats}</li>
-        </ul>
+		<p>Match joués : {data.stats.nb_games}</p>
 	</div>
 }
 
-
 export function Statistics () {
-
-
 	return <>
 		<QueryClientProvider client={queryClient}>
 			<FetchStats />
