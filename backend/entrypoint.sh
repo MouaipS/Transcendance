@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-until curl -sf "$VAULT_ADDR/v1/sys/health" >/dev/null; do
+until curl -sf --cacert "$VAULT_CACERT" "$VAULT_ADDR/v1/sys/health" >/dev/null; do
 	sleep 1
 done
 
@@ -23,10 +23,18 @@ until node -e "
 	sleep 1
 done
 
+# Récupère le root token depuis le fichier d'init du vault
+VAULT_TOKEN=$(jq -r '.root_token' /vault/init/keys.json)
+export VAULT_TOKEN
+echo "token : ${VAULT_TOKEN}"
+echo "cacert : ${VAULT_CACERT}"
+echo "addr : ${VAULT_ADDR}"
 
-DB_INFO=$(curl -sf \
+DB_INFO=$(curl -sf --cacert "$VAULT_CACERT" \
 	-H "X-Vault-Token: ${VAULT_TOKEN}" \
 	"$VAULT_ADDR/v1/secret/data/database")
+
+echo "Le Vault est ok3\n"
 
 eval $(echo "$DB_INFO" | node -e "
     let content = '';
@@ -41,6 +49,8 @@ eval $(echo "$DB_INFO" | node -e "
         console.log('DB_NAME=' + db_bloc.db_name);
     });
 ")
+echo "Le Vault est ok4\n"
+
 
 export DATABASE_URL="postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}?schema=public"
 

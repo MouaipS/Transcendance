@@ -1,9 +1,18 @@
+import { readFileSync } from "node:fs";
+
 const VAULT_ADDR = process.env.VAULT_ADDR
-const VAULT_TOKEN = process.env.VAULT_TOKEN
+if (!VAULT_ADDR)
+	throw new Error("Vault addr env variable undefined");
 
-if (!VAULT_ADDR || !VAULT_TOKEN)
-	throw new Error("Vault env variable undefined");
-
+const INIT_FILE = "/vault/init/keys.json";
+let VAULT_TOKEN: string;
+try {
+    const raw = readFileSync(INIT_FILE, "utf-8");
+    VAULT_TOKEN = JSON.parse(raw).root_token;
+    if (!VAULT_TOKEN) throw new Error("root_token absent du fichier d'init");
+} catch (e) {
+    throw new Error(`Lecture du token vault impossible : ${(e as Error).message}`);
+}
 interface KvResponse<T> { data: { data: T } }
 
 async function readVault<T>(path: string): Promise<T> {

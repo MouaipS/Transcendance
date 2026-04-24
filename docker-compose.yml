@@ -38,13 +38,17 @@ services:
     container_name: backend
     restart: unless-stopped
     environment:
-      - VAULT_TOKEN=${VAULT_TOKEN}
+      - VAULT_CACERT=/vault/tls/vault.crt
+      - NODE_EXTRA_CA_CERTS=/vault/tls/vault.crt
       - VAULT_ADDR=${VAULT_ADDR}
     expose:
       - "3001"
     depends_on:
       - db
       - vault
+    volumes:
+      - ${DATA_PATH}/vault/tls:/vault/tls:ro
+      - ${DATA_PATH}/vault/init:/vault/init:ro
     networks:
       - transcendance
   
@@ -86,13 +90,11 @@ services:
 
 
   vault:
-    image: hashicorp/vault:latest
+    image: hashicorp/vault:1.18.3
     container_name: vault
     restart: unless-stopped
     environment:
-      - VAULT_DEV_ROOT_TOKEN_ID=${VAULT_TOKEN}
       - VAULT_ADDR=http://127.0.0.1:8200
-      - VAULT_TOKEN=${VAULT_TOKEN}
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -101,6 +103,10 @@ services:
       - COOKIE_SECRET=${COOKIE_SECRET}
     volumes:
       - ./vault/entrypoint.sh:/entrypoint.sh:ro
+      - ./vault/config.hcl:/vault/config.hcl:ro
+      - ${DATA_PATH}/vault/data:/vault/data
+      - ${DATA_PATH}/vault/tls:/vault/tls:ro
+      - ${DATA_PATH}/vault/init:/vault/init
     entrypoint: ["sh", "/entrypoint.sh"]
     expose:
       - "8200"

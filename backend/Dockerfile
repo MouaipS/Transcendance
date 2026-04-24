@@ -1,7 +1,7 @@
 FROM public.ecr.aws/docker/library/node:trixie AS dev
 
 RUN apt-get update 
-RUN apt-get install -y curl
+RUN apt-get install -y curl jq
 
 WORKDIR /app
 
