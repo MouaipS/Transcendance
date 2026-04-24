@@ -31,8 +31,15 @@ const FetchStats = () => {
 	if (error) return <div>Error : {error.message}</div>
 	if (!data || !data.stats) return <div>None data found</div>
 
+
+	const s = data.stats //raccourci
+	const calcWinRate = s.nb_games > 0 ? Math.round((s.nb_victories / s.nb_games) * 100) : 0
+
 	return <div>
-		<p>Match joués : {data.stats.nb_games}</p>
+		<p>Match played : {s.nb_games}</p>
+		<p>Victories : {s.nb_victories}</p>
+		<p>Defeats : {s.nb_defeats}</p>
+		<p>Ratio V/D : {calcWinRate}%</p>
 	</div>
 }
 
