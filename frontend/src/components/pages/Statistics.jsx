@@ -97,6 +97,13 @@ const FetchStats = () => {
 	const smashAccuracy = s.nb_smash > 0 ? Math.round((s.nb_smash_success / s.nb_smash) * 100): 0
 
 	return <div className="px-8 pb-8">
+		<h2 className="text-center pb-4 font-caprasimo text-8xl">
+			Chef {data.username}
+		</h2>
+		<p className="text-center pb-6 italic text-amber-900/70">
+			Voici le récapitulatif de ta carrière en cuisine
+		</p>
+		
 		{/* ===== PARTIES ===== */}
 		<SectionTitle>GAMES</SectionTitle>
 		<div className="grid grid-colis-4 gap-4">
