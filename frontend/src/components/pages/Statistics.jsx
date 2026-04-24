@@ -7,6 +7,23 @@ import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-quer
 // oui c'est encore un autre plug-in...
 const queryClient = new QueryClient()
 
+const SectionTitle = ({ children }) => (
+	<h2 className="
+			pt-10
+			pb-6
+			font-caprasimo
+			tracking-wide
+
+			text-shadow-amber-200
+			text-shadow-2xs
+
+			text-center
+			text-5x1
+			">
+			=\=\=\=\=\ {children} /=/=/=/=/=
+			</h2>
+)
+
 
 const StatCard = ({ label, value }) => (
 	<div className="
@@ -48,8 +65,6 @@ const StatCard = ({ label, value }) => (
 	</div>
 )
 
-
-
 // Requête GET pour récupérer les infos depuis la DB afin
 // d'afficher les statistiques de l'utilisateur dans l'onglet stats
 const FetchStats = () => {
@@ -76,13 +91,49 @@ const FetchStats = () => {
 
 
 	const s = data.stats //raccourci
-	const calcWinRate = s.nb_games > 0 ? Math.round((s.nb_victories / s.nb_games) * 100) : 0
 
-	return <div className="grid grid-colis-4 gap-4 p-8"> 
-		<StatCard label="Match played"	value={s.nb_games}/>
-		<StatCard label="Victories"		value={s.nb_victories}/>
-		<StatCard label="Defeats"		value={s.nb_defeats}/>
-		<StatCard label="Ratio V/D"		value={calcWinRate}/>
+	const calcWinRate = s.nb_games > 0 ? Math.round((s.nb_victories / s.nb_games) * 100) : 0
+	const changeNone = (str) => str && str !== "None" ? str : "-"
+	const smashAccuracy = s.nb_smash > 0 ? Math.round((s.nb_smash_success / s.nb_smash) * 100): 0
+
+	return <div className="px-8 pb-8">
+		{/* ===== PARTIES ===== */}
+		<SectionTitle>GAMES</SectionTitle>
+		<div className="grid grid-colis-4 gap-4">
+			<StatCard label="Match played"	value={s.nb_games}/>
+			<StatCard label="Victories"		value={s.nb_victories}/>
+			<StatCard label="Defeats"		value={s.nb_defeats}/>
+			<StatCard label="Ratio V/D"		value={`${calcWinRate}%`}/>
+		</div>
+
+		{/* ===== RECORDS ===== */}
+		<SectionTitle>RECORDS</SectionTitle>
+		<div className="grid grid-cols-3 gap-4">
+			<StatCard label="Rang actuel"         value={s.rank} />
+			<StatCard label="Meilleur rang"       value={s.rank_max} />
+			<StatCard label="Heures de jeu"       value={s.hours_played} />
+			<StatCard label="Série de victoires"  value={s.max_win_streak} />
+			<StatCard label="Série de défaites"   value={s.max_loose_streak} />
+			<StatCard label="Smashs consécutifs"  value={s.max_smash_success_streak} />
+		</div>
+
+		{/* ===== SMASH ===== */}
+		<SectionTitle>SMASH</SectionTitle>
+		<div className="grid grid-cols-3 gap-4">
+			<StatCard label="Nombre de smashs"  value={s.nb_smash} />
+			<StatCard label="Smashs réussis"    value={s.nb_smash_success} />
+			<StatCard label="Précision"         value={`${smashAccuracy}%`} />
+			<StatCard label="Réaction moyenne"  value={`${s.avg_reaction_ms} ms`} />
+			<StatCard label="Meilleur combo"    value={changeNone(s.most_combo_smash)} />
+			<StatCard label="Carte smashée"     value={changeNone(s.most_smashed_card)} />
+		</div>
+
+		{/* ===== DIVERS ===== */}
+		<SectionTitle>DIVERS</SectionTitle>
+		<div className="grid grid-cols-2 gap-4">
+			<StatCard label="Carte favorite"  value={changeNone(s.favorite_card)} />
+			<StatCard label="Bonus joués"     value={s.nb_bonus_played} />
+		</div>
 	</div>
 }
 
