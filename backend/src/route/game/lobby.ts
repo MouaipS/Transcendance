@@ -88,8 +88,6 @@ function closeLobby(lobby: Lobby)
     else
       lobbies.splice(index, 1)
     startGame(lobby)
-    // games.push(lobby)
-
 }
 
 function joinLobby(lobby: Lobby, username: string)
