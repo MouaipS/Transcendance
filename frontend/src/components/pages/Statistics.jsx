@@ -104,6 +104,12 @@ const FetchStats = () => {
 							text-stone-700 font-bold mb-2">
 								Fiche du chef - Service en cours
 			</div>
+			<div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+				<h2 className="	font-caprasimo text-5xl sm:text-7xl
+								text-stone-900 leading-none">
+					{data.username}
+				</h2>
+			</div>
 		</div>
 		{/* ===== PARTIES ===== */}
 		<SectionTitle>GAMES</SectionTitle>
