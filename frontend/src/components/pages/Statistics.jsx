@@ -149,12 +149,21 @@ const FetchStats = () => {
 export function Statistics () {
 	return <>
 		<QueryClientProvider client={queryClient}>
-			{/* max-w-6xl limite de largeur pour la lisibilité - environ 100 caracteres par ligne
-				mx-auto pour le centrage horizontal
-				px-8 py-12 pour le padding - on le fait asymétrique pour avoir plus d'espace en vertical
-			*/}
-			<div className="max-w-6xl mx-auto px-8 py-12">
-				<FetchStats />
+			{/*wrappeur exterieur - prend tout l'ecran et donne le fond
+				inset-0 pour recouvrir tout l'ecran
+				min-h-full permet le scroll vertical car affichage à 100%
+				bg-amber-50 couleur du fond
+				overflow-y-auto active le scroll vertical
+				*/}
+			<div className="inset-0 min-h-full bg-amber-50 overflow-y-auto">
+				{/* wrappeur interieur
+					max-w-6xl limite de largeur pour la lisibilité - environ 100 caracteres par ligne
+					mx-auto pour le centrage horizontal
+					px-8 py-12 pour le padding - on le fait asymétrique pour avoir plus d'espace en vertical
+				*/}
+				<div className="max-w-6xl mx-auto px-8 py-12">
+					<FetchStats />
+				</div>
 			</div>
 		</QueryClientProvider>
 	</>
