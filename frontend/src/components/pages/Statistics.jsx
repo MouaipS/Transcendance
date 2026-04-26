@@ -147,6 +147,7 @@ const FetchStats = () => {
 }
 
 export function Statistics () {
+	const navigate = useNavigate()
 	return <>
 		<QueryClientProvider client={queryClient}>
 			{/*wrappeur exterieur - prend tout l'ecran et donne le fond
@@ -162,6 +163,37 @@ export function Statistics () {
 					px-8 py-12 pour le padding - on le fait asymétrique pour avoir plus d'espace en vertical
 				*/}
 				<div className="max-w-6xl mx-auto px-8 py-12">
+
+						{/* class du bouton
+							group pour le declarer group parent, les enfants peuvent utiliser group-hover pir gerer le survol
+							inline-flex : le button se comporte simplement comme un element en ligne de taille du contenu
+							items-center : centre les enfants
+							gap-2 : espace entre les 2 enfants
+							mb-8 : espace entre le button et la suite
+							text-stone-900 c'est la couleur du texte
+							hover:text-stone-700 : modification de la couleur en cas de survol
+							transition-colors : gestion de la transition de couleurs
+							 */}
+						{/* class de la fleche 
+							text-2xl : taille de la fleche
+							group-hover:-translate-x-1 : heritage du parents + translation de 4 pxl
+							transition-transform geston de la transition
+						 */}
+						{/* class du texte
+							text-xs taille du texte
+							uppercase : tout en maj
+							tracking-[0.3em] : espace des lettres
+							font-bold : mettre en gras
+							 */}
+					<button
+						onClick={() => navigate('/')}
+
+						className="	group inline-flex items-center gap-2 mb-8
+									text-stone-900 hover:text-stone-700
+									transition-colors">
+						<span className="text-2xl group-hover:-translate-x-1 transition-transform">←</span>
+						<span className="text-xs uppercase tracking-[0.3em] font-bold">Retour en cuisine</span>
+					</button>
 					<FetchStats />
 				</div>
 			</div>
