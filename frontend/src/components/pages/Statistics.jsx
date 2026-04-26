@@ -109,6 +109,18 @@ const FetchStats = () => {
 								text-stone-900 leading-none">
 					{data.username}
 				</h2>
+				<div className="text-right">
+					<div className="font-caprasimo text-4xl sm:text-5xl text-stone-900">
+						{s.rank} /
+						<span className="text-stone-700/40">
+							/ {s.rank_max}
+						</span>
+					</div>
+					<div className="text-[10px] uppercase tracking-[0.2em]
+									text-stone-700 font-bold mt-1">
+						Rang actuel // Meilleur
+					</div>
+				</div>
 			</div>
 		</div>
 		{/* ===== PARTIES ===== */}
