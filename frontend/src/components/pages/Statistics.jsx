@@ -99,7 +99,12 @@ const FetchStats = () => {
 	const smashAccuracy = s.nb_smash > 0 ? Math.round((s.nb_smash_success / s.nb_smash) * 100): 0
 
 	return <div className="px-8 pb-8">
-		<div className="border-2 border-stone-900 bg-amber-50/60 p-6 sm:p-10 mb-4"></div>
+		<div className="border-2 border-stone-900 bg-amber-50/60 p-6 sm:p-10 mb-4">
+			<div className="test-[10px] sm:text-xs uppercase tracking-[0.3em]
+							text-stone-700 font-bold mb-2">
+								Fiche du chef - Service en cours
+			</div>
+		</div>
 		{/* ===== PARTIES ===== */}
 		<SectionTitle>GAMES</SectionTitle>
 		<div className="grid grid-cols-4 gap-4">
