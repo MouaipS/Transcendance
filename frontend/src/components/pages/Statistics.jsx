@@ -11,7 +11,7 @@ import cuttingboardImg from '../images/cuttingboard.png'
 // oui c'est encore un autre plug-in...
 const queryClient = new QueryClient()
 
-const SectionTitle = ({ children, number, icon}) => (
+const SectionTitle = ({ children, number, icon, subtitle}) => (
 	<div className="pt-16 pb-8">
 		<div className="flex items-end gap-4 mb-3">
 			<div className="font-caprasimo text-5xl sm:text-6xl
@@ -27,7 +27,9 @@ const SectionTitle = ({ children, number, icon}) => (
 							tracking-wide text-stone-900">
 				{children}
 			</h2>
-			{}
+			<span className="italic text-stone-700/70 text-sm sm:text-base">
+					— {subtitle}
+			</span>
 		</div>
 	</div>
 )
@@ -132,7 +134,7 @@ const FetchStats = () => {
 			</div>
 		</div>
 		{/* ===== PARTIES ===== */}
-		<SectionTitle number="I" icon={poivronImg}>GAMES</SectionTitle>
+		<SectionTitle number="I" icon={poivronImg} subtitle={"bilan de la brigade"}>GAMES</SectionTitle>
 		<div className="grid grid-cols-4 gap-4">
 			<StatCard label="Match played"	value={s.nb_games}/>
 			<StatCard label="Victories"		value={s.nb_victories}/>
@@ -141,7 +143,7 @@ const FetchStats = () => {
 		</div>
 
 		{/* ===== RECORDS ===== */}
-		<SectionTitle number="II" icon={legumesImg} >RECORDS</SectionTitle>
+		<SectionTitle number="II" icon={legumesImg} subtitle={"bilan de la brigade"}>RECORDS</SectionTitle>
 		<div className="grid grid-cols-3 gap-4">
 			<StatCard label="Rang actuel"         value={s.rank} />
 			<StatCard label="Meilleur rang"       value={s.rank_max} />
@@ -152,7 +154,7 @@ const FetchStats = () => {
 		</div>
 
 		{/* ===== SMASH ===== */}
-		<SectionTitle number="III" icon={carotImg}>SMASH</SectionTitle>
+		<SectionTitle number="III" icon={carotImg} subtitle={"bilan de la brigade"}>SMASH</SectionTitle>
 		<div className="grid grid-cols-3 gap-4">
 			<StatCard label="Nombre de smashs"  value={s.nb_smash} />
 			<StatCard label="Smashs réussis"    value={s.nb_smash_success} />
@@ -163,7 +165,7 @@ const FetchStats = () => {
 		</div>
 
 		{/* ===== DIVERS ===== */}
-		<SectionTitle number="IV" icon={cuttingboardImg}>DIVERS</SectionTitle>
+		<SectionTitle number="IV" icon={cuttingboardImg} subtitle={"bilan de la brigade"}>DIVERS</SectionTitle>
 		<div className="grid grid-cols-2 gap-4">
 			<StatCard label="Carte favorite"  value={changeNone(s.favorite_card)} />
 			<StatCard label="Bonus joués"     value={s.nb_bonus_played} />
