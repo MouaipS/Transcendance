@@ -7,21 +7,19 @@ import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-quer
 // oui c'est encore un autre plug-in...
 const queryClient = new QueryClient()
 
-const SectionTitle = ({ children }) => (
-	<h2 className="
-			pt-10
-			pb-6
-			font-caprasimo
-			tracking-wide
-
-			text-shadow-amber-200
-			text-shadow-2xs
-
-			text-center
-			text-5xl
-			">
-			=\=\=\=\=\ {children} /=/=/=/=/=
+const SectionTitle = ({ children, number}) => (
+	<div className="pt-16 pb-8">
+		<div className="flex items-end gap-4 mb-3">
+			<div className="font-caprasimo text-5xl sm:text-6xl
+							text-stone-900 leading-none">
+				{number}
+			</div>
+			<h2 className="	font-caprasimo text-3xl sm:text-5xl
+							tracking-wide text-stone-900">
+				{children}
 			</h2>
+		</div>
+	</div>
 )
 
 
@@ -124,7 +122,7 @@ const FetchStats = () => {
 			</div>
 		</div>
 		{/* ===== PARTIES ===== */}
-		<SectionTitle>GAMES</SectionTitle>
+		<SectionTitle number="I">GAMES</SectionTitle>
 		<div className="grid grid-cols-4 gap-4">
 			<StatCard label="Match played"	value={s.nb_games}/>
 			<StatCard label="Victories"		value={s.nb_victories}/>
@@ -133,7 +131,7 @@ const FetchStats = () => {
 		</div>
 
 		{/* ===== RECORDS ===== */}
-		<SectionTitle>RECORDS</SectionTitle>
+		<SectionTitle number="II">RECORDS</SectionTitle>
 		<div className="grid grid-cols-3 gap-4">
 			<StatCard label="Rang actuel"         value={s.rank} />
 			<StatCard label="Meilleur rang"       value={s.rank_max} />
@@ -144,7 +142,7 @@ const FetchStats = () => {
 		</div>
 
 		{/* ===== SMASH ===== */}
-		<SectionTitle>SMASH</SectionTitle>
+		<SectionTitle number="III">SMASH</SectionTitle>
 		<div className="grid grid-cols-3 gap-4">
 			<StatCard label="Nombre de smashs"  value={s.nb_smash} />
 			<StatCard label="Smashs réussis"    value={s.nb_smash_success} />
@@ -155,7 +153,7 @@ const FetchStats = () => {
 		</div>
 
 		{/* ===== DIVERS ===== */}
-		<SectionTitle>DIVERS</SectionTitle>
+		<SectionTitle number="IV">DIVERS</SectionTitle>
 		<div className="grid grid-cols-2 gap-4">
 			<StatCard label="Carte favorite"  value={changeNone(s.favorite_card)} />
 			<StatCard label="Bonus joués"     value={s.nb_bonus_played} />
