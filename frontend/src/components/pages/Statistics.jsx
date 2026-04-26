@@ -18,7 +18,7 @@ const SectionTitle = ({ children }) => (
 			text-shadow-2xs
 
 			text-center
-			text-5x1
+			text-5xl
 			">
 			=\=\=\=\=\ {children} /=/=/=/=/=
 			</h2>
@@ -68,17 +68,19 @@ const StatCard = ({ label, value }) => (
 // Requête GET pour récupérer les infos depuis la DB afin
 // d'afficher les statistiques de l'utilisateur dans l'onglet stats
 const FetchStats = () => {
+
+	const navigate = useNavigate()
 	
 	const { data, error, isLoading } = useQuery({
 		queryKey: ['stats'],
 		queryFn: () => 
-			fetch('api/home', {
+			fetch('/api/home', {
 				method: 'GET',
 				credentials: 'include'
 			})
 			.then(res => {
 				if (res.status === 401) {
-					NavigateEvent('/login')
+					Navigate('/login')
 					throw new Error('Not authentificate user')
 				}
 				return res.json()
@@ -88,7 +90,7 @@ const FetchStats = () => {
 	if (isLoading) return <div>Loading...</div>
 	if (error) return <div>Error : {error.message}</div>
 	if (!data || !data.stats) return <div>None data found</div>
-
+ 
 
 	const s = data.stats //raccourci
 
@@ -106,7 +108,7 @@ const FetchStats = () => {
 		
 		{/* ===== PARTIES ===== */}
 		<SectionTitle>GAMES</SectionTitle>
-		<div className="grid grid-colis-4 gap-4">
+		<div className="grid grid-cols-4 gap-4">
 			<StatCard label="Match played"	value={s.nb_games}/>
 			<StatCard label="Victories"		value={s.nb_victories}/>
 			<StatCard label="Defeats"		value={s.nb_defeats}/>
@@ -147,7 +149,13 @@ const FetchStats = () => {
 export function Statistics () {
 	return <>
 		<QueryClientProvider client={queryClient}>
-			<FetchStats />
+			{/* max-w-6xl limite de largeur pour la lisibilité - environ 100 caracteres par ligne
+				mx-auto pour le centrage horizontal
+				px-8 py-12 pour le padding - on le fait asymétrique pour avoir plus d'espace en vertical
+			*/}
+			<div className="max-w-6xl mx-auto px-8 py-12">
+				<FetchStats />
+			</div>
 		</QueryClientProvider>
 	</>
 }
