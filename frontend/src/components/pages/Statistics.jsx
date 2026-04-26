@@ -1,23 +1,33 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
+import carotImg        from '../images/carot.png'
+import poivronImg      from '../images/poivron.png'
+import legumesImg      from '../images/legumes.png'
+import cuttingboardImg from '../images/cuttingboard.png'
 
 
 // Utilisé pour fetch depuis le back,
 // oui c'est encore un autre plug-in...
 const queryClient = new QueryClient()
 
-const SectionTitle = ({ children, number}) => (
+const SectionTitle = ({ children, number, icon}) => (
 	<div className="pt-16 pb-8">
 		<div className="flex items-end gap-4 mb-3">
 			<div className="font-caprasimo text-5xl sm:text-6xl
 							text-stone-900 leading-none">
 				{number}
 			</div>
+			<div className="flex-1 pb-2">
+				<div className="h-[3px] bg-stone-900 w-full" />
+			</div>
+			<img src={icon} alt=""
+					className="h-10 w-10 sm:h-12 sm:w-12 object-contain"/>
 			<h2 className="	font-caprasimo text-3xl sm:text-5xl
 							tracking-wide text-stone-900">
 				{children}
 			</h2>
+			{}
 		</div>
 	</div>
 )
@@ -122,7 +132,7 @@ const FetchStats = () => {
 			</div>
 		</div>
 		{/* ===== PARTIES ===== */}
-		<SectionTitle number="I">GAMES</SectionTitle>
+		<SectionTitle number="I" icon={poivronImg}>GAMES</SectionTitle>
 		<div className="grid grid-cols-4 gap-4">
 			<StatCard label="Match played"	value={s.nb_games}/>
 			<StatCard label="Victories"		value={s.nb_victories}/>
@@ -131,7 +141,7 @@ const FetchStats = () => {
 		</div>
 
 		{/* ===== RECORDS ===== */}
-		<SectionTitle number="II">RECORDS</SectionTitle>
+		<SectionTitle number="II" icon={legumesImg} >RECORDS</SectionTitle>
 		<div className="grid grid-cols-3 gap-4">
 			<StatCard label="Rang actuel"         value={s.rank} />
 			<StatCard label="Meilleur rang"       value={s.rank_max} />
@@ -142,7 +152,7 @@ const FetchStats = () => {
 		</div>
 
 		{/* ===== SMASH ===== */}
-		<SectionTitle number="III">SMASH</SectionTitle>
+		<SectionTitle number="III" icon={carotImg}>SMASH</SectionTitle>
 		<div className="grid grid-cols-3 gap-4">
 			<StatCard label="Nombre de smashs"  value={s.nb_smash} />
 			<StatCard label="Smashs réussis"    value={s.nb_smash_success} />
@@ -153,7 +163,7 @@ const FetchStats = () => {
 		</div>
 
 		{/* ===== DIVERS ===== */}
-		<SectionTitle number="IV">DIVERS</SectionTitle>
+		<SectionTitle number="IV" icon={cuttingboardImg}>DIVERS</SectionTitle>
 		<div className="grid grid-cols-2 gap-4">
 			<StatCard label="Carte favorite"  value={changeNone(s.favorite_card)} />
 			<StatCard label="Bonus joués"     value={s.nb_bonus_played} />
