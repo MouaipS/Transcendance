@@ -1,4 +1,6 @@
 import {FastifyInstance, FastifyRequest, FastifyReply} from 'fastify'
+import { WebSocket } from '@fastify/websocket'
+import { RawData } from 'ws'
 import { prisma } from "../../server/prisma.js"
 import { Lobby } from "./lobby.js"
 
@@ -18,8 +20,8 @@ interface Player {
 interface Game {
     owner: string;
     players: Player[];
+    ws: Set<WebSocket>    //we use a Set because only unique values
     winner?: Player;
-    //code: string;
 }
 
 interface PlayerBody {
@@ -87,33 +89,49 @@ function buildDecks(): Card[][]
     return decks
 }
 
-// Draw the first card of player's deck
-//  receive body : {username, code}
-//  reply body: {username, score, nb_cards, card_name, card_value}
-export async function drawCardsRoute(request : FastifyRequest<{Body: PlayerBody}>, reply : FastifyReply)
+//Draw the first card and broadcast informations to all websockets registered
+//  {typeOfEvent, username, score updated, nb_cards, cardName, cardValue}
+function drawCard(game: Game, username: string)
 {
-    const {code, username} = request.body
-    const game: Game | undefined = games.get(code)
-    if(!game)
-        return reply.status(404).send("Error: Game unavailable")
     const player: Player | undefined = game.players.find(p => p.username === username)
     if(!player)
-        return reply.status(404).send("Error: Player doesn't exist")
+        return
     if (player.deck.length === 0)
-        return reply.status(404).send(player.username + "'s deck is empty")
-    player.card = player.deck.shift()
-    if (!player.card)
-        return reply.status(404).send(player.username + "'s deck is empty")
-    player.score += player.card.value    
-    return reply.status(200).send({
+        return
+    const card = player.deck.shift()
+    if (!card)
+        return
+    player.card = card
+    player.score += card.value    
+    
+    game.ws.forEach(websocket => websocket.send(JSON.stringify({
+        type: 'DRAW',
         username: player.username,
         score: player.score,
         nb_card: player.deck.length,
-        card_name: player.card.name,
-        card_value: player.card.value
+        card_name: card.name,
+        card_value: card.value
+    })))
+}
+
+//Websocket must receive a raw message {"type", "username"} + game code in URL
+//  type: type of event ("DRAW", "SMASH", etc)
+export function webSocketRoute(websocket: WebSocket, request: FastifyRequest)
+{
+    const {code} = request.params as {code: string}
+    const game = games.get(code)!
+    game.ws.add(websocket) //if ws already exists, it is not added (Set)
+
+    websocket.on('msg', (raw: RawData) => {
+        const msg = JSON.parse(raw.toString())
+
+        if (msg.type === 'DRAW')
+            drawCard(game, msg.username)
     })
 }
 
+//receive Lobby {owner: string; code: string; nb_players: number; users: string[];}
+//  -> set a game instance in the games Map <code, Game>
 export function startGame(lobby: Lobby)
 {
     const decks: Card[][] = buildDecks()
@@ -123,6 +141,11 @@ export function startGame(lobby: Lobby)
     const p3: Player = {username:lobby.users[2], deck: decks[2], score: 0, card: undefined}
     const p4: Player = {username:lobby.users[3], deck: decks[3], score: 0, card: undefined}
 
-    const game: Game = {owner: lobby.owner, players: [p1, p2, p3, p4]}
+    const game: Game = {
+        owner: lobby.owner,
+        players: [p1, p2, p3, p4],
+        ws: new Set()
+    }
+
     games.set(lobby.code, game)
 }
