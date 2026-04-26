@@ -194,6 +194,29 @@ export function Statistics () {
 						<span className="text-2xl group-hover:-translate-x-1 transition-transform">←</span>
 						<span className="text-xs uppercase tracking-[0.3em] font-bold">Retour en cuisine</span>
 					</button>
+					{/*class header
+						mb-12 : espace entre le header et la premiere section */}
+					{/*flex container : pour la gestion des alignements avec les enfants*/}
+					<header className="mb-12">
+						<div className="flex items-center gap-3 mb-3">
+							<div className="text-xs uppercase tracking-[0.4em] font-bold text-stone-700">gauche</div>
+							<div className="flex-1 h-px bg-stone-900/30"/>
+							<div className="text-xs uppercase tracking-[0.3em] font-bold text-stone-700">Droite</div>
+						</div>
+						<h1 className="	font-caprasimo text-stone-900 leading-[0.85]
+										text-7xl sm:text-8xl lg:text-[10rem]
+										tracking-tighter">
+							Statistiques
+						</h1>
+						<div className="mt-4 h-1 bg-stone-900"/>
+						<p className="mt-4 text-stone-700 italic max-w-2xl text-sm sm:text-base">
+							Le récapitulatif de toute ta carrière de chef :
+						</p>
+						<p className="mt-2 text-stone-700 italic max-w-4xl text-sm sm:text-base">
+							Victoires, smashs, séries et records obtenus, tout ce que tu as obtenu
+							au fil des services en salle est là.
+						</p>
+					</header>
 					<FetchStats />
 				</div>
 			</div>
