@@ -4,7 +4,7 @@ import {registerRoute} from "../route/authentication/register.js"//same but for 
 import {logoutRoute} from "../route/authentication/logout.js"
 import {homePageRoute} from "../route/pages/homePage.js"
 import { joinGameRoute , createGameRoute } from './game/lobby.js'
-import { webSocketRoute } from './game/start-game.js'
+import { lobbySocketRoute, gameSocketRoute } from './game/start-game.js'
 
 
 //This linker function takes the server as parameter which is a FastifyInstance type (our server)
@@ -39,6 +39,7 @@ export async function linker(server: FastifyInstance)
 	server.post<{Body:any}>('/api/game/create', async (request, reply) => { return createGameRoute(request, reply)});			// private game creation route
 
 	//Websockets
-	server.get('/ws/game/:code', {websocket: true}, webSocketRoute)
+	server.get('/ws/lobby/:code', {websocket: true}, lobbySocketRoute)
+	server.get('/ws/game/:code', {websocket: true}, gameSocketRoute)
 }
 

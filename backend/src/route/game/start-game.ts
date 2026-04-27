@@ -34,20 +34,12 @@ interface PlayerBody {
 const games = new Map<string, Game>()
 
 const DECK_CONFIG: Card[] = [
-    {name:"1", value: 1, nb: 14},
-    {name:"2", value: 2, nb: 14},
-    {name:"3", value: 3, nb: 14},
-    {name:"4", value: 4, nb: 14},
-    {name:"5", value: 5, nb: 14},
-    {name:"6", value: 6, nb: 14},
-    {name:"7", value: 7, nb: 14},
-    {name:"8", value: 8, nb: 14},
-    {name:"9", value: 9, nb: 14},
-    {name:"10", value: 10, nb: 14},
-    {name:"11", value: 11, nb:  7},
-    {name:"12", value: 12, nb:  7},
-    {name:"13", value: 13, nb:  7},
-    {name:"14", value: 14, nb:  7},
+    {name:"1", value: 1, nb: 3},
+    {name:"2", value: 2, nb: 3},
+    {name:"3", value: 3, nb: 3},
+    {name:"4", value: 4, nb: 3},
+    {name:"5", value: 5, nb: 3},
+    {name:"6", value: 6, nb: 3},
 ]
 
 function createSuperDeck(): Card[]
@@ -114,19 +106,20 @@ function drawCard(game: Game, username: string)
     })))
 }
 
-//Websocket must receive a raw message {"type", "username"} + game code in URL
+// This road is used when Front-End create a New Websocket
+// Websocket must receive a raw message {"type", "username"} + game code in URL
 //  type: type of event ("DRAW", "SMASH", etc)
-export function webSocketRoute(websocket: WebSocket, request: FastifyRequest)
+export function gameSocketRoute(websocket: WebSocket, request: FastifyRequest)
 {
     const {code} = request.params as {code: string}
     const game = games.get(code)!
     game.ws.add(websocket) //if ws already exists, it is not added (Set)
 
-    websocket.on('msg', (raw: RawData) => {
-        const msg = JSON.parse(raw.toString())
+    websocket.on('message', (raw: RawData) => {
+        const message = JSON.parse(raw.toString())
 
-        if (msg.type === 'DRAW')
-            drawCard(game, msg.username)
+        if (message.type === 'DRAW')
+            drawCard(game, message.username)
     })
 }
 

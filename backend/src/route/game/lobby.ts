@@ -28,6 +28,7 @@ export interface Lobby {
   code: string;
   nb_players: number;
   users: string[];
+  ws: Set<WebSocket>;
 }
 
 //Creation of arrays Lobbies[] (Game waiting) and Games[] (Games running)
@@ -35,7 +36,8 @@ const lobbies: Lobby[] = [{
   owner: "public",
   code: '',
   nb_players: 0,
-  users: ["Player1", "Player2", "Player3", "Player4"]
+  users: ["Player1", "Player2", "Player3", "Player4"],
+  ws: new Set<WebSocket>()
 }];
 
 
@@ -66,15 +68,14 @@ function codeAlreadyExists(code: string): boolean
 //  reply game : {owner, status, code, nb_players, users[]}
 export async function createGameRoute(request : FastifyRequest<{Body: CreationRequestBody}>, reply : FastifyReply)
 {
-  const {username} = request.body
+  const {username, ws} = request.body
   let code: string = ''
   while (code === '' || codeAlreadyExists(code)) {
     code = generateGameCode()
   }
 
-  const lobby: Lobby = {owner: username, code: code, nb_players: 1, users: [username, "Player2", "Player3", "Player4"]}
+  const lobby: Lobby = {owner: username, code: code, nb_players: 1, users: [username, "Player2", "Player3", "Player4"], ws: new Set<WebSocket>([ws])}
   lobbies.push(lobby)
-  console.log("LOBBIES", lobbies)
   return reply.status(200).send(lobby);
 }
 function closeLobby(lobby: Lobby)
@@ -82,7 +83,7 @@ function closeLobby(lobby: Lobby)
   const index = lobbies.findIndex(lob => lob === lobby)
     if (index === 0)
     {
-      const newLobby: Lobby = {owner: "public", code: '', nb_players: 0, users: ["Player1", "Player2", "Player3", "Player4"]}
+      const newLobby: Lobby = {owner: "public", code: '', nb_players: 0, users: ["Player1", "Player2", "Player3", "Player4"], ws: new Set<WebSocket>()}
       lobbies.splice(index, 1, newLobby)
     }
     else
@@ -94,9 +95,14 @@ function joinLobby(lobby: Lobby, username: string)
 {
   lobby.nb_players += 1
   lobby.users[lobby.nb_players - 1] = username
+
+  lobby.ws.forEach(websocket => websocket.send(JSON.stringify({
+        type: 'JOIN',
+        username: username,
+    })))
+
   if (lobby.nb_players === 4)
     closeLobby(lobby)
-  console.log("LOBBIES", lobbies)
 }
 
 
