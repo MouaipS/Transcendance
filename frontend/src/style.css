@@ -4,3 +4,46 @@
 @theme {
 	--font-caprasimo: "Caprasimo", serif;
 }
+
+@keyframes fade-in-up {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes slide-in-left {
+	from {
+		opacity: 0;
+		transform: translateX(-30px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+@keyframes draw-line {
+	from { transform: scaleX(0); }
+	to   { transform: scaleX(1); }
+}
+
+.animate-fade-in-up {
+	opacity: 0;
+	animation: fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-in-left {
+	opacity: 0;
+	animation: slide-in-left 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-draw-line {
+	transform-origin: left;
+	transform: scaleX(0);
+	animation: draw-line 0.8s cubic-bezier(0.65, 0, 0.35, 1) 0.3s forwards;
+}

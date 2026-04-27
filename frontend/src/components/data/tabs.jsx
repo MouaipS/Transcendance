@@ -63,7 +63,7 @@ const tabsData = [
 		txt: <QueryClientProvider client={queryClient}>
 				<FetchStats />
 			</QueryClientProvider>,
-		url: "/statistics"
+		url: "/profile"
 	},
 	{
 		tabTitle: <img
