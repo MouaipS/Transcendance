@@ -120,13 +120,6 @@ export function Game () {
     return () => clearInterval(intervalId)
   }, [start, index])
 
-  const reverse = () => {
-      setStart(true)
-      console.log("cards[0]")
-      cards = cards.reverse()
-      console.log(cards[0])
-  }
-
 
 	return <>
 		{page === 0 && 
