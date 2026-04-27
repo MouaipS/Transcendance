@@ -12,14 +12,14 @@ import cuttingboardImg from '../images/cuttingboard.png'
 const queryClient = new QueryClient()
 
 const SectionTitle = ({ children, number, icon, subtitle}) => (
-	<div className="pt-16 pb-8">
+	<div className="pt-16 pb-8 animate-slide-in-left">
 		<div className="flex items-end gap-4 mb-3">
 			<div className="font-caprasimo text-5xl sm:text-6xl
 							text-stone-900 leading-none">
 				№{number}
 			</div>
 			<div className="flex-1 pb-2">
-				<div className="h-[3px] bg-stone-900 w-full" />
+				<div className="h-[3px] bg-stone-900 w-full animate-slide-in-left" />
 			</div>
 			{icon && (<img src={icon} alt=""
 					className="h-10 w-10 sm:h-12 sm:w-12 object-contain"/>)}
@@ -38,23 +38,25 @@ const SectionTitle = ({ children, number, icon, subtitle}) => (
 	</div>
 )
 
-const StatCard = ({label, value, index = 0, bool = false}) => {
-	const wrapperClass = bool ? 'bg-stone-900 border-stone-900' : 'bg-amber-50/80 border-stone-900'
+const StatCard = ({label, value, index = 0, isHighlighted = false}) => {
+	const wrapperClass = isHighlighted ? 'bg-stone-900 border-stone-900' : 'bg-amber-50/80 border-stone-900'
 
-	const numberClass = bool ? 'text-amber-400/70' : 'text-stone-900/40'
+	const numberClass = isHighlighted ? 'text-amber-400/70' : 'text-stone-900/40'
 
-	const valueClass = bool ? 'text-4xl sm:text-5xl lg:text-6xl text-amber-50' : 'text-3xl sm:text-4xl lg:text-5xl text-stone-900'
+	const valueClass = isHighlighted ? 'text-4xl sm:text-5xl lg:text-6xl text-amber-50' : 'text-3xl sm:text-4xl lg:text-5xl text-stone-900'
 
-	const dividerClass = bool ? 'bg-amber-400/60' : 'bg-stone-900/40'
+	const dividerClass = isHighlighted ? 'bg-amber-400/60' : 'bg-stone-900/40'
 
-	const labelClass = bool ? 'text-amber-200/90' : 'text-stone-900/70'
+	const labelClass = isHighlighted ? 'text-amber-200/90' : 'text-stone-900/70'
 
 	const cardNumber = String(index + 1).padStart(2, '0')
 
 	return(
 		<div className={`relative border-2 overflow-hidden
 						transition-all duration-200 hover:-translate-y-1
-						${wrapperClass}`}>
+						animate-fade-in-up
+						${wrapperClass}`}
+		style={{animationDelay: `${index*60}ms`}}>
 			<div className={`absolute top-2 left-3 text-[10px]
 							font-bold tracking-widest
 							${numberClass}`}>
@@ -95,7 +97,7 @@ const FetchStats = () => {
 			})
 			.then(res => {
 				if (res.status === 401) {
-					Navigate('/login')
+					navigate('/login')
 					throw new Error('Not authentificate user')
 				}
 				return res.json()
@@ -114,8 +116,8 @@ const FetchStats = () => {
 	const smashAccuracy = s.nb_smash > 0 ? Math.round((s.nb_smash_success / s.nb_smash) * 100): 0
 
 	return <div className="px-8 pb-8">
-		<div className="border-2 border-stone-900 bg-amber-50/60 p-6 sm:p-10 mb-4">
-			<div className="test-[10px] sm:text-xs uppercase tracking-[0.3em]
+		<div className="border-2 border-stone-900 bg-amber-50/60 p-6 sm:p-10 mb-4 animate-slide-in-left">
+			<div className="text-[10px] sm:text-xs uppercase tracking-[0.3em]
 							text-stone-700 font-bold mb-2">
 								Fiche du chef - Service en cours
 			</div>
@@ -144,14 +146,14 @@ const FetchStats = () => {
 			<StatCard label="Matchs joués" value={s.nb_games}     index={0} />
 			<StatCard label="Victoires"    value={s.nb_victories} index={1} />
 			<StatCard label="Défaites"     value={s.nb_defeats}   index={2} />
-			<StatCard label="Ratio V/D"    value={`${calcWinRate}%`} index={3} bool />
+			<StatCard label="Ratio V/D"    value={`${calcWinRate}%`} index={3} isHighlighted />
 		</div>
 
 		{/* ===== RECORDS ===== */}
 		<SectionTitle number="II" icon={legumesImg} subtitle={"spécialités du chef"}>RECORDS</SectionTitle>
 		<div className="grid grid-cols-3 gap-4">
-			<StatCard label="Rang actuel"        value={s.rank}                     index={4} bool />
-			<StatCard label="Meilleur rang"      value={s.rank_max}                 index={5} bool />
+			<StatCard label="Rang actuel"        value={s.rank}                     index={4} isHighlighted />
+			<StatCard label="Meilleur rang"      value={s.rank_max}                 index={5} isHighlighted />
 			<StatCard label="Heures de jeu"      value={s.hours_played}             index={6} />
 			<StatCard label="Série de victoires" value={s.max_win_streak}           index={7} />
 			<StatCard label="Série de défaites"  value={s.max_loose_streak}         index={8} />
@@ -163,7 +165,7 @@ const FetchStats = () => {
 		<div className="grid grid-cols-3 gap-4">
 			<StatCard label="Nombre de smashs"  value={s.nb_smash}                       index={10} />
 			<StatCard label="Smashs réussis"    value={s.nb_smash_success}               index={11} />
-			<StatCard label="Précision"         value={`${smashAccuracy}%`}              index={12} bool />
+			<StatCard label="Précision"         value={`${smashAccuracy}%`}              index={12} isHighlighted />
 			<StatCard label="Réaction moyenne"  value={`${s.avg_reaction_ms} ms`}        index={13} />
 			<StatCard label="Meilleur combo"    value={changeNone(s.most_combo_smash)}   index={14} />
 			<StatCard label="Carte smashée"     value={changeNone(s.most_smashed_card)}  index={15} />
@@ -188,7 +190,7 @@ export function Statistics () {
 				bg-amber-50 couleur du fond
 				overflow-y-auto active le scroll vertical
 				*/}
-			<div className="inset-0 min-h-full bg-amber-50 overflow-y-auto">
+			<div className="absolute inset-0 min-h-full bg-amber-50 overflow-y-auto">
 				{/* wrappeur interieur
 					max-w-6xl limite de largeur pour la lisibilité - environ 100 caracteres par ligne
 					mx-auto pour le centrage horizontal
@@ -222,14 +224,14 @@ export function Statistics () {
 
 						className="	group inline-flex items-center gap-2 mb-8
 									text-stone-900 hover:text-stone-700
-									transition-colors">
+									transition-colors animate-slide-in-left">
 						<span className="text-2xl group-hover:-translate-x-1 transition-transform">←</span>
 						<span className="text-xs uppercase tracking-[0.3em] font-bold">Retour en cuisine</span>
 					</button>
 					{/*class header
 						mb-12 : espace entre le header et la premiere section */}
 					{/*flex container : pour la gestion des alignements avec les enfants*/}
-					<header className="mb-12">
+					<header className="mb-12 animate-slide-in-left">
 						<div className="flex items-center gap-3 mb-3">
 							<div className="text-xs uppercase tracking-[0.4em] font-bold text-stone-700">gauche</div>
 							<div className="flex-1 h-px bg-stone-900/30"/>
