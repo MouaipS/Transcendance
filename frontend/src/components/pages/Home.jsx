@@ -73,7 +73,7 @@ export function Home () {
 
 					<div dir="ltr">
 						<button
-							onClick={() => navigate('/statistics')}
+							onClick={() => navigate('/profile')}
 							className="flex items-center gap-6 rounded-md 
 							border border-black shadow-md bg-white 
 							text-sm font-medium text-gray-700 hover:bg-gray-50 

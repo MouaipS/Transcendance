@@ -180,7 +180,7 @@ const FetchStats = () => {
 	</div>
 }
 
-export function Statistics () {
+export function Profile () {
 	const navigate = useNavigate()
 	return <>
 		<QueryClientProvider client={queryClient}>
@@ -240,7 +240,7 @@ export function Statistics () {
 						<h1 className="	font-caprasimo text-stone-900 leading-[0.85]
 										text-7xl sm:text-8xl lg:text-[10rem]
 										tracking-tighter">
-							Statistiques
+							Profile
 						</h1>
 						<div className="mt-4 h-1 bg-stone-900"/>
 						<p className="mt-4 text-stone-700 italic max-w-2xl text-sm sm:text-base">

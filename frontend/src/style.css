@@ -5,12 +5,6 @@
 	--font-caprasimo: "Caprasimo", serif;
 }
 
-
-/* ═══════════════════════════════════════════════════════════════
-   ANIMATIONS — keyframes utilisés dans la page Statistiques
-   ═══════════════════════════════════════════════════════════════ */
-
-/* Apparition douce avec montée verticale (utilisé sur les cartes) */
 @keyframes fade-in-up {
 	from {
 		opacity: 0;
@@ -22,7 +16,6 @@
 	}
 }
 
-/* Apparition par la gauche (utilisé sur les titres de section) */
 @keyframes slide-in-left {
 	from {
 		opacity: 0;
@@ -34,16 +27,10 @@
 	}
 }
 
-/* Trait qui se dessine de gauche à droite (filets décoratifs) */
 @keyframes draw-line {
 	from { transform: scaleX(0); }
 	to   { transform: scaleX(1); }
 }
-
-
-/* ═══════════════════════════════════════════════════════════════
-   CLASSES UTILITAIRES — appliquent les keyframes ci-dessus
-   ═══════════════════════════════════════════════════════════════ */
 
 .animate-fade-in-up {
 	opacity: 0;
