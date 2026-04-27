@@ -100,6 +100,8 @@ export function Register() {
 							name="username"
 							required
 							value={username}
+							minlength="3"
+							maxlength="12"
 							placeholder="Cedric Grolard"
 							onChange={(e) => setUsername(e.target.value)}
 							className="block w-full rounded-md bg-black/5 px-3 
