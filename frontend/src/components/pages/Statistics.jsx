@@ -16,7 +16,7 @@ const SectionTitle = ({ children, number, icon, subtitle}) => (
 		<div className="flex items-end gap-4 mb-3">
 			<div className="font-caprasimo text-5xl sm:text-6xl
 							text-stone-900 leading-none">
-				{number}
+				№{number}
 			</div>
 			<div className="flex-1 pb-2">
 				<div className="h-[3px] bg-stone-900 w-full" />
@@ -38,45 +38,47 @@ const SectionTitle = ({ children, number, icon, subtitle}) => (
 	</div>
 )
 
-const StatCard = ({ label, value }) => (
-	<div className="
-			bg-amber-50				//fond beige
-			border-2				//bordure 2px d'epaisseur
-			border-amber-900/40		//opacité 40%
-			rounded-lg 				//coins arrondis
-			p-4						//padding interieur (espacement entre le contenu et sa bordure)
+const StatCard = ({label, value, index = 0, bool = false}) => {
+	const wrapperClass = bool ? 'bg-stone-900 border-stone-900' : 'bg-amber-50/80 border-stone-900'
 
-			shadow-md				//ombre moyenne au repos
-			hover:shadow-lg			//ombre plus grande au survol
-			hover:-translate-y-1	//soulevement de 4px
-			transition-all			//anime tout les changements
-			duration-150			//duree de l'animation 150ms
-			
-			flex flex-col			//empilement vertical des blocs StatCard
-			justify-center			//centrage des card
-			min-h-32">
+	const numberClass = bool ? 'text-amber-400/70' : 'text-stone-900/40'
 
-		<div className="
-			text-4xl				//taille
-			text-center				//centrage
-			font-caprasimo			//police custom
-			text-black				//couleur du texte
-			">
-			{value}
+	const valueClass = bool ? 'text-4xl sm:text-5xl lg:text-6xl text-amber-50' : 'text-3xl sm:text-4xl lg:text-5xl text-stone-900'
+
+	const dividerClass = bool ? 'bg-amber-400/60' : 'bg-stone-900/40'
+
+	const labelClass = bool ? 'text-amber-200/90' : 'text-stone-900/70'
+
+	const cardNumber = String(index + 1).padStart(2, '0')
+
+	return(
+		<div className={`relative border-2 overflow-hidden
+						transition-all duration-200 hover:-translate-y-1
+						${wrapperClass}`}>
+			<div className={`absolute top-2 left-3 text-[10px]
+							font-bold tracking-widest
+							${numberClass}`}>
+					№{cardNumber}
+			</div>
+
+			<div className="p-5 pt-8 flex flex-col justify-between min-h-36">
+				<div className={`text-center font-caprasimo
+								break-words leading-none
+								${valueClass}`}>
+						{value}
+				</div>
+
+				<div className={`mx-auto mt-3 mb-2 h-px w-8
+								${dividerClass}`} />
+				<div className={`text-[11px] sm:text-xs text-center
+								font-bold mt-1 uppercase tracking-[0.2em]
+								${labelClass}`}>
+					{label}
+				</div>
+			</div>
 		</div>
-		<div className="
-			text-sm					//taille
-			text-center				//centre
-			text-amber-900/80		//couleur brune 80%
-			font-medium				//gras
-			mt-2					//marge haute
-			uppercase				//majuscule
-			tracking-wider			//espace des lettres
-			">
-			{label}
-		</div>
-	</div>
-)
+	)
+}
 
 // Requête GET pour récupérer les infos depuis la DB afin
 // d'afficher les statistiques de l'utilisateur dans l'onglet stats
@@ -139,39 +141,39 @@ const FetchStats = () => {
 		{/* ===== PARTIES ===== */}
 		<SectionTitle number="I" icon={poivronImg} subtitle={"bilan de la brigade"}>GAMES</SectionTitle>
 		<div className="grid grid-cols-4 gap-4">
-			<StatCard label="Match played"	value={s.nb_games}/>
-			<StatCard label="Victories"		value={s.nb_victories}/>
-			<StatCard label="Defeats"		value={s.nb_defeats}/>
-			<StatCard label="Ratio V/D"		value={`${calcWinRate}%`}/>
+			<StatCard label="Matchs joués" value={s.nb_games}     index={0} />
+			<StatCard label="Victoires"    value={s.nb_victories} index={1} />
+			<StatCard label="Défaites"     value={s.nb_defeats}   index={2} />
+			<StatCard label="Ratio V/D"    value={`${calcWinRate}%`} index={3} bool />
 		</div>
 
 		{/* ===== RECORDS ===== */}
 		<SectionTitle number="II" icon={legumesImg} subtitle={"spécialités du chef"}>RECORDS</SectionTitle>
 		<div className="grid grid-cols-3 gap-4">
-			<StatCard label="Rang actuel"         value={s.rank} />
-			<StatCard label="Meilleur rang"       value={s.rank_max} />
-			<StatCard label="Heures de jeu"       value={s.hours_played} />
-			<StatCard label="Série de victoires"  value={s.max_win_streak} />
-			<StatCard label="Série de défaites"   value={s.max_loose_streak} />
-			<StatCard label="Smashs consécutifs"  value={s.max_smash_success_streak} />
+			<StatCard label="Rang actuel"        value={s.rank}                     index={4} bool />
+			<StatCard label="Meilleur rang"      value={s.rank_max}                 index={5} bool />
+			<StatCard label="Heures de jeu"      value={s.hours_played}             index={6} />
+			<StatCard label="Série de victoires" value={s.max_win_streak}           index={7} />
+			<StatCard label="Série de défaites"  value={s.max_loose_streak}         index={8} />
+			<StatCard label="Smashs consécutifs" value={s.max_smash_success_streak} index={9} />
 		</div>
 
 		{/* ===== SMASH ===== */}
 		<SectionTitle number="III" icon={carotImg} subtitle={"techniques du chef"}>SMASH</SectionTitle>
 		<div className="grid grid-cols-3 gap-4">
-			<StatCard label="Nombre de smashs"  value={s.nb_smash} />
-			<StatCard label="Smashs réussis"    value={s.nb_smash_success} />
-			<StatCard label="Précision"         value={`${smashAccuracy}%`} />
-			<StatCard label="Réaction moyenne"  value={`${s.avg_reaction_ms} ms`} />
-			<StatCard label="Meilleur combo"    value={changeNone(s.most_combo_smash)} />
-			<StatCard label="Carte smashée"     value={changeNone(s.most_smashed_card)} />
+			<StatCard label="Nombre de smashs"  value={s.nb_smash}                       index={10} />
+			<StatCard label="Smashs réussis"    value={s.nb_smash_success}               index={11} />
+			<StatCard label="Précision"         value={`${smashAccuracy}%`}              index={12} bool />
+			<StatCard label="Réaction moyenne"  value={`${s.avg_reaction_ms} ms`}        index={13} />
+			<StatCard label="Meilleur combo"    value={changeNone(s.most_combo_smash)}   index={14} />
+			<StatCard label="Carte smashée"     value={changeNone(s.most_smashed_card)}  index={15} />
 		</div>
 
 		{/* ===== DIVERS ===== */}
 		<SectionTitle number="IV" icon={cuttingboardImg} subtitle={"les petits plus"}>DIVERS</SectionTitle>
 		<div className="grid grid-cols-2 gap-4">
-			<StatCard label="Carte favorite"  value={changeNone(s.favorite_card)} />
-			<StatCard label="Bonus joués"     value={s.nb_bonus_played} />
+			<StatCard label="Carte favorite" value={changeNone(s.favorite_card)} index={16} />
+			<StatCard label="Bonus joués"    value={s.nb_bonus_played}           index={17} />
 		</div>
 	</div>
 }
