@@ -21,19 +21,22 @@ const SectionTitle = ({ children, number, icon, subtitle}) => (
 			<div className="flex-1 pb-2">
 				<div className="h-[3px] bg-stone-900 w-full" />
 			</div>
-			<img src={icon} alt=""
-					className="h-10 w-10 sm:h-12 sm:w-12 object-contain"/>
+			{icon && (<img src={icon} alt=""
+					className="h-10 w-10 sm:h-12 sm:w-12 object-contain"/>)}
+		</div>
+		<div className="flex items-baseline gap-3">
 			<h2 className="	font-caprasimo text-3xl sm:text-5xl
 							tracking-wide text-stone-900">
 				{children}
 			</h2>
+			{subtitle && (
 			<span className="italic text-stone-700/70 text-sm sm:text-base">
-					— {subtitle}
+				— {subtitle}
 			</span>
+			)}
 		</div>
 	</div>
 )
-
 
 const StatCard = ({ label, value }) => (
 	<div className="
@@ -143,7 +146,7 @@ const FetchStats = () => {
 		</div>
 
 		{/* ===== RECORDS ===== */}
-		<SectionTitle number="II" icon={legumesImg} subtitle={"bilan de la brigade"}>RECORDS</SectionTitle>
+		<SectionTitle number="II" icon={legumesImg} subtitle={"spécialités du chef"}>RECORDS</SectionTitle>
 		<div className="grid grid-cols-3 gap-4">
 			<StatCard label="Rang actuel"         value={s.rank} />
 			<StatCard label="Meilleur rang"       value={s.rank_max} />
@@ -154,7 +157,7 @@ const FetchStats = () => {
 		</div>
 
 		{/* ===== SMASH ===== */}
-		<SectionTitle number="III" icon={carotImg} subtitle={"bilan de la brigade"}>SMASH</SectionTitle>
+		<SectionTitle number="III" icon={carotImg} subtitle={"techniques du chef"}>SMASH</SectionTitle>
 		<div className="grid grid-cols-3 gap-4">
 			<StatCard label="Nombre de smashs"  value={s.nb_smash} />
 			<StatCard label="Smashs réussis"    value={s.nb_smash_success} />
@@ -165,7 +168,7 @@ const FetchStats = () => {
 		</div>
 
 		{/* ===== DIVERS ===== */}
-		<SectionTitle number="IV" icon={cuttingboardImg} subtitle={"bilan de la brigade"}>DIVERS</SectionTitle>
+		<SectionTitle number="IV" icon={cuttingboardImg} subtitle={"les petits plus"}>DIVERS</SectionTitle>
 		<div className="grid grid-cols-2 gap-4">
 			<StatCard label="Carte favorite"  value={changeNone(s.favorite_card)} />
 			<StatCard label="Bonus joués"     value={s.nb_bonus_played} />
