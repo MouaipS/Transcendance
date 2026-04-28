@@ -109,14 +109,11 @@ const StatCard = ({label, value, index = 0, isHighlighted = false}) => {
 	)
 }
 
-// Requête GET pour récupérer les infos depuis la DB afin
-// d'afficher les statistiques de l'utilisateur dans l'onglet stats
-const FetchStats = () => {
-
+const ProfilContent = () => {
 	const navigate = useNavigate()
 	
 	const { data, error, isLoading } = useQuery({
-		queryKey: ['stats'],
+		queryKey: ['profile'],
 		queryFn: () => 
 			fetch('/api/home', {
 				method: 'GET',
@@ -134,16 +131,28 @@ const FetchStats = () => {
 	if (isLoading) return <div>Loading...</div>
 	if (error) return <div>Error : {error.message}</div>
 	if (!data || !data.stats) return <div>None data found</div>
- 
 
-	const s = data.stats //raccourci
+	const s = data.stats
+
+	return (
+		<div className="px-8 pb-8">
+			<IdentityCard username={data.username} rank={s.rank} rank_max={s.rank_max} />
+			<FetchStats stats={s} />
+		</div>
+	)
+}
+
+// Requête GET pour récupérer les infos depuis la DB afin
+// d'afficher les statistiques de l'utilisateur dans l'onglet stats
+const FetchStats = ({stats}) => {
+
+	const s = stats //raccourci
 
 	const calcWinRate = s.nb_games > 0 ? Math.round((s.nb_victories / s.nb_games) * 100) : 0
 	const changeNone = (str) => str && str !== "None" ? str : "-"
 	const smashAccuracy = s.nb_smash > 0 ? Math.round((s.nb_smash_success / s.nb_smash) * 100): 0
 
-	return <div className="px-8 pb-8">
-		<IdentityCard username={data.username} rank={s.rank} rank_max={s.rank_max} />
+	return <>
 		{/* ===== PARTIES ===== */}
 		<SectionTitle number="I" icon={poivronImg} subtitle={"bilan de la brigade"}>GAMES</SectionTitle>
 		<div className="grid grid-cols-4 gap-4">
@@ -181,7 +190,7 @@ const FetchStats = () => {
 			<StatCard label="Carte favorite" value={changeNone(s.favorite_card)} index={16} />
 			<StatCard label="Bonus joués"    value={s.nb_bonus_played}           index={17} />
 		</div>
-	</div>
+	</>
 }
 
 export function Profile () {
@@ -255,7 +264,7 @@ export function Profile () {
 							au fil des services en salle est là.
 						</p>
 					</header>
-					<FetchStats />
+					<ProfilContent />
 				</div>
 			</div>
 		</QueryClientProvider>
