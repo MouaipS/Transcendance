@@ -11,6 +11,33 @@ import cuttingboardImg from '../images/cuttingboard.png'
 // oui c'est encore un autre plug-in...
 const queryClient = new QueryClient()
 
+const IdentityCard = ({ username, rank, rank_max}) => (
+	<div className="border-2 border-stone-900 bg-amber-50/60 p-6 sm:p-10 mb-4 animate-slide-in-left">
+		<div className="text-[10px] sm:text-xs uppercase tracking-[0.3em]
+						text-stone-700 font-bold mb-2">
+							Fiche du chef - Service en cours
+		</div>
+		<div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+			<h2 className="	font-caprasimo text-5xl sm:text-7xl
+							text-stone-900 leading-none">
+				{username}
+			</h2>
+			<div className="text-right">
+				<div className="font-caprasimo text-4xl sm:text-5xl text-stone-900">
+					{rank} /
+					<span className="text-stone-700/40">
+						/ {rank_max}
+					</span>
+				</div>
+				<div className="text-[10px] uppercase tracking-[0.2em]
+								text-stone-700 font-bold mt-1">
+					Rang actuel // Meilleur
+				</div>
+			</div>
+		</div>
+	</div>
+)
+
 const SectionTitle = ({ children, number, icon, subtitle}) => (
 	<div className="pt-16 pb-8 animate-slide-in-left">
 		<div className="flex items-end gap-4 mb-3">
@@ -116,30 +143,7 @@ const FetchStats = () => {
 	const smashAccuracy = s.nb_smash > 0 ? Math.round((s.nb_smash_success / s.nb_smash) * 100): 0
 
 	return <div className="px-8 pb-8">
-		<div className="border-2 border-stone-900 bg-amber-50/60 p-6 sm:p-10 mb-4 animate-slide-in-left">
-			<div className="text-[10px] sm:text-xs uppercase tracking-[0.3em]
-							text-stone-700 font-bold mb-2">
-								Fiche du chef - Service en cours
-			</div>
-			<div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-				<h2 className="	font-caprasimo text-5xl sm:text-7xl
-								text-stone-900 leading-none">
-					{data.username}
-				</h2>
-				<div className="text-right">
-					<div className="font-caprasimo text-4xl sm:text-5xl text-stone-900">
-						{s.rank} /
-						<span className="text-stone-700/40">
-							/ {s.rank_max}
-						</span>
-					</div>
-					<div className="text-[10px] uppercase tracking-[0.2em]
-									text-stone-700 font-bold mt-1">
-						Rang actuel // Meilleur
-					</div>
-				</div>
-			</div>
-		</div>
+		<IdentityCard username={data.username} rank={s.rank} rank_max={s.rank_max} />
 		{/* ===== PARTIES ===== */}
 		<SectionTitle number="I" icon={poivronImg} subtitle={"bilan de la brigade"}>GAMES</SectionTitle>
 		<div className="grid grid-cols-4 gap-4">
