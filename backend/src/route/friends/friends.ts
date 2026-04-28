@@ -52,7 +52,7 @@ export async function allFriendsRoute(request: FastifyRequest, reply: FastifyRep
 	return reply.status(200).send({ friends, received_request, sent_request })
 }
 
-
+///////////////////////////////////////////////////////////////////////
 interface CreateFriendshipBody{
     username: string
 }
@@ -117,4 +117,52 @@ export async function createFriendshipRoute(request: FastifyRequest<{Body: Creat
         message: "Friend request send",
         friendship:friendship,
     })
+}
+
+
+///////////////////////////////////////////////////////////////
+
+interface AcceptFriendshipParams {
+    id: string
+}
+
+export async function AcceptFriendshipRoute(request: FastifyRequest<{ Params: AcceptFriendshipParams}>, reply: FastifyReply){
+    const {id : userId} = request.user as {id: string; username:string}
+    const friendshipId = parseInt(request.params.id, 10)
+
+    if (isNaN(friendshipId)) 
+        return reply.code(400).send({error: "Invalid friendship id"})
+
+    const friendship = await prisma.friendship.findUnique({
+        where: {
+            id: friendshipId
+        }
+    })
+    if (!friendship) {
+        return reply.code(404).send({error: "friend request not found"})
+    }
+    if(friendship.received_id !== userId) {
+        return reply.code(403).send({error: "Not authorized"})
+    }
+    if(friendship.status !== 'WAITING') {
+        return  reply.code(409).send({error: "request not wainting"})
+    }
+
+    const updated = await prisma.friendship.update({
+        where: {
+            id: friendshipId
+        },
+        data: {
+            status: 'ACCEPTED'
+        },
+    })
+    return reply.code(200).send({
+        message: "friend request accepted",
+        friendship: updated,
+    })
+
+
+
+
+
 }
