@@ -6,6 +6,7 @@ import {homePageRoute} from "../route/pages/homePage.js"
 import { joinGameRoute , createGameRoute } from './game/lobby.js'
 import { drawCardsRoute } from './game/start-game.js'
 import { allFriendsRoute } from './friends/friends.js'
+import { createFriendshipRoute } from './friends/friends.js'
 
 
 //This linker function takes the server as parameter which is a FastifyInstance type (our server)
@@ -42,4 +43,5 @@ export async function linker(server: FastifyInstance)
 	
 	//friends
 	server.get('/api/friends', {onRequest: [authenticate]}, async(request, reply) => { return allFriendsRoute(request, reply)});
+	server.post<{Body:any}>('/api/friends',{onRequest: [authenticate]} , async (request, reply) => {return createFriendshipRoute(request, reply)});
 }

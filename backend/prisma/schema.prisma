@@ -20,7 +20,6 @@ enum GameStatus {
 
 enum FriendshipStatus {
 	ACCEPTED
-	REFUSED
 	WAITING
 }
 

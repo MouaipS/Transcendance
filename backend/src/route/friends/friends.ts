@@ -4,15 +4,15 @@ import { prisma } from '../../server/prisma.js'
 export async function allFriendsRoute(request: FastifyRequest, reply: FastifyReply){
     const {id : userId} = request.user as {id: string; username:string}
     const rows = await prisma.friendship.findMany({
-      where: {
+    where: {
         OR: [
             { request_id: userId},
             { received_id: userId},
         ],
-      },
-      include: {
+    },
+    include: {
         requester: {
-            select: {
+        select: {
                 id: true,
                 username: true,
             },
@@ -23,8 +23,8 @@ export async function allFriendsRoute(request: FastifyRequest, reply: FastifyRep
                 username: true,
             },
         },
-      },
-    })
+    },
+})
 
     const friends:      any[] = []
     const received_request: any[] = []
@@ -50,4 +50,71 @@ export async function allFriendsRoute(request: FastifyRequest, reply: FastifyRep
 		}
 	}
 	return reply.status(200).send({ friends, received_request, sent_request })
+}
+
+
+interface CreateFriendshipBody{
+    username: string
+}
+
+export async function createFriendshipRoute(request: FastifyRequest<{Body: CreateFriendshipBody}>, reply: FastifyReply) {
+    const {id : userId, username: name} = request.user as {id: string; username:string}
+    const { username: targetUsername } = request.body
+    
+    if (!targetUsername || typeof targetUsername !== 'string')
+        return reply.code(400).send({error: "Username required"})
+    if(name === targetUsername)
+        return reply.code(400).send({error: "Cannot be your own username"})
+
+    const target = await prisma.user.findUnique({
+        where:{
+            username: targetUsername
+        },
+        select:{
+            id: true
+        }
+    })
+    if(!target)
+        return reply.code(404).send({error: "User not found"})
+
+    const existing_friendship = await prisma.friendship.findFirst({
+        where: {
+            OR: [
+                {request_id: userId, received_id: target.id},
+                {request_id: target.id, received_id: userId}
+            ],
+        },
+    })
+
+    if (existing_friendship) {
+        if(existing_friendship.status === 'ACCEPTED') {
+            return reply.code(409).send({error: 'Already friends'})
+        } else if (existing_friendship.status === 'WAITING') {
+            if (existing_friendship.received_id === userId) {
+                const update = await prisma.friendship.update({
+                    where: {
+                        id: existing_friendship.id },
+                    data: {
+                        status: 'ACCEPTED' }
+                })
+                return reply.code(200).send({
+                    message: "Mutual request, noow friends",
+                    friendship: update,
+                })
+            }
+            return reply.code(409).send({error: "Friend request already sent"})
+        }
+    }
+
+    const friendship = await prisma.friendship.create({
+        data:{
+            request_id: userId,
+            received_id: target.id,
+            status: 'WAITING',
+        }
+    })
+    return reply.code(201).send({
+        message: "Friend request send",
+        friendship:friendship,
+    })
 }
