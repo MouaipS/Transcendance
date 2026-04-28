@@ -38,6 +38,34 @@ const IdentityCard = ({ username, rank, rank_max}) => (
 	</div>
 )
 
+const Tabs = ({actifTab, onChange}) => {
+	const tab = [
+		{id: 'friends', label: 'FRIENDS' },
+		{id: 'stats', label: 'STATS' },
+		{id: 'settings', label: 'SETTINGS'},
+	]
+
+	return (
+		<div className="flex flex-wrap gap-3 mb-8 animate-slide-in-left">
+			{tab.map((tabN) => {
+				const isActif = actifTab === tabN.id
+
+				const baseClass = "px-6 py-3 border-2 border-stone-900 font-bold text-xs sm:text-sm uppercase tracking-[0.3em] transition-all duration-200 hover:-translate-y-0.5"
+				const variantClass = isActif ? 'bg-amber-300 text-stone-900 shadow-[3px_3px_0_0_rgba(28,25,23,1)]' : 'bg-amber-50/80 text-stone-900 hover:bg-amber-100'
+
+				return (
+					<button
+						key={tabN.id}
+						onClick={() => onChange(tabN.id)}
+						className={`${baseClass} ${variantClass}`} >
+								{tabN.label}
+					</button>
+				)
+			})}
+		</div>
+	)
+}
+
 const SectionTitle = ({ children, number, icon, subtitle}) => (
 	<div className="pt-16 pb-8 animate-slide-in-left">
 		<div className="flex items-end gap-4 mb-3">
@@ -111,6 +139,7 @@ const StatCard = ({label, value, index = 0, isHighlighted = false}) => {
 
 const ProfilContent = () => {
 	const navigate = useNavigate()
+	const [actifTab, setActifTab] = useState('stats')
 	
 	const { data, error, isLoading } = useQuery({
 		queryKey: ['profile'],
@@ -137,6 +166,7 @@ const ProfilContent = () => {
 	return (
 		<div className="px-8 pb-8">
 			<IdentityCard username={data.username} rank={s.rank} rank_max={s.rank_max} />
+			<Tabs actifTab={actifTab} onChange={setActifTab} />
 			<FetchStats stats={s} />
 		</div>
 	)
