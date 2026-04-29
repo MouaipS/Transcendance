@@ -190,10 +190,7 @@ const FriendCard = ({ entry, index, onAccept, onDelete}) => {
                 )}
                 {isFriend && (
                     <button
-					onClick={() => {
-            console.log("clic supprimer", entry)
-            onDelete()
-        }}
+					onClick={onDelete}
 					className="px-3 py-2 border-2 border-stone-900 bg-amber-50 text-xs font-bold uppercase tracking-[0.2em]">
                         Supprimer
                     </button>
@@ -236,6 +233,47 @@ const ProfilContent = () => {
 			{actifTab ==='friends' && <FriendsTab/>}
 			{actifTab ==='stats' && <FetchStats stats={s}/>}
 			{actifTab ==='settings' && <SettingsTab/>}
+		</div>
+	)
+}
+
+const AddFriendForm = ({ onSubmit, isWaiting, errorMessage}) => {
+	const [username, setUsername] = useState('')
+
+	const handleClick = () => {
+		if(!username.trim()) return
+		onSubmit(username.trim())
+		setUsername('')
+	}
+
+	return (
+		<div className="border-2 border-stone-900 bg-amber-50/60 p-4
+                        flex flex-col gap-3 mb-4 animate-slide-in-left">
+			<div className="flex flex-col sm:flex-row gap-3">
+				<input
+					type="text"
+					value={username}
+					onChange={(e) => setUsername(e.target.value)}
+					className="flex-1 px-4 py-3 bg-amber-50 border-2 border-stone-900
+                                font-caprasimo text-lg text-stone-900
+                                focus:outline-none focus:bg-white"
+					disable={isWaiting}
+				/>
+				<button
+					onClick={handleClick}
+					disable={isWaiting || !username.trim()}
+					className="px-6 py-3 border-2 border-stone-900 bg-amber-300
+                                font-bold text-xs uppercase tracking-[0.3em] text-stone-900
+                                hover:-translate-y-0.5 transition-all
+                                disabled:opacity-50 disabled:cursor-not-allowed">
+					{isWaiting ? '...' : '+Ajouter'}
+				</button>
+			</div>
+			{errorMessage && (
+				<div className="text-xs uppercase tracking-[0.2em] text-red-700 font-bold">
+					{errorMessage}
+				</div>
+				)}
 		</div>
 	)
 }
@@ -283,6 +321,27 @@ const FriendsTab = () => {
 		}
 	})
 
+	const addMutation = useMutation({
+    mutationFn: (username) =>
+        fetch('/api/friends', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username })
+        })
+        .then(async (res) => {
+            // Si pas OK, on lit l'erreur et on throw pour déclencher onError
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}))
+                throw new Error(errData.error || 'Erreur inconnue')
+            }
+            return res.json()
+        }),
+    onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['friends'] })
+    }
+})
+
 	if (isLoading) return <div>Loading...</div>
 	if (error) return <div>Error : {error.message}</div>
 	if (!data) return <div>None data found</div>
@@ -295,11 +354,17 @@ const FriendsTab = () => {
 
 	return (
 		<div className="flex flex-col gap-3 pt-8">
-			{allEntries.map((entry, index) => (
-				<FriendCard key={entry.friendship_id} entry={entry} index={index}
-					onAccept={() => acceptMutation.mutate(entry.friendship_id)}
-					onDelete={() => deleteMutation.mutate(entry.friendship_id)}/>
-			))}
+			<AddFriendForm
+            onSubmit={(username) => addMutation.mutate(username)}
+            isPending={addMutation.isPending}
+            errorMessage={addMutation.error?.message}
+        />
+		{allEntries.map((entry, index) => (
+			<FriendCard key={entry.friendship_id} entry={entry} index={index}
+				onAccept={() => acceptMutation.mutate(entry.friendship_id)}
+				onDelete={() => deleteMutation.mutate(entry.friendship_id)}
+		/>
+		))}
 		</div>
 	)
 }
