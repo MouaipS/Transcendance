@@ -46,11 +46,11 @@ const Tabs = ({actifTab, onChange}) => {
 	]
 
 	return (
-		<div className="flex flex-wrap gap-3 mb-8 animate-slide-in-left">
+		<div className="flex gap-3 mb-8 animate-slide-in-left">
 			{tab.map((tabN) => {
 				const isActif = actifTab === tabN.id
 
-				const baseClass = "px-6 py-3 border-2 border-stone-900 font-bold text-xs sm:text-sm uppercase tracking-[0.3em] transition-all duration-200 hover:-translate-y-0.5"
+				const baseClass = "flex-1 px-6 py-3 border-2 border-stone-900 font-bold text-xs sm:text-sm uppercase tracking-[0.3em] transition-all duration-200 hover:-translate-y-0.5"
 				const variantClass = isActif ? 'bg-amber-300 text-stone-900 shadow-[3px_3px_0_0_rgba(28,25,23,1)]' : 'bg-amber-50/80 text-stone-900 hover:bg-amber-100'
 
 				return (
