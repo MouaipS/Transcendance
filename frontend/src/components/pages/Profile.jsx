@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import carotImg        from '../images/carot.png'
 import poivronImg      from '../images/poivron.png'
 import legumesImg      from '../images/legumes.png'
@@ -10,6 +10,61 @@ import cuttingboardImg from '../images/cuttingboard.png'
 // Utilisé pour fetch depuis le back,
 // oui c'est encore un autre plug-in...
 const queryClient = new QueryClient()
+
+const IdentityCard = ({ username, rank, rank_max}) => (
+	<div className="border-2 border-stone-900 bg-amber-50/60 p-6 sm:p-10 mb-4 animate-slide-in-left">
+		<div className="text-[10px] sm:text-xs uppercase tracking-[0.3em]
+						text-stone-700 font-bold mb-2">
+							Fiche du chef - Service en cours
+		</div>
+		<div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+			<h2 className="	font-caprasimo text-5xl sm:text-7xl
+							text-stone-900 leading-none">
+				{username}
+			</h2>
+			<div className="text-right">
+				<div className="font-caprasimo text-4xl sm:text-5xl text-stone-900">
+					{rank} /
+					<span className="text-stone-700/40">
+						/ {rank_max}
+					</span>
+				</div>
+				<div className="text-[10px] uppercase tracking-[0.2em]
+								text-stone-700 font-bold mt-1">
+					Rang actuel // Meilleur
+				</div>
+			</div>
+		</div>
+	</div>
+)
+
+const Tabs = ({actifTab, onChange}) => {
+	const tab = [
+		{id: 'friends', label: 'FRIENDS' },
+		{id: 'stats', label: 'STATS' },
+		{id: 'settings', label: 'SETTINGS'},
+	]
+
+	return (
+		<div className="flex gap-3 mb-8 animate-slide-in-left">
+			{tab.map((tabN) => {
+				const isActif = actifTab === tabN.id
+
+				const baseClass = "flex-1 px-6 py-3 border-2 border-stone-900 font-bold text-xs sm:text-sm uppercase tracking-[0.3em] transition-all duration-200 hover:-translate-y-0.5"
+				const variantClass = isActif ? 'bg-amber-300 text-stone-900 shadow-[3px_3px_0_0_rgba(28,25,23,1)]' : 'bg-amber-50/80 text-stone-900 hover:bg-amber-100'
+
+				return (
+					<button
+						key={tabN.id}
+						onClick={() => onChange(tabN.id)}
+						className={`${baseClass} ${variantClass}`} >
+								{tabN.label}
+					</button>
+				)
+			})}
+		</div>
+	)
+}
 
 const SectionTitle = ({ children, number, icon, subtitle}) => (
 	<div className="pt-16 pb-8 animate-slide-in-left">
@@ -82,14 +137,75 @@ const StatCard = ({label, value, index = 0, isHighlighted = false}) => {
 	)
 }
 
-// Requête GET pour récupérer les infos depuis la DB afin
-// d'afficher les statistiques de l'utilisateur dans l'onglet stats
-const FetchStats = () => {
+const FriendCard = ({ entry, index, onAccept, onDelete}) => {
+	const isFriend = entry.source === 'friend'
+	const isReceived = entry.source === 'received'
+	const isSent = entry.source === 'sent'
 
+	const cardClass = isFriend ? 'bg-amber-50/80 border-stone-900' : 'bg-stone-200/60 border-stone-400 opacity-80'
+
+	const state = isReceived ? "Demannde reçue" : isSent ? "Demande envoyée" : null
+
+	return (
+		<div className={`flex items-center gap-4 border-2 p-4
+                         animate-fade-in-up transition-all duration-200 hover:-translate-y-0.5
+                         ${cardClass}`}
+             style={{ animationDelay: `${index * 60}ms` }}>
+
+            <div className="h-14 w-14 rounded-full border-2 border-stone-900
+                            bg-amber-50 shrink-0" />
+
+            <div className="flex-1 min-w-0">
+                <div className="font-caprasimo text-2xl sm:text-3xl text-stone-900 leading-none">
+                    {entry.username}
+                </div>
+                {state && (
+                    <div className="text-xs uppercase tracking-[0.2em] text-stone-700 mt-1">
+                        {state}
+                    </div>
+                )}
+            </div>
+
+            <div className="flex gap-2 shrink-0">
+                {isReceived && (
+                    <>
+                        <button
+						onClick={onAccept}
+						className="px-3 py-2 border-2 border-stone-900 bg-amber-300 text-xs font-bold uppercase tracking-[0.2em]">
+                            Accepter
+                        </button>
+                        <button
+						onClick={onDelete}
+						className="px-3 py-2 border-2 border-stone-900 bg-amber-50 text-xs font-bold uppercase tracking-[0.2em]">
+                            Refuser
+                        </button>
+                    </>
+                )}
+                {isSent && (
+                    <button 
+					onClick={onDelete}
+					className="px-3 py-2 border-2 border-stone-400 bg-stone-50 text-xs font-bold uppercase tracking-[0.2em] text-stone-700">
+                        Annuler
+                    </button>
+                )}
+                {isFriend && (
+                    <button
+					onClick={onDelete}
+					className="px-3 py-2 border-2 border-stone-900 bg-amber-50 text-xs font-bold uppercase tracking-[0.2em]">
+                        Supprimer
+                    </button>
+                )}
+            </div>
+        </div>
+	)
+}
+
+const ProfilContent = () => {
 	const navigate = useNavigate()
+	const [actifTab, setActifTab] = useState('stats')
 	
 	const { data, error, isLoading } = useQuery({
-		queryKey: ['stats'],
+		queryKey: ['profile'],
 		queryFn: () => 
 			fetch('/api/home', {
 				method: 'GET',
@@ -107,39 +223,172 @@ const FetchStats = () => {
 	if (isLoading) return <div>Loading...</div>
 	if (error) return <div>Error : {error.message}</div>
 	if (!data || !data.stats) return <div>None data found</div>
- 
 
-	const s = data.stats //raccourci
+	const s = data.stats
+
+	return (
+		<div className="px-8 pb-8">
+			<IdentityCard username={data.username} rank={s.rank} rank_max={s.rank_max} />
+			<Tabs actifTab={actifTab} onChange={setActifTab} />
+			{actifTab ==='friends' && <FriendsTab/>}
+			{actifTab ==='stats' && <FetchStats stats={s}/>}
+			{actifTab ==='settings' && <SettingsTab/>}
+		</div>
+	)
+}
+
+const AddFriendForm = ({ onSubmit, isWaiting, errorMessage}) => {
+	const [username, setUsername] = useState('')
+
+	const handleClick = () => {
+		if(!username.trim()) return
+		onSubmit(username.trim())
+		setUsername('')
+	}
+
+	return (
+		<div className="border-2 border-stone-900 bg-amber-50/60 p-4
+                        flex flex-col gap-3 mb-4 animate-slide-in-left">
+			<div className="flex flex-col sm:flex-row gap-3">
+				<input
+					type="text"
+					value={username}
+					onChange={(e) => setUsername(e.target.value)}
+					className="flex-1 px-4 py-3 bg-amber-50 border-2 border-stone-900
+                                font-caprasimo text-lg text-stone-900
+                                focus:outline-none focus:bg-white"
+					disable={isWaiting}
+				/>
+				<button
+					onClick={handleClick}
+					disable={isWaiting || !username.trim()}
+					className="px-6 py-3 border-2 border-stone-900 bg-amber-300
+                                font-bold text-xs uppercase tracking-[0.3em] text-stone-900
+                                hover:-translate-y-0.5 transition-all
+                                disabled:opacity-50 disabled:cursor-not-allowed">
+					{isWaiting ? '...' : '+Ajouter'}
+				</button>
+			</div>
+			{errorMessage && (
+				<div className="text-xs uppercase tracking-[0.2em] text-red-700 font-bold">
+					{errorMessage}
+				</div>
+				)}
+		</div>
+	)
+}
+
+const FriendsTab = () => {
+	const navigate = useNavigate()
+
+	const { data, error, isLoading } = useQuery({
+		queryKey: ['friends'],
+		queryFn: () => 
+			fetch('/api/friends', {
+				method: 'GET',
+				credentials: 'include'
+			})
+			.then(res => {
+				if (res.status === 401) {
+					navigate('/login')
+					throw new Error('Not authentificate user')
+				}
+				return res.json()
+			})
+	})
+
+	const queryClient = useQueryClient()
+
+	const acceptMutation = useMutation({
+		mutationFn: (friendshipId) =>
+			fetch(`/api/friends/${friendshipId}/accept`, {
+				method: 'POST',
+				credentials: 'include'
+			}),
+		onSuccess: () => {
+			queryClient.invalidateQueries({queryKey: ['friends']})
+		}
+	})
+
+	const deleteMutation = useMutation({
+		mutationFn: (friendshipId) =>
+			fetch(`/api/friends/${friendshipId}`, {
+				method: 'DELETE',
+				credentials: 'include'
+			}),
+		onSuccess: () => {
+			queryClient.invalidateQueries({queryKey: ['friends']})
+		}
+	})
+
+	const addMutation = useMutation({
+    mutationFn: (username) =>
+        fetch('/api/friends', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username })
+        })
+        .then(async (res) => {
+            // Si pas OK, on lit l'erreur et on throw pour déclencher onError
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}))
+                throw new Error(errData.error || 'Erreur inconnue')
+            }
+            return res.json()
+        }),
+    onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['friends'] })
+    }
+})
+
+	if (isLoading) return <div>Loading...</div>
+	if (error) return <div>Error : {error.message}</div>
+	if (!data) return <div>None data found</div>
+
+	const friendsSource = data.friends.map(f => 			({...f, source:'friend'}))
+	const receivedSource = data.received_request.map(r =>	({...r, source:'received'}))
+	const sentSource = data.sent_request.map(s => 			({...s, source:'sent'}))
+
+	const allEntries = friendsSource.concat(receivedSource, sentSource)
+
+	return (
+		<div className="flex flex-col gap-3 pt-8">
+			<AddFriendForm
+            onSubmit={(username) => addMutation.mutate(username)}
+            isPending={addMutation.isPending}
+            errorMessage={addMutation.error?.message}
+        />
+		{allEntries.map((entry, index) => (
+			<FriendCard key={entry.friendship_id} entry={entry} index={index}
+				onAccept={() => acceptMutation.mutate(entry.friendship_id)}
+				onDelete={() => deleteMutation.mutate(entry.friendship_id)}
+		/>
+		))}
+		</div>
+	)
+}
+
+const SettingsTab = () => {
+	return (
+		<div>
+			<SectionTitle number="II" icon={cuttingboardImg} subtitle={"page temporaire"}>SETTINGS</SectionTitle>
+			<p>test setting</p>
+		</div>
+	)
+}
+
+// Requête GET pour récupérer les infos depuis la DB afin
+// d'afficher les statistiques de l'utilisateur dans l'onglet stats
+const FetchStats = ({stats}) => {
+
+	const s = stats //raccourci
 
 	const calcWinRate = s.nb_games > 0 ? Math.round((s.nb_victories / s.nb_games) * 100) : 0
 	const changeNone = (str) => str && str !== "None" ? str : "-"
 	const smashAccuracy = s.nb_smash > 0 ? Math.round((s.nb_smash_success / s.nb_smash) * 100): 0
 
-	return <div className="px-8 pb-8">
-		<div className="border-2 border-stone-900 bg-amber-50/60 p-6 sm:p-10 mb-4 animate-slide-in-left">
-			<div className="text-[10px] sm:text-xs uppercase tracking-[0.3em]
-							text-stone-700 font-bold mb-2">
-								Fiche du chef - Service en cours
-			</div>
-			<div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-				<h2 className="	font-caprasimo text-5xl sm:text-7xl
-								text-stone-900 leading-none">
-					{data.username}
-				</h2>
-				<div className="text-right">
-					<div className="font-caprasimo text-4xl sm:text-5xl text-stone-900">
-						{s.rank} /
-						<span className="text-stone-700/40">
-							/ {s.rank_max}
-						</span>
-					</div>
-					<div className="text-[10px] uppercase tracking-[0.2em]
-									text-stone-700 font-bold mt-1">
-						Rang actuel // Meilleur
-					</div>
-				</div>
-			</div>
-		</div>
+	return <>
 		{/* ===== PARTIES ===== */}
 		<SectionTitle number="I" icon={poivronImg} subtitle={"bilan de la brigade"}>GAMES</SectionTitle>
 		<div className="grid grid-cols-4 gap-4">
@@ -177,7 +426,7 @@ const FetchStats = () => {
 			<StatCard label="Carte favorite" value={changeNone(s.favorite_card)} index={16} />
 			<StatCard label="Bonus joués"    value={s.nb_bonus_played}           index={17} />
 		</div>
-	</div>
+	</>
 }
 
 export function Profile () {
@@ -251,7 +500,7 @@ export function Profile () {
 							au fil des services en salle est là.
 						</p>
 					</header>
-					<FetchStats />
+					<ProfilContent />
 				</div>
 			</div>
 		</QueryClientProvider>
