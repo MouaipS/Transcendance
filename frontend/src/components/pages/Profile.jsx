@@ -167,7 +167,27 @@ const ProfilContent = () => {
 		<div className="px-8 pb-8">
 			<IdentityCard username={data.username} rank={s.rank} rank_max={s.rank_max} />
 			<Tabs actifTab={actifTab} onChange={setActifTab} />
-			<FetchStats stats={s} />
+			{actifTab ==='friends' && <FriendsTab/>}
+			{actifTab ==='stats' && <FetchStats stats={s}/>}
+			{actifTab ==='settings' && <SettingsTab/>}
+		</div>
+	)
+}
+
+const FriendsTab = () => {
+	return (
+		<div>
+			<SectionTitle number="I" icon={poivronImg} subtitle={"page temporaire"}>FRIEND</SectionTitle>
+			<p>test friends</p>
+		</div>
+	)
+}
+
+const SettingsTab = () => {
+	return (
+		<div>
+			<SectionTitle number="II" icon={cuttingboardImg} subtitle={"page temporaire"}>SETTINGS</SectionTitle>
+			<p>test setting</p>
 		</div>
 	)
 }
