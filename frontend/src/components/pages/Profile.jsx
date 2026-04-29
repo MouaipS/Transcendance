@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import carotImg        from '../images/carot.png'
 import poivronImg      from '../images/poivron.png'
 import legumesImg      from '../images/legumes.png'
@@ -137,7 +137,7 @@ const StatCard = ({label, value, index = 0, isHighlighted = false}) => {
 	)
 }
 
-const FriendCard = ({ entry, index}) => {
+const FriendCard = ({ entry, index, onAccept, onDelete}) => {
 	const isFriend = entry.source === 'friend'
 	const isReceived = entry.source === 'received'
 	const isSent = entry.source === 'sent'
@@ -169,21 +169,32 @@ const FriendCard = ({ entry, index}) => {
             <div className="flex gap-2 shrink-0">
                 {isReceived && (
                     <>
-                        <button className="px-3 py-2 border-2 border-stone-900 bg-amber-300 text-xs font-bold uppercase tracking-[0.2em]">
+                        <button
+						onClick={onAccept}
+						className="px-3 py-2 border-2 border-stone-900 bg-amber-300 text-xs font-bold uppercase tracking-[0.2em]">
                             Accepter
                         </button>
-                        <button className="px-3 py-2 border-2 border-stone-900 bg-amber-50 text-xs font-bold uppercase tracking-[0.2em]">
+                        <button
+						onClick={onDelete}
+						className="px-3 py-2 border-2 border-stone-900 bg-amber-50 text-xs font-bold uppercase tracking-[0.2em]">
                             Refuser
                         </button>
                     </>
                 )}
                 {isSent && (
-                    <button className="px-3 py-2 border-2 border-stone-400 bg-stone-50 text-xs font-bold uppercase tracking-[0.2em] text-stone-700">
+                    <button 
+					onClick={onDelete}
+					className="px-3 py-2 border-2 border-stone-400 bg-stone-50 text-xs font-bold uppercase tracking-[0.2em] text-stone-700">
                         Annuler
                     </button>
                 )}
                 {isFriend && (
-                    <button className="px-3 py-2 border-2 border-stone-900 bg-amber-50 text-xs font-bold uppercase tracking-[0.2em]">
+                    <button
+					onClick={() => {
+            console.log("clic supprimer", entry)
+            onDelete()
+        }}
+					className="px-3 py-2 border-2 border-stone-900 bg-amber-50 text-xs font-bold uppercase tracking-[0.2em]">
                         Supprimer
                     </button>
                 )}
@@ -248,6 +259,30 @@ const FriendsTab = () => {
 			})
 	})
 
+	const queryClient = useQueryClient()
+
+	const acceptMutation = useMutation({
+		mutationFn: (friendshipId) =>
+			fetch(`/api/friends/${friendshipId}/accept`, {
+				method: 'POST',
+				credentials: 'include'
+			}),
+		onSuccess: () => {
+			queryClient.invalidateQueries({queryKey: ['friends']})
+		}
+	})
+
+	const deleteMutation = useMutation({
+		mutationFn: (friendshipId) =>
+			fetch(`/api/friends/${friendshipId}`, {
+				method: 'DELETE',
+				credentials: 'include'
+			}),
+		onSuccess: () => {
+			queryClient.invalidateQueries({queryKey: ['friends']})
+		}
+	})
+
 	if (isLoading) return <div>Loading...</div>
 	if (error) return <div>Error : {error.message}</div>
 	if (!data) return <div>None data found</div>
@@ -261,7 +296,9 @@ const FriendsTab = () => {
 	return (
 		<div className="flex flex-col gap-3 pt-8">
 			{allEntries.map((entry, index) => (
-				<FriendCard key={entry.friendship_id} entry={entry} index={index} />
+				<FriendCard key={entry.friendship_id} entry={entry} index={index}
+					onAccept={() => acceptMutation.mutate(entry.friendship_id)}
+					onDelete={() => deleteMutation.mutate(entry.friendship_id)}/>
 			))}
 		</div>
 	)
