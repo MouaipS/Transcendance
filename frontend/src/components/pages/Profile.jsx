@@ -137,6 +137,61 @@ const StatCard = ({label, value, index = 0, isHighlighted = false}) => {
 	)
 }
 
+const FriendCard = ({ entry, index}) => {
+	const isFriend = entry.source === 'friend'
+	const isReceived = entry.source === 'received'
+	const isSent = entry.source === 'sent'
+
+	const cardClass = isFriend ? 'bg-amber-50/80 border-stone-900' : 'bg-stone-200/60 border-stone-400 opacity-80'
+
+	const state = isReceived ? "Demannde reçue" : isSent ? "Demande envoyée" : null
+
+	return (
+		<div className={`flex items-center gap-4 border-2 p-4
+                         animate-fade-in-up transition-all duration-200 hover:-translate-y-0.5
+                         ${cardClass}`}
+             style={{ animationDelay: `${index * 60}ms` }}>
+
+            <div className="h-14 w-14 rounded-full border-2 border-stone-900
+                            bg-amber-50 shrink-0" />
+
+            <div className="flex-1 min-w-0">
+                <div className="font-caprasimo text-2xl sm:text-3xl text-stone-900 leading-none">
+                    {entry.username}
+                </div>
+                {state && (
+                    <div className="text-xs uppercase tracking-[0.2em] text-stone-700 mt-1">
+                        {state}
+                    </div>
+                )}
+            </div>
+
+            <div className="flex gap-2 shrink-0">
+                {isReceived && (
+                    <>
+                        <button className="px-3 py-2 border-2 border-stone-900 bg-amber-300 text-xs font-bold uppercase tracking-[0.2em]">
+                            Accepter
+                        </button>
+                        <button className="px-3 py-2 border-2 border-stone-900 bg-amber-50 text-xs font-bold uppercase tracking-[0.2em]">
+                            Refuser
+                        </button>
+                    </>
+                )}
+                {isSent && (
+                    <button className="px-3 py-2 border-2 border-stone-400 bg-stone-50 text-xs font-bold uppercase tracking-[0.2em] text-stone-700">
+                        Annuler
+                    </button>
+                )}
+                {isFriend && (
+                    <button className="px-3 py-2 border-2 border-stone-900 bg-amber-50 text-xs font-bold uppercase tracking-[0.2em]">
+                        Supprimer
+                    </button>
+                )}
+            </div>
+        </div>
+	)
+}
+
 const ProfilContent = () => {
 	const navigate = useNavigate()
 	const [actifTab, setActifTab] = useState('stats')
@@ -175,10 +230,39 @@ const ProfilContent = () => {
 }
 
 const FriendsTab = () => {
+	const navigate = useNavigate()
+
+	const { data, error, isLoading } = useQuery({
+		queryKey: ['friends'],
+		queryFn: () => 
+			fetch('/api/friends', {
+				method: 'GET',
+				credentials: 'include'
+			})
+			.then(res => {
+				if (res.status === 401) {
+					navigate('/login')
+					throw new Error('Not authentificate user')
+				}
+				return res.json()
+			})
+	})
+
+	if (isLoading) return <div>Loading...</div>
+	if (error) return <div>Error : {error.message}</div>
+	if (!data) return <div>None data found</div>
+
+	const friendsSource = data.friends.map(f => 			({...f, source:'friend'}))
+	const receivedSource = data.received_request.map(r =>	({...r, source:'received'}))
+	const sentSource = data.sent_request.map(s => 			({...s, source:'sent'}))
+
+	const allEntries = friendsSource.concat(receivedSource, sentSource)
+
 	return (
-		<div>
-			<SectionTitle number="I" icon={poivronImg} subtitle={"page temporaire"}>FRIEND</SectionTitle>
-			<p>test friends</p>
+		<div className="flex flex-col gap-3 pt-8">
+			{allEntries.map((entry, index) => (
+				<FriendCard key={entry.friendship_id} entry={entry} index={index} />
+			))}
 		</div>
 	)
 }
