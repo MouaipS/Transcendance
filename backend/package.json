@@ -28,7 +28,6 @@
   "devDependencies": {
     "@types/node": "25.5.0",
     "@types/pg": "8.20.0",
-    "@types/ws": "8.5.0",
     "prisma": "7.7.0",
     "ts-node": "10.9.2",
     "typescript": "6.0.2"
