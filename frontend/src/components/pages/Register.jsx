@@ -121,7 +121,7 @@ export function Register() {
 						<input
 							id="email"
 							name="email"
-							type="email"
+							//type="email"
 							required
 							value={email}
 							placeholder="cedriclebôgoss@grolard.com"

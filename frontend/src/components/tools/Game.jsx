@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 
 
@@ -17,9 +17,12 @@ export function Game () {
   const [number, setNumber] = useState(0)
   const [players, setPlayers] = useState()
   const [decks, setDecks] = useState([20, 20, 20, 20])
+  const [score, setScore] = useState([0, 0, 0, 0])
   const [start, setStart] = useState(false)
   const [timer, setTimer] = useState(0)
   const [index, setIndex] = useState(0)
+
+  const socketRef = useRef(null)
 
   useEffect(() => {
   
@@ -50,40 +53,67 @@ export function Game () {
   }, []);
 
 
-	const handleSubmit = (e) => {
-		e.preventDefault()
+  const handleJoin = async (e) => {
 
+    e.preventDefault()
     const body = { username, code }
 
-		fetch('https://localhost:8443/api/game/join',
-		{
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(body)
-		}	
-		)
-		.then( (Response) => {
+    const response = await fetch('/api/game/join',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
 
-			if (Response.status === 401) {
-				console.log("non", Response.status)
-				throw "Erreur retourne en enfer"
-			}
+    const data = await response.json()
 
-			console.log("oui")
-			const data = Response.json()
-			return data
-		})
-		.then( (data) => {
-			console.log(data.message)
-			console.log(data.user)
-		}
-		)
-		.catch((err) => console.error("error:", err))
+    console.log(data)
+
+    if (data.error === 'Game unavailable')
+      return
+
+    setPlayers(data.users)
+
+    const socket = new WebSocket(`ws:localhost:3001/ws/game/:${code}`)
+    socket.onopen = () => {
+      socket.send(JSON.stringify({type: 'JOIN', data: username }))
+    }
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data)
+
+      if (data.type === 'JOIN') {
+        setPlayers(data.users)
+      }
+
+      if (data.type === 'DRAW') {
+
+        let i
+        while (players[i] === data.username && i < 4)
+          i++
+
+        setDecks((prevDecks) => {
+          const newDecks = [...prevDecks]
+          newDecks[i] = data.deck.length
+          return newDecks
+        })
+
+        setScore((prevScore) => {
+          const newScore = [...prevScore]
+          newScore[i] = data.score
+          return newScore
+        })
+      }
+    }
+
+    socketRef.current = socket
+    setPage(1)
   }
 
   const handleCreate = async (e) => {
 
-    const response = await fetch('https://localhost:8443/api/game/create',
+    e.preventDefault()
+    const response = await fetch('/api/game/create',
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -92,10 +122,45 @@ export function Game () {
 
     const data = await response.json()
 
-    console.log(data)
+    //console.log(data)
 
     setCode(data.code)
-    setPlayers(data.users)	
+    setPlayers(data.users)
+
+    const socket = new WebSocket(`ws:localhost:3001/ws/game/:${code}`)
+    
+    socket.onopen = () => {
+      socket.send(JSON.stringify({type: 'CREATE'}))
+    }
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data)
+
+      if (data.type === 'JOIN') {
+        setPlayers(data.users)
+      }
+
+      if (data.type === 'DRAW') {
+
+        let i
+        while (players[i] === data.username && i < 4)
+          i++
+
+        setDecks((prevDecks) => {
+          const newDecks = [...prevDecks]
+          newDecks[i] = data.deck.length
+          return newDecks
+        })
+
+        setScore((prevScore) => {
+          const newScore = [...prevScore]
+          newScore[i] = data.score
+          return newScore
+        })
+      }
+    }
+
+    socketRef.current = socket
     setPage(1)
   }
 
@@ -103,22 +168,38 @@ export function Game () {
 
     if (!start) return
 
-    const intervalId = setInterval(() => {
-      setDecks((prevDecks) => {
-        const newDecks = [...prevDecks]
-        newDecks[index % 4] = newDecks[index % 4] - 1
-        return newDecks
-      })
+    const intervalId = setInterval( () => {
+      
+      // setDecks((prevDecks) => {
+      //   const newDecks = [...prevDecks]
+      //   newDecks[index % 4] = newDecks[index % 4] - 1
+      //   return newDecks
+      // })
+    
+      // const card = cards[0]
+      // cards.shift()
+      // cards.push(card)
+    
+      // setIndex(prev => prev + 1)
 
-      const card = cards[0]
-      cards.shift()
-      cards.push(card)
-
-      setIndex(prev => prev + 1)
+      if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN)
+        socketRef.current.send(JSON.stringify({ type: 'DRAW' }))
+      else
+        console.error("Le socket n'est pas connecté.")
+      
     }, 1000)
-
+    
     return () => clearInterval(intervalId)
-  }, [start, index])
+  }, [start])
+
+  useEffect(() => {
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.close()
+      }
+    }
+  }, [])
 
 
 	return <>
@@ -131,14 +212,14 @@ export function Game () {
 				focus-visible:outline-offset-2 focus-visible:outline-indigo-500 
 				border border-black shadow-md hover:shadow-none 
 				hover:inset-shadow-xs hover:inset-shadow-black/50"
-				onClick={() => setPage(1)}>
+				onClick={handleJoin}>
 				JOIN PUBLIC GAME
 			</button>
 
       <form 
         className="items-center py-5 rounded-md text-3xl justify-center 
         text-center border bg-yellow-300 font-semibold"
-        onSubmit={handleSubmit}>
+        onSubmit={handleJoin}>
         JOIN PRIVATE GAME
         <input
           id="code"
@@ -170,7 +251,7 @@ export function Game () {
     <div className="flex flex-col">
       <p className="px-5 py-5 absolute text-2xl font-semibold">{code}</p>
 
-      <p className="px-10 py-20 absolute" onClick={() => setStart(true)}>start</p>
+      <p className="px-10 py-20 absolute" onClick={() => setStart(!start)}>start</p>
 
       <div dir="ltr" className="px-120 flex py-5">
         <button
@@ -198,6 +279,8 @@ export function Game () {
             {decks[0]}
           </span>
         </div>
+
+        <div>{score[0]}</div>
       </div>
 
       <div dir="ltr" className="flex justify-between w-full px-4 mt-15">
@@ -227,16 +310,17 @@ export function Game () {
               {decks[1]}
             </span>
           </div>
+          <div>{score[1]}</div>
         </div>
         
         <img
           src={cards[0]}
-          className="h-80 rotate-45"
+          className="h-80 rotate-50"
         />
 
         <img
           src={cards[1]}
-          className="h-80 rotate-25 absolute px-140"
+          className="h-80 rotate-20 absolute px-140"
         />
 
         <img
@@ -270,7 +354,7 @@ export function Game () {
               {decks[3]}
             </span>
           </div>
-
+          <div>{score[3]}</div>
         </div>
       </div>
 
@@ -300,6 +384,7 @@ export function Game () {
             {decks[2]}
           </span>
         </div>
+        <div>{score[2]}</div>
       </div>
       
 
