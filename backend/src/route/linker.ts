@@ -38,6 +38,8 @@ export async function linker(server: FastifyInstance)
 	server.post<{Body:any}>('/api/game/create', async (request, reply) => { return createGameRoute(request, reply)});			// private game creation route
 
 	//Websockets
-	server.get('/ws/game/:code', {websocket: true}, gameSocketRoute)
+	server.register(() => {
+		server.get('/ws/game/:code', {websocket: true}, gameSocketRoute);
+	})
 }
 

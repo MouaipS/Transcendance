@@ -104,14 +104,14 @@ export async function joinGameRoute(request : FastifyRequest<{Body: JoinRequestB
 }
 
 
-export function gameSocketRoute(websocket: WebSocket, request: FastifyRequest)
+export function gameSocketRoute(websocket:  WebSocket, request: FastifyRequest)
 {
-    const {code} = request.params as {code: string}
+  const {code} = request.params as {code: string}
     const lobby = lobbies.find(lobby => lobby.code === code)
     if (!lobby) 
       return websocket.close()
     lobby.ws.add(websocket) //if ws already exists, it is not added (Set)
-    console.log(lobby.ws)
+    
     websocket.on('message', (data: any) => {
         const message = JSON.parse(data.toString())
 

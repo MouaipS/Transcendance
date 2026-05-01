@@ -74,7 +74,7 @@ export function Game () {
 
     setPlayers(data.users)
 
-    const socket = new WebSocket(`ws:localhost:3001/ws/game/:${code}`)
+    const socket = new WebSocket(`ws/game/${code}`)
     socket.onopen = () => {
       socket.send(JSON.stringify({type: 'JOIN', data: username }))
     }
@@ -127,7 +127,7 @@ export function Game () {
     setCode(data.code)
     setPlayers(data.users)
 
-    const socket = new WebSocket(`ws:localhost:3001/ws/game/:${code}`)
+    const socket = new WebSocket(`ws/game/${data.code}`)
     
     socket.onopen = () => {
       socket.send(JSON.stringify({type: 'CREATE'}))
