@@ -5,7 +5,6 @@ import michelImg from '../images/michel.jpg';
 import { NavigateButtons } from "../tools/NavigateButtons";
 import { Game } from "../tools/Game";
 
-
 export function Home () {
 
 	const navigate = useNavigate()
@@ -13,7 +12,7 @@ export function Home () {
   const [diff, setDiff] = useState(0)
 
   const logout = async () => {
-    fetch("/api/logout", {
+    fetch("/api/refresh/logout", {
       method: "POST",
       credentials: "include",
     })
@@ -26,37 +25,65 @@ export function Home () {
     })
   };
 
-  useEffect(() => {
+	useEffect(() => {
 
-    const fetchProfile = async () => {
+    	const fetchProfile = async () => {
 
-      console.log("Profile - fetch")
-      fetch('/api/home',
-      {
-        method: "GET",
-        credentials: "include"
-      })
-      .then ((Response) => {
-        if (Response.status === 401) 
-        {
-          console.log("non ", Response.status);
-          navigate("/login")
-        }
-        console.log("Profile - fetch ok");
-        const data = Response.json();
-        return data;           
-      })
-      .then ((data) => {
-        setUsername(data.username)
-      })
-      .catch ((err) => { 
-          console.error("error:", err)
-          navigate("/login")
-      })
-    }
+			try {
+				console.log("Profile - fetch")
+				let response = await fetch("/api/home", {
+					method: "GET",
+					credentials: "include"
+				})
 
-    fetchProfile();
-  }, [navigate]);
+				if (response.status === 403)
+				{
+					console.log("error with token")
+					try {
+						let refresh = await fetch('/api/refresh', {
+							method: "POST",
+							credentials: "include"
+						})
+						
+						if (refresh.ok)
+						{
+							console.log("token refreshed")
+							try {
+								response = await fetch("/api/home", {
+									method: "GET",
+									credentials: "include"
+								})
+							} catch (err) { console.log("/api/home err: ", err)}
+				
+						} else {
+							console.log("hacked")
+							navigate("/login")
+						}
+			
+					} catch (err) { console.log("/api/refresh err: ", err)}
+				}
+
+				if (response.ok)
+				{
+					const data = await response.json()
+					setUsername(data.username)
+					console.log("Profile - fetch ok")
+				} else {
+					console.log("Erreur exacte:", err)
+    				console.log("Erreur type:", err.name)
+    				console.log("Erreur message:", err.message)
+					console.log("Profile fetch - no token")
+					navigate("/login")
+				}
+
+			} catch (err) { 
+				console.log("Profile fetch - no cookies / token")
+				navigate("/login")
+			}
+
+		}
+    	fetchProfile();
+  	}, []);
 
 	return <>
 	<div className="relative w-full h-screen overflow-hidden">

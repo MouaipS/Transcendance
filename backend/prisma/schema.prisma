@@ -19,6 +19,7 @@ enum GameStatus {
 }
 
 model User {
+	RefreshToken			String[]
 	id						String		@id @default(uuid())
 	username				String		@unique
 	password				String

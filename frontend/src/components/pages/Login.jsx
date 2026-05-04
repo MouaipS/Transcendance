@@ -20,12 +20,12 @@ export function Login() {
 
 		const login = { username, password };
 		
-    fetch('https://localhost:8443/api/login',
+    fetch('/api/login',
 		{
-		  method: 'POST',
+			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(login),
-      credentials: "include"
+			credentials: "include"
 		})
 		.then( (Response) => {
 
@@ -43,7 +43,7 @@ export function Login() {
 		.then( (data) => {
 				console.log(data.message);
 				console.log(data.user);
-        console.log(data.token);
+        console.log(data.accessToken);
 				navigate('/');
 		})
 		.catch((err) => console.error("error:", err))

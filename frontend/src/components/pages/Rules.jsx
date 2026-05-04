@@ -8,8 +8,6 @@ export function Rules () {
 		navigate("/")
 	}
 
-	
-
 	return <>
 	<div className="absolute flex flex-col left-60 right-60 min-h-full px-6 py-12 lg:px-8 border-l border-r bg-amber-100">
 		<div className="py-7 outline -outline-offset-1 relative flex flex-col items-center bg-amber-50 mb-20"> 
