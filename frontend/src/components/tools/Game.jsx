@@ -16,11 +16,12 @@ export function Game () {
   const [username, setUsername] = useState('Michel')
   const [number, setNumber] = useState(0)
   const [players, setPlayers] = useState()
-  const [decks, setDecks] = useState([20, 20, 20, 20])
+  const [decks, setDecks] = useState([3, 3, 3, 3])
   const [score, setScore] = useState([0, 0, 0, 0])
   const [start, setStart] = useState(false)
   const [timer, setTimer] = useState(0)
   const [index, setIndex] = useState(0)
+  const [number2, setNumber2] = useState(0)
 
   const socketRef = useRef(null)
 
@@ -81,26 +82,29 @@ export function Game () {
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data)
-
       if (data.type === 'JOIN') {
         setPlayers(data.users)
       }
-
+      
       if (data.type === 'DRAW') {
+        
+        console.log (data)
 
-        let i
-        while (players[i] === data.username && i < 4)
-          i++
+        let newNumber = 0
+        while (newNumber !== data.player.id)
+          newNumber++
 
+        setNumber2(newNumber)
+        
         setDecks((prevDecks) => {
           const newDecks = [...prevDecks]
-          newDecks[i] = data.deck.length
+          newDecks[newNumber] = data.player.deck.length
           return newDecks
         })
 
         setScore((prevScore) => {
           const newScore = [...prevScore]
-          newScore[i] = data.score
+          newScore[newNumber] = data.player.score
           return newScore
         })
       }
@@ -142,21 +146,22 @@ export function Game () {
 
       if (data.type === 'DRAW') {
 
-        let i
-        while (players[i] === data.username && i < 4)
-          i++
+        console.log(data.player)
+        // let i
+        // while (players[i] === data.username && i < 4)
+        //   i++
 
-        setDecks((prevDecks) => {
-          const newDecks = [...prevDecks]
-          newDecks[i] = data.deck.length
-          return newDecks
-        })
+        // setDecks((prevDecks) => {
+        //   const newDecks = [...prevDecks]
+        //   newDecks[i] = data.deck.length
+        //   return newDecks
+        // })
 
-        setScore((prevScore) => {
-          const newScore = [...prevScore]
-          newScore[i] = data.score
-          return newScore
-        })
+        // setScore((prevScore) => {
+        //   const newScore = [...prevScore]
+        //   newScore[i] = data.score
+        //   return newScore
+        // })
       }
     }
 
@@ -168,29 +173,33 @@ export function Game () {
 
     if (!start) return
 
-    const intervalId = setInterval( () => {
-      
-      // setDecks((prevDecks) => {
+    
+    // setDecks((prevDecks) => {
       //   const newDecks = [...prevDecks]
       //   newDecks[index % 4] = newDecks[index % 4] - 1
       //   return newDecks
       // })
-    
+      
       // const card = cards[0]
       // cards.shift()
       // cards.push(card)
-    
-      // setIndex(prev => prev + 1)
-
-      if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN)
-        socketRef.current.send(JSON.stringify({ type: 'DRAW' }))
-      else
-        console.error("Le socket n'est pas connecté.")
       
+      // setIndex(prev => prev + 1)
+      const intervalId = setInterval( () => {
+
+      if (decks[index % 4] !== 0)
+      {
+        if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN)
+          socketRef.current.send(JSON.stringify({ type: 'DRAW' , username: players[index % 4], code: code}))
+        else
+          console.error("Le socket n'est pas connecté.")
+      }
+      
+      setIndex(prev => prev + 1)
     }, 1000)
     
     return () => clearInterval(intervalId)
-  }, [start])
+  }, [start, index])
 
   useEffect(() => {
 

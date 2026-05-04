@@ -12,8 +12,6 @@ const DECK_CONFIG: Card[] = [
     {name:"2", value: 2, nb: 3},
     {name:"3", value: 3, nb: 3},
     {name:"4", value: 4, nb: 3},
-    {name:"5", value: 5, nb: 3},
-    {name:"6", value: 6, nb: 3},
 ]
 
 function createSuperDeck(): Card[]
@@ -59,6 +57,7 @@ function buildDecks(): Card[][]
 //  {typeOfEvent, username, score updated, nb_cards, cardName, cardValue}
 export function drawCard(game : Game, username: string) : Player | undefined
 {
+    console.log('player who draw', username)
     const player: Player | undefined = game.players.find(p => p.username === username)
     if(!player)
         return
@@ -69,7 +68,7 @@ export function drawCard(game : Game, username: string) : Player | undefined
         return
     player.card = card
     player.score += card.value    
-    
+    console.log('player object: ', player)
     return player
 }
 
@@ -80,10 +79,10 @@ export function setGame(lobby: Lobby)
     console.log("setGame")
     const decks: Card[][] = buildDecks()
 
-    const p1: Player = {username:lobby.users[0], deck: decks[0], score: 0, card: undefined}
-    const p2: Player = {username:lobby.users[1], deck: decks[1], score: 0, card: undefined}
-    const p3: Player = {username:lobby.users[2], deck: decks[2], score: 0, card: undefined}
-    const p4: Player = {username:lobby.users[3], deck: decks[3], score: 0, card: undefined}
+    const p1: Player = {id: 0, username:lobby.users[0], deck: decks[0], score: 0, card: undefined}
+    const p2: Player = {id: 1, username:lobby.users[1], deck: decks[1], score: 0, card: undefined}
+    const p3: Player = {id: 2, username:lobby.users[2], deck: decks[2], score: 0, card: undefined}
+    const p4: Player = {id: 3, username:lobby.users[3], deck: decks[3], score: 0, card: undefined}
 
     const game: Game = {
         owner: lobby.owner,

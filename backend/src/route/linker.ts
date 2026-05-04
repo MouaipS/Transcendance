@@ -4,7 +4,6 @@ import {registerRoute} from "../route/authentication/register.js"//same but for 
 import {logoutRoute} from "../route/authentication/logout.js"
 import {homePageRoute} from "../route/pages/homePage.js"
 import { joinGameRoute , createGameRoute, gameSocketRoute } from './game/websocket.js'
-import { drawCardsRoute } from './game/start-game.js'
 import { allFriendsRoute } from './friends/friends.js'
 import { createFriendshipRoute } from './friends/friends.js'
 import { AcceptFriendshipRoute } from './friends/friends.js'

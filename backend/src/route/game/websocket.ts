@@ -30,6 +30,7 @@ export interface Card {
 }
 
 export interface Player {
+    id: number;
     username: string;
     deck: Card[];
     score: number;
@@ -131,7 +132,7 @@ export function gameSocketRoute(websocket:  WebSocket, request: FastifyRequest)
     websocket.on('message', (data: any) => {
         const message = JSON.parse(data.toString())
 
-        if (message.type === 'JOIN') // message : {type, code, username}
+        if (message.type === 'JOIN') // message : {type, username}
         {
           lobby.ws?.forEach(websocket => websocket.send(JSON.stringify({
             type: 'JOIN',
@@ -143,12 +144,13 @@ export function gameSocketRoute(websocket:  WebSocket, request: FastifyRequest)
 
         if (message.type === 'DRAW') // message : {type, code, username}
         {
-            const game = games.get(code)!
+            const game = games.get(message.code)!
             const player = drawCard(game, message.username)
+            // console.log(player)
             //Broadcast
             game.ws.forEach(websocket => websocket.send(JSON.stringify({
               type: 'DRAW',
-              player: player
+              player: player, // {id, username, deck, score, card}
           })))
         }
 
