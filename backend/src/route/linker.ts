@@ -3,7 +3,7 @@ import {loginRoute} from "../route/authentication/login.js" //this the import fo
 import {registerRoute} from "../route/authentication/register.js"//same but for the register route. NOTE : the path start from the main which is index.ts
 import {logoutRoute} from "../route/authentication/logout.js"
 import {homePageRoute} from "../route/pages/homePage.js"
-import { joinGameRoute , createGameRoute } from './game/lobby.js'
+import { joinGameRoute , createGameRoute, gameSocketRoute } from './game/websocket.js'
 import { drawCardsRoute } from './game/start-game.js'
 import { allFriendsRoute } from './friends/friends.js'
 import { createFriendshipRoute } from './friends/friends.js'
@@ -25,22 +25,26 @@ export async function linker(server: FastifyInstance)
         	// Check if Token incorrect / modified -> throw
         	const decoded = await server.jwt.verify(token);
         	request.user = decoded;
-			console.log("token decoded")
+			// console.log("token decoded")
     	} catch (err) { reply.code(401).send({ error: "Authentification required" }) }
 	};
 
 	server.decorate("authenticate", authenticate);
 
-	//these are the shorthand route declaration that execute the actual route
+	//HTTP routes
 	server.post<{Body: any}>('/api/login', async (request, reply) => { return loginRoute(request, reply)}); 					//login route
 	server.post<{Body: any}>('/api/register', async (request, reply) => { return registerRoute(request, reply)}); 				// registration route
 	server.post('/api/logout', async (request, reply) => { return logoutRoute(reply)}); 										// logout route
 	server.get('/api/home', {onRequest : [authenticate]}, async (request, reply) => { return homePageRoute(request, reply)});	// homePage display route
 	
-	//game routes
+	//HTTP game routes
 	server.post<{Body:any}>('/api/game/join', async (request, reply) => { return joinGameRoute(request, reply)});								// public random game route
 	server.post<{Body:any}>('/api/game/create', async (request, reply) => { return createGameRoute(request, reply)});			// private game creation route
-	server.post<{Body:any}>('/api/game/draw', async (request, reply) => { return drawCardsRoute(request, reply)});			// private game creation route
+
+	//Websockets
+	server.register(() => {
+		server.get('/ws/game/:code', {websocket: true}, gameSocketRoute);
+	})
 	
 	//friends
 	server.get('/api/friends', {onRequest: [authenticate]}, async(request, reply) => { return allFriendsRoute(request, reply)});
@@ -48,3 +52,4 @@ export async function linker(server: FastifyInstance)
 	server.post<{Params: any}>('/api/friends/:id/accept',{onRequest: [authenticate]}, async (request, reply) => {return AcceptFriendshipRoute(request, reply)});
 	server.delete<{Params: any}>('/api/friends/:id',{onRequest: [authenticate]}, async (request, reply) => { return deleteFriendshipRoute(request, reply) });
 }
+
