@@ -1,6 +1,6 @@
 import {FastifyInstance, FastifyRequest, FastifyReply} from 'fastify'
 import { WebSocket } from '@fastify/websocket'
-import { drawCard } from "./start-game.js"
+import { drawCard , setGame } from "./start-game.js"
 import { joinLobby , codeAlreadyExists , generateGameCode } from "./lobby.js"
 
 /**
@@ -67,6 +67,7 @@ const lobbies: Lobby[] = [{
 export function addGame(code: string, game: Game)
 {
     games.set(code, game)
+    console.log(games)
 }
 
 //Route for private game creation : code generation et setup game variables
@@ -106,12 +107,27 @@ export async function joinGameRoute(request : FastifyRequest<{Body: JoinRequestB
 
 export function gameSocketRoute(websocket:  WebSocket, request: FastifyRequest)
 {
+  // Main Road when a websocket is declared. 
+  // Add the new WS to the lobby and launch the game if nb_players = 4
   const {code} = request.params as {code: string}
     const lobby = lobbies.find(lobby => lobby.code === code)
     if (!lobby) 
       return websocket.close()
-    lobby.ws.add(websocket) //if ws already exists, it is not added (Set)
-    
+    lobby.ws.add(websocket)
+    if (lobby.nb_players === 4)
+    {
+      setGame(lobby)
+      const index = lobbies.findIndex(lob => lob === lobby)
+      if (index === 0)
+      {
+        const newLobby: Lobby = {owner: "public", code: '', nb_players: 0, users: ["Player1", "Player2", "Player3", "Player4"], ws: new Set<WebSocket>()}
+        lobbies.splice(index, 1, newLobby)
+      }
+      else
+        lobbies.splice(index, 1)
+    }
+   
+
     websocket.on('message', (data: any) => {
         const message = JSON.parse(data.toString())
 
@@ -122,6 +138,8 @@ export function gameSocketRoute(websocket:  WebSocket, request: FastifyRequest)
             users: lobby.users,
           })))
         }
+
+        
 
         if (message.type === 'DRAW') // message : {type, code, username}
         {

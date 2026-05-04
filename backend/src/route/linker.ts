@@ -21,7 +21,7 @@ export async function linker(server: FastifyInstance)
         	// Check if Token incorrect / modified -> throw
         	const decoded = await server.jwt.verify(token);
         	request.user = decoded;
-			console.log("token decoded")
+			// console.log("token decoded")
     	} catch (err) { reply.code(401).send({ error: "Authentification required" }) }
 	};
 

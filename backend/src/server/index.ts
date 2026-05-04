@@ -8,7 +8,17 @@ const server = fastify();
 
 server.register(fastifyJwt, {secret : 'LeTeckelApoilDurEstUnFoutuClebard'})
 server.register(fastifyCookie, {secret: "AutmanMeRegardeFixement"})
-server.register(websocket)
+
+//Websocket : clientTracking protocol active to keep the socket connected,
+// --> periodic ping-pong between client and server
+server.register(websocket, {
+	options: {
+		clientTracking: true,
+		pingInterval: 30000,
+		pongTimeout: 10000,
+	},
+})
+
 linker(server);
 
 server.listen({ port: 3001, host: '0.0.0.0' }, (err, address) => 

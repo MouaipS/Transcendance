@@ -77,6 +77,7 @@ export function drawCard(game : Game, username: string) : Player | undefined
 //  -> set a game instance in the games Map <code, Game>
 export function setGame(lobby: Lobby)
 {
+    console.log("setGame")
     const decks: Card[][] = buildDecks()
 
     const p1: Player = {username:lobby.users[0], deck: decks[0], score: 0, card: undefined}
@@ -89,6 +90,6 @@ export function setGame(lobby: Lobby)
         players: [p1, p2, p3, p4],
         ws: lobby.ws
     }
-
+    console.log(game)
     addGame(lobby.code, game)
 }
