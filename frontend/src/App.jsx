@@ -3,7 +3,7 @@ import { Login } from "./components/pages/Login.jsx"
 import { Register } from "./components/pages/Register.jsx"
 import { Home } from "./components/pages/Home.jsx"
 import { Rules } from "./components/pages/Rules.jsx"
-import { Statistics } from "./components/pages/Statistics.jsx"
+import { Profile } from "./components/pages/Profile.jsx"
 import { Recipes } from "./components/pages/Recipes.jsx"
 import { ResetPassword } from "./components/pages/ResetPassword.jsx";
 
@@ -37,9 +37,9 @@ const router = createBrowserRouter([
 		</div>
 	},
 	{
-		path: '/statistics',
+		path: '/profile',
 		element: <div>
-			<Statistics/>
+			<Profile/>
 			<ul/>
 			<nav>
 				<Link to="/">Home</Link>

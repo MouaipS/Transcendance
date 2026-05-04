@@ -18,6 +18,11 @@ enum GameStatus {
   FINISHED
 }
 
+enum FriendshipStatus {
+	ACCEPTED
+	WAITING
+}
+
 model User {
 	id						String		@id @default(uuid())
 	username				String		@unique
@@ -32,6 +37,9 @@ model User {
 	// gamesPlayed				GamePlayer[]
 	// friendships				Friend[]	@relation("FriendPlayer")
 	// friendOf				Friend[]	@relation("FriendTarget")
+
+	sentFriendships			Friendship[]	@relation("FriendshipRequest")
+	receivedFriendships		Friendship[]	@relation("FriendshipAnswered")
 }
 
 model Game {
@@ -66,29 +74,32 @@ model StatsUser	{
 	nb_games					Int		@default(0)
 	nb_victories				Int		@default(0)
 	nb_defeats					Int		@default(0)
-	// rank						Int		@default(0)
-	// rank_max					Int		@default(0)
-	// favorite_card				String	@default("None")
-	// avg_reaction_ms				BigInt	@default(0)
-	// most_smashed_card			String	@default("None")
-	// most_combo_smash			String	@default("None")
-	// nb_smash					Int		@default(0)
-	// nb_smash_success			Int		@default(0)
-	// max_win_streak				Int		@default(0)
-	// max_loose_streak			Int		@default(0)
-	// max_smash_success_streak	Int		@default(0)
-	// hours_played				Int		@default(0)
-	// nb_bonus_played				Int		@default(0)
+	rank						Int		@default(0)
+	rank_max					Int		@default(0)
+	favorite_card				String	@default("None")
+	avg_reaction_ms				Int		@default(0)
+	most_smashed_card			String	@default("None")
+	most_combo_smash			String	@default("None")
+	nb_smash					Int		@default(0)
+	nb_smash_success			Int		@default(0)
+	max_win_streak				Int		@default(0)
+	max_loose_streak			Int		@default(0)
+	max_smash_success_streak	Int		@default(0)
+	hours_played				Int		@default(0)
+	nb_bonus_played				Int		@default(0)
 }
 
+model Friendship {
+	id							Int		@id @default(autoincrement())
+	
+	request_id					String
+	requester					User	@relation("FriendshipRequest", fields: [request_id], references: [id], onDelete: Cascade)
 
+	received_id					String
+	receiver					User	@relation("FriendshipAnswered", fields: [received_id], references: [id],onDelete: Cascade)
 
+	status						FriendshipStatus	@default(WAITING)
 
-// model Friend {
-// 	id							Int		@id @default(autoincrement())
-// 	players_id					String
-// 	player						User	@relation("FriendPlayer", fields: [players_id], references: [id])
-// 	friend_id					String
-// 	friend						User	@relation("FriendTarget", fields: [friend_id], references: [id])
-// 	status						Int
-// }
+	//Pour empecher les doublons d'une meme paire
+	@@unique([request_id, received_id])
+}

@@ -19,8 +19,8 @@ services:
       - PARANOIA=2                  #level max des regles possibles
       - BLOCKING_PARANOIA=2         #level max des regles used - peut pas etre <PARANOIA
       #Pour savoir si on applique les regles, si on regarde juste ou pas du tout 
-      - MODSEC_RULE_ENGINE=On
-      #- MODSEC_RULE_ENGINE = DetectionOnly
+      #- MODSEC_RULE_ENGINE=On
+      - MODSEC_RULE_ENGINE=DetectionOnly
       #- MODSEC_RULE_ENGINE = Off
       - ANOMALY_INBOUND=5         #score max pour qualifier une requete entrante comme invalide
       - ANOMALY_OUTBOUND=5      #score max pour qualifier une requete sortante comme invalide
