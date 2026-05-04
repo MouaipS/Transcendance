@@ -105,6 +105,10 @@ export async function joinGameRoute(request : FastifyRequest<{Body: JoinRequestB
   return reply.status(200).send(lobby);
 }
 
+function allDecksEmpty(game : Game) : Boolean
+{
+  return game.players.every(p => p.deck.length === 0)
+}
 
 export function gameSocketRoute(websocket:  WebSocket, request: FastifyRequest)
 {
@@ -146,14 +150,26 @@ export function gameSocketRoute(websocket:  WebSocket, request: FastifyRequest)
         {
             const game = games.get(message.code)!
             const player = drawCard(game, message.username)
+
             // console.log(player)
             //Broadcast
             game.ws.forEach(websocket => websocket.send(JSON.stringify({
               type: 'DRAW',
               player: player, // {id, username, deck, score, card}
           })))
+
+            if (allDecksEmpty(game))
+            {
+              game.winner = game.players.reduce((best, current) => 
+                current.score > best.score ? current : best)
+              game.ws.forEach(websocket => websocket.send(JSON.stringify({
+              type: 'WINNER',
+              winner: game.winner, // {id, username, deck, score, card}
+              })))
+            }
         }
 
+        //
         // if (message.type === 'SMASH')
     })
 }

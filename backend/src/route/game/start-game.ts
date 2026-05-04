@@ -67,8 +67,7 @@ export function drawCard(game : Game, username: string) : Player | undefined
     if (!card)
         return
     player.card = card
-    player.score += card.value    
-    console.log('player object: ', player)
+    player.score += card.value   
     return player
 }
 

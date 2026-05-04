@@ -107,6 +107,11 @@ export function Game () {
           newScore[newNumber] = data.player.score
           return newScore
         })
+
+      }
+
+      if (data.type === 'WINNER') {
+        alert(`bravo ${data.winner.username}`)
       }
     }
 
@@ -147,21 +152,27 @@ export function Game () {
       if (data.type === 'DRAW') {
 
         console.log(data.player)
-        // let i
-        // while (players[i] === data.username && i < 4)
-        //   i++
+        let newNumber = 0
+        while (newNumber !== data.player.id)
+          newNumber++
 
-        // setDecks((prevDecks) => {
-        //   const newDecks = [...prevDecks]
-        //   newDecks[i] = data.deck.length
-        //   return newDecks
-        // })
+        setNumber2(newNumber)
+        
+        setDecks((prevDecks) => {
+          const newDecks = [...prevDecks]
+          newDecks[newNumber] = data.player.deck.length
+          return newDecks
+        })
 
-        // setScore((prevScore) => {
-        //   const newScore = [...prevScore]
-        //   newScore[i] = data.score
-        //   return newScore
-        // })
+        setScore((prevScore) => {
+          const newScore = [...prevScore]
+          newScore[newNumber] = data.player.score
+          return newScore
+        })
+      }
+
+      if (data.type === 'WINNER') {
+        alert("bravo ", data.winner)
       }
     }
 
@@ -305,7 +316,7 @@ export function Game () {
               src="src/components/images/default_avatar.webp"
               className="h-14 w-14 object-cover rounded-s-lg"
             />
-            <span className="pr-4 text-2xl">{players[1]}</span>
+            <span className="pr-4 text-2xl">{players[3]}</span>
           </button>
 
           <div className="relative flex items-center justify-center">
@@ -316,10 +327,10 @@ export function Game () {
             />
             
             <span className="absolute text-white font-bold text-2xl shadow-sm">
-              {decks[1]}
+              {decks[3]}
             </span>
           </div>
-          <div>{score[1]}</div>
+          <div>{score[3]}</div>
         </div>
         
         <img
@@ -349,7 +360,7 @@ export function Game () {
               src="src/components/images/default_avatar.webp"
               className="h-14 w-14 object-cover rounded-s-lg"
             />
-            <span className="pr-4 text-2xl">{players[3]}</span>
+            <span className="pr-4 text-2xl">{players[1]}</span>
           </button>
 
           <div className="relative flex items-center justify-center">
@@ -360,10 +371,10 @@ export function Game () {
             />
             
             <span className="absolute text-white font-bold text-2xl shadow-sm">
-              {decks[3]}
+              {decks[1]}
             </span>
           </div>
-          <div>{score[3]}</div>
+          <div>{score[1]}</div>
         </div>
       </div>
 
