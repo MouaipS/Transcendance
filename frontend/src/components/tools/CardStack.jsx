@@ -35,8 +35,37 @@ export default function CardStack () {
 					zIndex: 20
 				}}
 			>
-			<h3 className="font-serif text-lg mb-2"> {card.title}</h3>
-			<div>{card.content}</div>
+				<div className="flex items-center justify-between mb-1">
+					<h3 className="font-serif text-lg mb-2"> {card.title}</h3>
+					<span className="text-xs text-gray-400 font-mono">
+						{activeIndex + 1} / {total}
+					</span>
+				</div>
+				<div className="border-b border-gray-300 mb-3"></div>
+				<div>{card.content}</div>
+				<div className="flex justify-between items-center mt-3 pt-2 border-t border-gray-200">
+					<button 
+						onClick={prevCard}
+						className="px-3 py-1 border border-slate-400 bg-white hover:bg-slate-100 text-lg font-bold">
+							←
+					</button>
+					<div className="flex gap-1.5">
+						{cardsData.map((_, i) => (
+							<button
+								key={i}
+								onClick={() => setActiveIndex(i)}
+								className={`h-2 w-2  border border-slate-400 
+									${	i === activeIndex ? 'bg-slate-700' : 'bg-white hover:bg-slate-200'}`}
+								arial-label={`Aller à la fiche ${i+1}`}
+							/>
+						))}
+					</div>
+					<button 
+						onClick={nextCard}
+						className="px-3 py-1 border border-slate-400 bg-white hover:bg-slate-100 text-lg font-bold">
+							→
+						</button>
+				</div>
 			</div>
 		</div>
 }	

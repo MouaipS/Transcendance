@@ -21,6 +21,10 @@ const cardsData = [
 	{
 		title: "test 5",
 		content: <p>contenu 5</p>,
+	},
+		{
+		title: "test 6",
+		content: <p>contenu 6</p>,
 	}
 ]
 
