@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Tabs from "../tools/Tabs";
+import CardStack from "../tools/CardStack";
 import michelImg from '../images/michel.jpg';
 import { NavigateButtons } from "../tools/NavigateButtons";
 import { Game } from "../tools/Game";
@@ -88,7 +89,7 @@ export function Home () {
 						</button>
 					</div>
 
-					<Tabs/>
+					<CardStack/>
 				
 					<NavigateButtons/>
           
