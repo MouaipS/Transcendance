@@ -5,7 +5,9 @@ import { Home } from "./components/pages/Home.jsx"
 import { Rules } from "./components/pages/Rules.jsx"
 import { Profile } from "./components/pages/Profile.jsx"
 import { Recipes } from "./components/pages/Recipes.jsx"
-import { ResetPassword } from "./components/pages/ResetPassword.jsx";
+import { ResetPassword } from "./components/pages/ResetPassword.jsx"
+import { NotFound } from "./components/pages/NotFound.jsx"
+
 
 // Architecture du site avec les différentes pages, 
 // leur URL et leur contenu
@@ -62,8 +64,13 @@ const router = createBrowserRouter([
 			<ResetPassword/>
 			<ul/>
 		</div>
+	},
+	{
+		path: '*',
+		element: <NotFound />
 	}
 ])
+
 
 
 function App() {
