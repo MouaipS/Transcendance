@@ -1,211 +1,198 @@
+import {useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { QueryClient, QueryClientProvider, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import carotImg        from '../images/carot.png'
+import poivronImg      from '../images/poivron.png'
+import legumesImg      from '../images/legumes.png'
+import cuttingboardImg from '../images/cuttingboard.png'
 
-export function Rules () {
+const queryClient = new QueryClient()
 
+const SectionTitle = ({ children, number, icon, subtitle }) => (
+	<div className="pt-16 pb-8 animate-slide-in-left">
+		<div className="flex items-end gap-4 mb-3">
+			<div className="font-caprasimo text-4xl sm:text-6xl text-stone-900 leading-none">
+				№{number}
+			</div>
+			<div className="flex-1 pb-2">
+				<div className="h-[3px] bg-stone-900 w-full animate-slide-in-left" />
+			</div>
+			{icon && (
+				<img src={icon} alt="" className="h-10 w-10 sm:h-12 sm:w-12 object-contain" />
+			)}
+		</div>
+		<div className="flex items-baseline gap-3">
+			<h2 className="font-caprasimo text-3xl sm:text-5xl tracking-wide text-stone-900">
+				{children}
+			</h2>
+			{subtitle && (
+				<span className="italic text-stone-700/70 text-sm sm:text-base">
+					— {subtitle}
+				</span>
+			)}
+		</div>
+	</div>
+)
+
+const RulesTab = () => (
+	<div>
+
+		<SectionTitle number="0" icon={legumesImg} subtitle="L'appetit">
+			Conditions de victoires
+		</SectionTitle>
+		<p className="text-stone-700 leading-relaxed max-w-3xl">
+			Le but du jeu est d'avoir le score le plus élevé à la fin du temps impartis ou bien d'avoir récuperer l'ensemble des cartes du jeu.
+			Le jeu s'arrête à ces seuls conditions - ainsi ne plus avoir de cartes ne signifie pas ne plus pouvoir jouer.
+		</p>
+
+
+		<SectionTitle number="I" icon={legumesImg} subtitle="avant le service">
+			MISE EN PLACE ET DEROULEMENT D'UN PLI
+		</SectionTitle>
+		<p className="text-stone-700 leading-relaxed max-w-3xl">
+			Chaque joueur commence la partie avec un paquet identique de cartes, mélangé aléatoirement.
+			Tour à tour, les joueurs retournent la première carte de leur deck au centre de la zone de
+			jeu — et ce jusqu'à ce que l'un d'entre eux remporte le pli. Il existe deux manières d'y
+			parvenir : remplir un récipient ou réussir un smash.
+			Un paquet de carte se compose de 13 ingrédients (10 legumes, 3 viandes), 4 recipients et quelques légumes douteux.
+		</p>
+
+		<SectionTitle number="II" icon={legumesImg} subtitle="remplir son récipient">
+			RÉCIPIENT
+		</SectionTitle>
+		< p className="text-stone-700 leading-relaxed max-w-3xl">
+			Lorsqu'un joueur retourne une carte <strong>Récipient</strong>, le joueur suivant devient
+			son <strong>commis</strong>. Le commis doit remplir ce Récipient en tirant autant de cartes
+			Ingrédients que requis. Si une carte Récipient est tirée à la place d'un ingrédient, le joueur suivant
+			reprend le rôle de commis pour ce nouveau Récipient — et ainsi de suite jusqu'à ce qu'un
+			Récipient soit entièrement rempli ou qu'un smash soit réussi.
+		</p>
+
+		<SectionTitle number="III" icon={legumesImg} subtitle="taper du poing sur la table">
+			SMASH
+		</SectionTitle>
+		< p className="text-stone-700 leading-relaxed max-w-3xl">
+			À tout moment du pli, lorsque les conditions sont remplies, tous les joueurs peuvent
+			smasher — c'est-à-dire être le premier à appuyer sur <kbd className="px-2 py-0.5 border border-stone-400 bg-stone-100 text-xs font-mono rounded">Entrée</kbd>.
+			Le premier qui smash remporte le pli et l'ensemble des cartes. Les conditions pour smasher sont les recettes.
+		</p>
+
+		<SectionTitle number="III" icon={legumesImg} subtitle="chaud devant">
+			RECETTE
+		</SectionTitle>
+		< p className="text-stone-700 leading-relaxed max-w-3xl">
+			Une recette est une liste d'ingrédients qui forme un combo lorsqu'ils se suivent. L'ordre n'a pas d'importance tant que la série n'est pas interrompu par un ingrédient en trop.
+			Pour faire simple : lorsque tous les ingrédients qui la composent sont tirés les uns à la
+			suite des autres, dans n'importe quel ordre. Le premier à smasher remporte le pli et réalise
+			la recette. 
+		</p>
+		<p className="mt-4 text-stone-700 leading-relaxed max-w-3xl">
+			La liste des recettes disponibles pour la partie, ainsi que leurs ingrédients et leurs
+			pouvoirs, est affichée dans le menu situé à gauche de la zone de jeu. Il est impératif de la consulter dès le début de la partie.
+			Tu peux retruver l'ensemble des recettes dans l'onglet <kbd className="px-2 py-0.5 border border-stone-400 bg-stone-100 text-xs font-mono rounded">RECIPES</kbd>.
+		</p>
+
+		<SectionTitle number="III" icon={legumesImg} subtitle="le pot pourris">
+			LEGUMES POURRIS
+		</SectionTitle>
+		< p className="text-stone-700 leading-relaxed max-w-3xl">
+			parmis les ingredients du jeu, on peut tomber sur des légumes plus tres frais. Attention à ne pas faire de recettes avec, il se pourrait qu'ils ne vous apportent aucun bienfait.
+		</p>
+
+	</div>
+	
+)
+
+const CardsTab = () => (
+	<div className="pt-8 text-stone-700 italic">À venir…</div>
+
+)
+
+const RecipesTab = () => (
+	<div className="pt-8 text-stone-700 italic">À venir…</div>
+)
+
+const PageContent = () => {
 	const navigate = useNavigate()
+	const [actifTab, setActifTab] = useState('rules')
 
-	const navigateHome = () => {
-		navigate("/")
-	}
-
-	
-
-	return <>
-	<div className="absolute flex flex-col left-60 right-60 min-h-full px-6 py-12 lg:px-8 border-l border-r bg-amber-100">
-		<div className="py-7 outline -outline-offset-1 relative flex flex-col items-center bg-amber-50 mb-20"> 
-			<div className="absolute top-0 left-0 w-8 h-8 rounded-br-full border-b border-r bg-amber-100"></div>
-			<div className="absolute top-0 right-0 w-8 h-8 rounded-bl-full border-b border-l bg-amber-100"></div>
-			<div className="absolute bottom-0 left-0 w-8 h-8 rounded-tr-full border-t border-r bg-amber-100"></div>
-			<div className="absolute bottom-0 right-0 w-8 h-8 rounded-tl-full border-t border-l bg-amber-100"></div>
-			<button className="absolute -bottom-8 font-bold rounded-full border-[3px] bg-amber-200 w-20 h-16 flex items-center justify-center hover:bg-amber-300" onClick={navigateHome}>HOME</button>
-			<h1 className="font-caprasimo tracking-wide text-center text-8xl text-shadow-lg/20">. . . RÈGLES DU JEU . . .</h1>
+	return (
+		<div className="px-8 pb-8">
+			<Tabs actifTab={actifTab} onChange={setActifTab} />
+			{actifTab ==='rules' && <RulesTab/>}
+			{actifTab ==='cards' && <CardsTab/>}
+			{actifTab ==='recipes' && <RecipesTab/>}
 		</div>
-	
-		<h2 className="pt-10 pb-30 font-caprasimo tracking-wide text-shadow-amber-200 text-shadow-2xs text-center text-6xl">Bienvenus jeunes commis !</h2>
+	)
+}
 
-	<div className="bg-[url(/src/components/images/cuttingboard.png)] scale-110 h-160 place-content-center">
-	<div className="flex flex-row ">
-		<div className="basis-1/3 -translate-x-10">
-		<img 
-			alt="carot"
-			src="src/components/images/carot.png"
-			className=" rotate-y-180 mx-auto h-110 w-auto"
-		/>
+const Tabs = ({actifTab, onChange}) => {
+	const tab = [
+		{id: 'rules', label: 'RULES' },
+		{id: 'cards', label: 'CARDS' },
+		{id: 'recipes', label: 'RECIPES'},
+	]
+
+	return (
+		<div className="flex gap-3 mb-8 animate-slide-in-left">
+			{tab.map((tabN) => {
+				const isActif = actifTab === tabN.id
+
+				const baseClass = "flex-1 px-6 py-3 border-2 border-stone-900 font-bold text-xs sm:text-sm uppercase tracking-[0.3em] transition-all duration-200 hover:-translate-y-0.5"
+				const variantClass = isActif ? 'bg-amber-300 text-stone-900 shadow-[3px_3px_0_0_rgba(28,25,23,1)]' : 'bg-amber-50/80 text-stone-900 hover:bg-amber-100'
+
+				return (
+					<button
+						key={tabN.id}
+						onClick={() => onChange(tabN.id)}
+						className={`${baseClass} ${variantClass}`} >
+								{tabN.label}
+					</button>
+				)
+			})}
 		</div>
+	)
+}
 
-		<div className="basis-1/3">
-			<p className="font-caprasimo text-shadow-lg/30 -rotate-10 -translate-x-10 translate-y-3 text-3xl text-white text-justify">
-				"Nom du jeu" est un jeu de cartes dans lequel vous incarnez des cuisiniers et 
-				cuisinières en plein rush. Vous devez récupérer des ingrédients et confectionner 
-				des plats pour marquer le plus de points possible. Mais en cuisine, le rythme est 
-				soutenu ! Seuls les plus rapides pourront accéder au rang tant convoité de Grand Chef.
-			</p>
-		</div>
-		
-		<div className="basis-1/3 translate-x-10">
-		<img 
-			alt="carot"
-			src="src/components/images/carot.png"
-			className="mx-auto h-110 w-auto"
-		/>
-		</div>
-		</div>
-
-	</div>
-
-	<div className="pt-30 pb-30">
-		<h2 className="font-caprasimo tracking-wide text-shadow-amber-200 text-shadow-2xs text-center text-6xl">. . . BUT DU JEU . . .</h2>
-	</div>
-
-	<div className="mb-8">
-	<p className="text-center">
-		Les joueurs s'affrontent au cours de plis qu'ils doivent remporter pour marquer
-		des points. À la fin du temps imparti, la personne ayant marqué le plus de 
-		points est déclarée vainqueur.
-	</p>
-	</div>
-
-	<div className="mb-5">
-		<h2 className="font-serif text-xl text-center">. . . MATÉRIEL . . .</h2>
-	</div>
-
-	<div className="mb-5">
-		<h1 className="text-center font-bold">Le jeu se compose de 3 types de cartes:</h1>
-	</div>
-
-	<div className="flex flex-row mb-8">
-		<div className="basis-1/3">
-			<p className="text-center">Les cartes Ingrédients</p>
-			<img
-				alt="logo"
-				src="src/components/images/carte.png"
-				className="mx-auto h-35 w-auto"
-			/>
-		</div>
-		<div className="basis-1/3">
-			<p className="text-center">Les cartes Ingrédients Périmés</p>
-			<img
-				alt="logo"
-				src="src/components/images/carte.png"
-				className="mx-auto h-35 w-auto"
-			/>
-		</div>
-		<div className="basis-1/3">
-			<p className="text-center">Les cartes Récipients</p>
-			<img
-				alt="logo"
-				src="src/components/images/carte.png"
-				className="mx-auto h-35 w-auto"
-			/>
-		</div>
-	</div>
-	<p>
-		Chaque joueur commence la partie avec un paquet identique de cartes, 
-		mélangé aléatoirement.
-	</p>
-	<h2>DÉROULEMENT D'UN PLI</h2>
-	<p>
-		Tour à tour, les joueurs vont retourner la première carte de leur deck au centre 
-		de la zone de jeu, et ce jusqu'à ce que l'un d'entre eux remporte le pli. 
-		Il existe trois manières de remporter un pli :
-	</p>
-	<h3>1. Remplir son récipient</h3>
-	<p>
-		Lorsqu'un joueur (A) retourne une carte Récipient, il oblige le joueur suivant 
-		à devenir son commis. Le commis doit maintenant "remplir" le Récipient du joueur 
-		A en tirant autant de cartes que nécessaire. Le nombre de cartes que le commis  
-		doit tirer pour remplir le Récipient du joueur A depend du type de Récipient :
-	</p>
-	<ul>
-			<li>La Cuillère : le commis doit tirer une carte</li>
-    		<li>L'Assiette : le commis doit tirer deux cartes</li>
-    		<li>Le Plat à Gratin : le commis doit tirer trois cartes</li>
-			<li>La Grosse Marmite : le commis doit tirer quatre cartes</li>
-	</ul>
-	<p>
-		Si toutes les cartes tirées par le commis sont des cartes Ingrédients, il 
-		remplit entièrement le récipient du joueur A et lui fait gagner le pli. 
-		Le joueur A récupère alors toutes les cartes au centre de la zone de jeu et 
-		un nouveau pli commence. Mais si l'une des cartes tirées par le commis est 
-		une carte Récipient, alors il cesse immédiatement de tirer des cartes. 
-		C'est maintenant au tour du joueur suivant de devenir commis et de tirer des 
-		cartes pour remplir ce nouveau Récipient. On continue de cette facon, jusqu'à 
-		ce qu'un joueur réussisse à faire remplir son Récipient entièrement par son 
-		commis et remporte le pli.
-	</p>
-	<p>
-		Exemple : Le joueur A tire une carte Assiette. Le joueur suivant, B, devient 
-		alors son commis et doit remplir ce Recipient avec deux Ingrédients. 
-		Le joueur B tire d'abord une carte Poivron (Ingrédient), puis une carte 
-		Cuillère (Récipient à 1 Ingrédient). Il prend alors l'avantage, et oblige 
-		maintenant le joueur suivant, C, à devenir son commis. Le joueur C tire une 
-		carte Carotte (Ingredient), et atteint le nombre d'Ingrédients requis pour 
-		remplir la Cuillère. Le joueur B gagne alors le pli et récupère toutes les 
-		cartes situées au centre de la zone de jeu, qu'il place en dessous de son deck.
-	</p>
-	<h3>2. Smasher des ingredients : taper du poing sur la table !</h3>
-	<p>
-		À tout moment du pli, lorsque les conditions sont remplies, tous les joueurs 
-		ont l'occasion de smasher, c'est-à-dire être le premier joueur à frapper le 
-		centre de la zone de jeu en appuyant sur la touche Entrée.
-	</p>
-	<p>
-		Les conditions requises pour pouvoir smasher des ingrédients sont les suivantes :
-	</p>
-	<ul>
-			<li>
-				DOUBLE : dès que deux cartes identiques sont tirées l'une apres 
-				l'autre. Exemple : le joueur A tire une carte Carotte. Le joueur B 
-				tire une carte Carotte. DOUBLE !!! Le premier joueur qui smashe 
-				remporte le pli.
-			</li>
-    		<li>
-				SANDWICH : dès qu'une carte est en situation dite de Sandwich : 
-				prise entre deux cartes identiques. Exemple : Le joueur A tire une 
-				carte Carotte. Le joueur B tire une carte Oignon. Le joueur C tire 
-				une carte Carotte. SANDWICH !!! Le premier joueur qui smashe remporte 
-				le pli.
-			</li>
-	</ul>
-	<p>
-		_NB : Toute action de smash effectuée alors que les conditions ne sont pas 
-		remplies est considérée comme une faute. Le cuisinier qui en est responsable 
-		subit immédiatement un malus de "N" points et perd "N" cartes de son deck, 
-		qui sont placées immédiatement sous les cartes situées au centre de la zone 
-		de jeu.
-	</p>
-	<p>
-		_NB2 : Si personne ne smashe avant que le joueur suivant retourne une nouvelle 
-		carte, les conditions pour smasher ne sont plus remplies et le jeu reprend 
-		normalement.
-	</p>
-	<h3>3. Réaliser une Recette : chaud devant !</h3>
-	<p>
-		A tout moment du pli, les joueurs ont également la possiblité de smasher pour 
-		réaliser une Recette, c'est-à-dire lorsque chacun des Ingrédients qui composent 
-		l'une des Recettes du jeu sont tirés les uns à la suite des autres. La liste 
-		détaillée des Recettes disponibles pendant cette partie, et les Ingrédients qui 
-		les composent sont indiqués dans le menu situé à gauche de la zone de jeu.
-	</p>
-	<p>
-		Exemple : La Recette Poulet Basquaise, actuellement au menu, est composée de 3 
-		ingrédients : une carte Poulet, une carte Poivron, et une carte Oignon. Si ces 3 
-		cartes Ingrédients sont tirées l'une après l'autre, dans n'importe quel ordre, 
-		il y a RECETTE !!! Le premier joueur qui smashe réalise la recette Poulet 
-		Basquaise et remporte le pli.
-	</p>
-	<p>
-		NB : le Pouvoir des Recettes (à faire)
-	</p>
-	<p>
-		Si elle est smashée avec une rapidité suffisante, chaque recette peut 
-		déclencher un effet intéressant pour le cuisinier qui la réalise. Le pouvoir 
-		associé à chaque recette est indiqué dans le menu situé à gauche de la zone de jeu.
-	</p>
-	<p>
-		NB 2 : Attention aux ingrédients périmés ! (à faire)
-	</p>
-	<button onClick={navigateHome}>Home</button>
-	</div>
+export function Rules() {
+	const navigate = useNavigate()
+	return<>
+		<QueryClientProvider client={queryClient}>
+			<div className="absolute inset-0 min-h-full bg-amber-50 overflow-y-auto">
+				<div className="max-w-6xl mx-auto px-8 py-12">
+					<button
+						onClick={() =>navigate('/')}
+						className="	group inline-flex items-center gap-2 mb-8
+									text-stone-900 hover:text-stone-700
+									transition-colors animate-slide-in-left">
+						<span className="text-2xl group-hover:-translate-x-1 transition-transform">←</span>
+						<span className="text-xs uppercase tracking-[0.3em] font-bold">Retour en cuisine</span>
+					</button>
+					<header className="mb-12 animate-slide-in-left">
+						<div className="flex items-center gap-3 mb-3">
+							<div className="text-xs uppercase tracking-[0.4em] font-bold text-stone-700">gauche</div>
+							<div className="flex-1 h-px bg-stone-900/30"/>
+							<div className="text-xs uppercase tracking-[0.3em] font-bold text-stone-700">Droite</div>
+						</div>
+						<h1 className="	font-caprasimo text-stone-900 leading-[0.85]
+										text-7xl sm:text-8xl lg:text-[10rem]
+										tracking-tighter">
+							Rules
+						</h1>
+						<div className="mt-4 h-1 bg-stone-900"/>
+						<p className="mt-4 text-stone-700 italic max-w-2xl text-sm sm:text-base">
+							
+						</p>
+						<p className="mt-2 text-stone-700 italic max-w-4xl text-sm sm:text-base">
+						" Il est venu à moi, l'Anneau Unique. Il sera l'Héritage de mon royaume. Tous mes descendants seront liés à son destin aussi ne me risquerai-je pas à faire de mal à l'Anneau. Il m'est très précieux, bien que je l'ai acquis avec souffrance. Les inscriptions sur son contour commencent à s'effacer. L'écriture qui au début était aussi lumineuse qu'une flamme rougeoyante a presque disparu. C'est un secret qu'aujourd'hui seul les flammes peuvent révéler. "
+						</p>
+						<p className="mt-2 text-stone-700 italic max-w-4xl text-sm sm:text-base">
+						Comme quoi c'est souvent utile de lire les archives, les parchemins et les règles. Tu trouveras tout ce qu'il te faut ici pour comprendre comment vaincre tes adversaires.
+						</p>
+					</header>
+				</div>
+				<PageContent/>
+			</div>
+		</QueryClientProvider>
 	</>
 }
