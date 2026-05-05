@@ -5,7 +5,6 @@ import michelImg from '../images/michel.jpg';
 import { NavigateButtons } from "../tools/NavigateButtons";
 import { Game } from "../tools/Game";
 
-
 export function Home () {
 
 	const navigate = useNavigate()
@@ -13,7 +12,7 @@ export function Home () {
   const [diff, setDiff] = useState(0)
 
   const logout = async () => {
-    fetch("/api/logout", {
+    fetch("/api/refresh/logout", {
       method: "POST",
       credentials: "include",
     })
@@ -26,37 +25,51 @@ export function Home () {
     })
   };
 
-  useEffect(() => {
+	useEffect(() => {
 
-    const fetchProfile = async () => {
+    	const fetchProfile = async () => {
 
-      console.log("Profile - fetch")
-      fetch('/api/home',
-      {
-        method: "GET",
-        credentials: "include"
-      })
-      .then ((Response) => {
-        if (Response.status === 401) 
-        {
-          console.log("non ", Response.status);
-          navigate("/login")
-        }
-        console.log("Profile - fetch ok");
-        const data = Response.json();
-        return data;           
-      })
-      .then ((data) => {
-        setUsername(data.username)
-      })
-      .catch ((err) => { 
-          console.error("error:", err)
-          navigate("/login")
-      })
-    }
+			try {
+				let response = await fetch("/api/home", {
+					method: "GET",
+					credentials: "include"
+				})
 
-    fetchProfile();
-  }, [navigate]);
+				if (response.status === 401)
+				{
+					try {
+						let refresh = await fetch('/api/refresh', {
+							method: "POST",
+							credentials: "include"
+						})
+						
+						if (refresh.ok) 
+						{
+							try {
+								response = await fetch("/api/home", {
+									method: "GET",
+									credentials: "include"
+								})
+							} catch (err) { console.error("fetch /api/home(2): ", err); }
+
+						} else { console.error("reresh not ok", err) }
+			
+					} catch (err) { console.error("fetch /api/refresh: ", err)}
+				}
+				if (response.ok)
+				{
+					const data = await response.json()
+					setUsername(data.username)
+
+				} else { navigate("/login") }
+
+			} catch (err) { 
+				console.error("fetch /api/home(1): ", err)
+				navigate("/login")
+			}
+		}
+    	fetchProfile();
+  	}, []);
 
 	return <>
 	<div className="relative w-full h-screen overflow-hidden">

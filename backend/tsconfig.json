@@ -3,6 +3,7 @@
 		"target": "es2022",	//Javascript version
 		"module": "nodenext", //Module manager 
 		"moduleResolution": "NodeNext", //How ts finds files with import
+		"types": ["node"],
 		"outDir": "./object", //transpiled scripts location
 		"rootDir": ".", //typescripts files location
 		"strict": true, //like wall werror wextra
