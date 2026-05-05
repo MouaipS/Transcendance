@@ -13,32 +13,12 @@ export async function linker(server: FastifyInstance)
 	
 	const authenticate = async (request: FastifyRequest, reply: FastifyReply) => { //authenticate token function that is called at on request hook
 
-		try {
-    		// Get token from Cookies, if no token -> throw
-        	// const accessToken = request.cookies.accessToken;
-			console.log("Cookies bruts:", request.cookies); 
-			console.log("Cookie accessToken:", request.cookies.accessToken)
-        	// if (!accessToken) return reply.code(401).send({ message: "Missing token" });
-        
-        	// Check if Token incorrect / modified -> throw
+		// check for accesToken in Cookies
+		try {    
         	const decoded = await request.jwtVerify()
         	request.user = decoded;
-			console.log("Token decoded")
 
-    	} catch (err: any) {
-
-			console.log("error content: ", err)
-			// if (err.name === 'FST_JWT_AUTHORIZATION_TOKEN_EXPIRED') {
-				
-			// 	console.log("authenticate error token")
-            // 	return reply.code(401).send({ 
-            //     	error: "Token expired", 
-            //     	code: "TOKEN_EXPIRED" 
-            // 	});
-        	// }
-			console.log("authenticate error any")
-			return reply.code(403).header('WWW-Authenticate', 'Bearer').send();
-		}
+    	} catch (err: any) { return reply.code(401).send({ message: "Authenticate: no cookies or accessToken expired"}); }
 	};
 
 	server.decorate("authenticate", authenticate);

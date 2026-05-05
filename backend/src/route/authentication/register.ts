@@ -1,7 +1,6 @@
 import {FastifyInstance, FastifyRequest, FastifyReply} from 'fastify'
 import { prisma } from "../../server/prisma.js"
 import { hash } from "bcrypt"
-// import '@fastify/jwt'
 
 interface RegisterBody {
   username: string;
@@ -16,7 +15,7 @@ export async function registerRoute(request : FastifyRequest<{Body: RegisterBody
 	const findUser = await prisma.user.findUnique({
 		where: { username : username } //can also put username only
 	});
-	if (findUser) return reply.code(401).send({ error: "User already exist" })
+	if (findUser) return reply.code(401).send({ error: "Register: user already exist" })
 
 	// 2. Register User in database
 	const hashedPassword = await hash(request.body.password, 10);
@@ -35,7 +34,7 @@ export async function registerRoute(request : FastifyRequest<{Body: RegisterBody
 			username: user.username,
 			id: user.id
 		}, { 
-			expiresIn: 60 * 3
+			expiresIn: 60 * 15
 		}
 	); console.log("Access Token created")
 
@@ -43,8 +42,7 @@ export async function registerRoute(request : FastifyRequest<{Body: RegisterBody
 	const refreshToken = await reply.jwtSign({
 		username: user.username 
 	}, {
-		expiresIn: 60 * 10,
-		// secret: process.env.REFRESH_TOKEN_SECRET
+		expiresIn: 60 * 60
 	});
 
 	//5. Update database
@@ -64,7 +62,7 @@ export async function registerRoute(request : FastifyRequest<{Body: RegisterBody
 		secure: true,
         httpOnly: true,
         sameSite: 'strict',
-        maxAge: 60 * 3
+        maxAge: 60 * 15
     });
 	console.log("access cookie created")
 
@@ -73,13 +71,13 @@ export async function registerRoute(request : FastifyRequest<{Body: RegisterBody
 		secure: true,
         httpOnly: true,
         sameSite: 'strict',
-        maxAge: 60 * 10
+        maxAge: 60 * 60
     });
 	console.log("refresh cookie created")
 
 	//4. Send response
 	return reply.code(200).send({
-		message: "Connexion suceeded",
+		message: "Regiser: connexion suceeded",
 		user: {
 			id: user.id,
 			username: user.username

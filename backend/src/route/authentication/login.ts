@@ -1,7 +1,6 @@
 import {FastifyInstance, FastifyRequest, FastifyReply} from 'fastify'
 import { prisma } from "../../server/prisma.js"
 import { compare } from "bcrypt" //imports the compare prisma function
-// import '@fastify/jwt'
 
 interface LoginBody { //this is used to type the request body this prevents from error is types are not respected
   username: string; //like username = request.body.username as string
@@ -10,9 +9,7 @@ interface LoginBody { //this is used to type the request body this prevents from
 
 export async function loginRoute(request : FastifyRequest<{Body: LoginBody}>, reply : FastifyReply)
 {
-	// const cookies = request.cookies;
 	const { username, password } = request.body as any;
-
 
 	// 1. Verifie if User exist in database
 	const findUser = await prisma.user.findUnique({
@@ -31,7 +28,7 @@ export async function loginRoute(request : FastifyRequest<{Body: LoginBody}>, re
 		username: findUser.username,
 		id: findUser.id
 	}, { 
-		expiresIn: 60 * 3
+		expiresIn: 60 * 15
 	});
 	console.log("Access Token created")
 
@@ -39,8 +36,7 @@ export async function loginRoute(request : FastifyRequest<{Body: LoginBody}>, re
 	const refreshToken = await reply.jwtSign({	
 		username: findUser.username 
 	}, {	
-		expiresIn: 60 * 10,
-		// secret: process.env.REFRESH_TOKEN_SECRET!
+		expiresIn: 60 * 60,
 	}); 
 	console.log("Refresh Token created")
 
@@ -61,7 +57,7 @@ export async function loginRoute(request : FastifyRequest<{Body: LoginBody}>, re
 		secure: true,
         httpOnly: true,
         sameSite: 'strict',
-       	maxAge: 60 * 3 // secondes
+       	maxAge: 60 * 15
     }); 
 	console.log("Access Token generated")
 
@@ -70,10 +66,9 @@ export async function loginRoute(request : FastifyRequest<{Body: LoginBody}>, re
 		secure: true,
         httpOnly: true,
         sameSite: 'strict',
-        maxAge: 60 * 10 // secondes
+        maxAge: 60 * 60
     });
 	console.log("Refresh Token generated")
-
 
 	//6. Send response
 	return reply.code(200).send({

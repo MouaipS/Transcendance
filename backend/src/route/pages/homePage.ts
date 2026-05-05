@@ -3,7 +3,6 @@ import { prisma } from "../../server/prisma.js"
 
 export async function homePageRoute(request : FastifyRequest, reply : FastifyReply) 
 {
-    console.log("homePageRoute - debut")
     const {username} = request.user as {username: string}
     const stats = await prisma.user.findUnique({
 		where: {
@@ -20,6 +19,5 @@ export async function homePageRoute(request : FastifyRequest, reply : FastifyRep
             }
         }
 	});
-    console.log("homePageRoute - fin")
 	return reply.status(200).send(stats);
 }

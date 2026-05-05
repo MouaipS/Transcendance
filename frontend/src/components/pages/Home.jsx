@@ -30,57 +30,43 @@ export function Home () {
     	const fetchProfile = async () => {
 
 			try {
-				console.log("Profile - fetch")
 				let response = await fetch("/api/home", {
 					method: "GET",
 					credentials: "include"
 				})
 
-				if (response.status === 403)
+				if (response.status === 401)
 				{
-					console.log("error with token")
 					try {
 						let refresh = await fetch('/api/refresh', {
 							method: "POST",
 							credentials: "include"
 						})
 						
-						if (refresh.ok)
+						if (refresh.ok) 
 						{
-							console.log("token refreshed")
 							try {
 								response = await fetch("/api/home", {
 									method: "GET",
 									credentials: "include"
 								})
-							} catch (err) { console.log("/api/home err: ", err)}
-				
-						} else {
-							console.log("hacked")
-							navigate("/login")
-						}
-			
-					} catch (err) { console.log("/api/refresh err: ", err)}
-				}
+							} catch (err) { console.error("fetch /api/home(2): ", err); }
 
+						} else { console.error("reresh not ok", err) }
+			
+					} catch (err) { console.error("fetch /api/refresh: ", err)}
+				}
 				if (response.ok)
 				{
 					const data = await response.json()
 					setUsername(data.username)
-					console.log("Profile - fetch ok")
-				} else {
-					console.log("Erreur exacte:", err)
-    				console.log("Erreur type:", err.name)
-    				console.log("Erreur message:", err.message)
-					console.log("Profile fetch - no token")
-					navigate("/login")
-				}
+
+				} else { navigate("/login") }
 
 			} catch (err) { 
-				console.log("Profile fetch - no cookies / token")
+				console.error("fetch /api/home(1): ", err)
 				navigate("/login")
 			}
-
 		}
     	fetchProfile();
   	}, []);

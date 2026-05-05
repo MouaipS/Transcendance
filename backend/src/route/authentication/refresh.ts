@@ -1,39 +1,45 @@
 import { prisma } from "../../server/prisma.js"
 import { FastifyRequest, FastifyReply } from 'fastify'
-// import '@fastify/jwt'
 
+interface tokenDecoded {
+	username: string;
+}
 
 export async function refreshRoute(request: FastifyRequest, reply: FastifyReply) {
 
     const refreshToken = request.cookies.refreshToken;
-    if (!refreshToken) return reply.code(401).send({ error: "no token"})
+    if (!refreshToken) return reply.code(401).send({ error: "no refreshToken"})
     
     try {
-        console.log("refresh")
-        const decoded = await request.server.jwt.verify(refreshToken)
         const foundUser = await prisma.user.findFirst({ 
-            where: { 
-                RefreshToken: { has: refreshToken }
-            }   
+            where: { RefreshToken: { has: refreshToken }}   
         });
+        
+        if (!foundUser) {
+                
+            try {
+                const decoded = await request.server.jwt.verify(refreshToken) as tokenDecoded
+                await prisma.user.update({
+                    where: { username: decoded.username},
+                    data: { RefreshToken: { set: [] }}
+                });
+                return reply.code(401).send({ message: "refreshToken Hacked. DB cleared"})
 
-        console.log("user found")
-        // supprimer le tableau de RefreshToken du user
-        if (!foundUser) return reply.code(403).send({ message: "Invalid refresh token - please log in"})
+            } catch (err) { return reply.code(401).send({ message: "Invalid refreshToken"}) }
+        }
 
         const accessToken = await reply.jwtSign({
             username: foundUser.username,
             id: foundUser.id
         }, {   
-            expiresIn: 60 * 3
+            expiresIn: 60 * 15
         });
         
         console.log("access token")
         const newRefreshToken = await reply.jwtSign({
             username: foundUser.username,
         }, {
-            expiresIn: 60 * 10,
-            // secret: process.env.REFRESH_TOKEN_SECRET
+            expiresIn: 60 * 60
         });
 
         console.log("refresh token")
@@ -51,7 +57,7 @@ export async function refreshRoute(request: FastifyRequest, reply: FastifyReply)
             httpOnly: true,
             secure: true,
             sameSite: "strict",
-            maxAge: 60 * 3
+            maxAge: 60 * 15
         });
 
         reply.setCookie("refreshToken", newRefreshToken, {
@@ -59,7 +65,7 @@ export async function refreshRoute(request: FastifyRequest, reply: FastifyReply)
             httpOnly: true,
             secure: true,
             sameSite: "strict",
-            maxAge: 60 * 10
+            maxAge: 60 * 60
         });
 
         console.log("cookies set")
