@@ -38,7 +38,7 @@ export default function CardStack () {
 				<div className="flex items-center justify-between mb-1">
 					<h3 className="font-serif text-lg mb-2"> {card.title}</h3>
 					<span className="text-xs text-gray-400 font-mono">
-						{activeIndex + 1} / {total}
+						{activeIndex + 1}/{total}
 					</span>
 				</div>
 				<div className="border-b border-gray-300 mb-3"></div>

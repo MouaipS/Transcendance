@@ -1,31 +1,65 @@
 
 
+const RulesCard = () => (
+	<div className="text-gray-500 italic">
+		Stats en cours de développement...
+	</div>
+)
+
+const StatsCard = () => (
+	<div className="text-gray-500 italic">
+		Stats en cours de développement...
+	</div>
+
+)
+
+const RecipesCard = () => (
+	<div className="text-gray-500 italic">
+		Stats en cours de développement...
+	</div>
+
+)
+
+const ChatCard = () => (
+	<div className="text-gray-500 italic">
+		Stats en cours de développement...
+	</div>
+
+)
+
+const BrigadeCard = () => (
+	<div className="text-gray-500 italic">
+		Stats en cours de développement...
+	</div>
+
+)
+
+
 //tbleau avec les fiches de la pile
 const cardsData = [
 	{
-		title: "test 1",
-		content: <p>contenu 1</p>,
+		title: "Un peu de stats dans votre plat ?",
+		content: <StatsCard/>,
 	},
 	{
-		title: "test 2",
-		content: <p>contenu 2</p>,
+		title: "Puis-je prendre votre commande ?",
+		content: <ChatCard/>,
 	},
 	{
-		title: "test 3",
-		content: <p>contenu 3</p>,
+		title: "Les recettes du jour",
+		content: <RecipesCard/>,
 	},
 	{
-		title: "test 4",
-		content: <p>contenu 4</p>,
+		title: "Les règles en cuisine",
+		content: <RulesCard/>,
 	},
 	{
-		title: "test 5",
-		content: <p>contenu 5</p>,
-	},
-		{
-		title: "test 6",
-		content: <p>contenu 6</p>,
+		title: "La brigade",
+		content: <BrigadeCard/>,
 	}
 ]
+
+
+
 
 export {cardsData}
