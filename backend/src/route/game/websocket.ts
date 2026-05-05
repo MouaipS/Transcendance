@@ -1,5 +1,6 @@
 import {FastifyInstance, FastifyRequest, FastifyReply} from 'fastify'
 import { WebSocket } from '@fastify/websocket'
+import { prisma } from "../../server/prisma.js"
 import { drawCard , setGame } from "./start-game.js"
 import { joinLobby , codeAlreadyExists , generateGameCode } from "./lobby.js"
 
@@ -29,12 +30,19 @@ export interface Card {
   nb: number;
 }
 
+export interface Stats {
+  victory: number
+  defeat: number
+  // ...
+}
+
 export interface Player {
     id: number;
     username: string;
     deck: Card[];
     score: number;
     card: Card | undefined
+    stats: Stats
 }
 
 export interface Lobby {
@@ -68,13 +76,12 @@ const lobbies: Lobby[] = [{
 export function addGame(code: string, game: Game)
 {
     games.set(code, game)
-    console.log(games)
 }
 
 //Route for private game creation : code generation et setup game variables
 //  receive body : {username, websocket}
 //  reply game : {owner, status, code, nb_players, users[]}
-export async function createGameRoute(request : FastifyRequest<{Body: CreationRequestBody}>, reply : FastifyReply)
+export async function createGameHTTP(request : FastifyRequest<{Body: CreationRequestBody}>, reply : FastifyReply)
 {
   const {username} = request.body
   let code: string = ''
@@ -90,7 +97,7 @@ export async function createGameRoute(request : FastifyRequest<{Body: CreationRe
 //Route to join a private game : comparison of code
 //  receive body : {username, code}
 //  reply game : {owner, status, code, nb_players, users[]}
-export async function joinGameRoute(request : FastifyRequest<{Body: JoinRequestBody}>, reply : FastifyReply)
+export async function joinGameHTTP(request : FastifyRequest<{Body: JoinRequestBody}>, reply : FastifyReply)
 {
   const {username, code} = request.body
   if(!code && lobbies[0].nb_players < 4)                //join public game
@@ -105,71 +112,114 @@ export async function joinGameRoute(request : FastifyRequest<{Body: JoinRequestB
   return reply.status(200).send(lobby);
 }
 
-function allDecksEmpty(game : Game) : Boolean
+function launchGame(lobby : Lobby)
 {
-  return game.players.every(p => p.deck.length === 0)
+  setGame(lobby)
+  const index = lobbies.findIndex(lob => lob === lobby)
+  if (index === 0)
+  {
+    const newLobby: Lobby = {owner: "public", code: '', nb_players: 0, users: ["Player1", "Player2", "Player3", "Player4"], ws: new Set<WebSocket>()}
+    lobbies.splice(index, 1, newLobby)
+  }
+  else
+    lobbies.splice(index, 1)
+}
+
+async function sendStatstoDB(player : Player)
+{
+  const user = await prisma.user.findUnique({
+  where: { username: player.username }
+  })
+  if (!user)
+    return
+
+  const update = await prisma.statsUser.update({
+    where: {player_id: user.id},
+    data: {
+      nb_games: {increment: 1},
+      nb_victories: {increment: player.stats.victory},
+      nb_defeats: {increment: player.stats.defeat},
+  }})
+  console.log('update : ', update)
+}
+
+async function sendGameStats()
+{
+
+}
+
+function endGame(message : any)
+{
+  const game = games.get(message.code)!
+  //Find the winner with the biggest score
+  game.winner = game.players.reduce((best, current) => 
+    current.score > best.score ? current : best)
+  game.winner.stats.victory = 1
+  game.winner.stats.defeat = 0
+
+  //Broadcast winner's name to all players
+  game.ws.forEach(websocket => websocket.send(JSON.stringify({
+    type: 'WINNER',
+    winner: game.winner, // {id, username, deck, score, card}
+   })))
+
+  //Store player's stats and game stats in DB
+  game.players.forEach(player => sendStatstoDB(player))
+  sendGameStats()
+}
+
+function broadcastNewPlayer(lobby : Lobby)
+{
+  lobby.ws?.forEach(websocket => websocket.send(JSON.stringify({
+        type: 'JOIN',
+        users: lobby.users,
+      })))
+}
+
+function broadcastDrawedCard(message : any)
+{
+  const game = games.get(message.code)!
+  const player = drawCard(game, message.username)
+
+  //Broadcast
+  game.ws.forEach(websocket => websocket.send(JSON.stringify({
+    type: 'DRAW',
+    player: player, // {id, username, deck, score, card}
+  })))
+
+  //End of the Game?
+    
 }
 
 export function gameSocketRoute(websocket:  WebSocket, request: FastifyRequest)
 {
-  // Main Road when a websocket is declared. 
+  // MAIN ROAD : when a websocket is declared in front-end. 
   // Add the new WS to the lobby and launch the game if nb_players = 4
   const {code} = request.params as {code: string}
-    const lobby = lobbies.find(lobby => lobby.code === code)
-    if (!lobby) 
-      return websocket.close()
-    lobby.ws.add(websocket)
-    if (lobby.nb_players === 4)
-    {
-      setGame(lobby)
-      const index = lobbies.findIndex(lob => lob === lobby)
-      if (index === 0)
-      {
-        const newLobby: Lobby = {owner: "public", code: '', nb_players: 0, users: ["Player1", "Player2", "Player3", "Player4"], ws: new Set<WebSocket>()}
-        lobbies.splice(index, 1, newLobby)
-      }
-      else
-        lobbies.splice(index, 1)
-    }
-   
+  const lobby = lobbies.find(lobby => lobby.code === code)
+  if (!lobby) 
+    return websocket.close()
+  lobby.ws.add(websocket)
+  if (lobby.nb_players === 4)
+  {
+    lobby.ws.forEach(websocket => websocket.send(JSON.stringify({type: 'START', code: lobby.code})))
+    launchGame(lobby)
+  }
+  
+  //WEBSOCKET.ON 
+  // Defines the behaviour of the new websocket
+  websocket.on('message', (data: any) => {
+    const message = JSON.parse(data.toString())
 
-    websocket.on('message', (data: any) => {
-        const message = JSON.parse(data.toString())
+    if (message.type === 'JOIN') // message : {type, username}
+      broadcastNewPlayer(lobby)
 
-        if (message.type === 'JOIN') // message : {type, username}
-        {
-          lobby.ws?.forEach(websocket => websocket.send(JSON.stringify({
-            type: 'JOIN',
-            users: lobby.users,
-          })))
-        }
+    if (message.type === 'DRAW') // message : {type, code, username}
+      broadcastDrawedCard(message)
 
-        
+      if (message.type === 'END')
+        endGame(message)
 
-        if (message.type === 'DRAW') // message : {type, code, username}
-        {
-            const game = games.get(message.code)!
-            const player = drawCard(game, message.username)
-
-            // console.log(player)
-            //Broadcast
-            game.ws.forEach(websocket => websocket.send(JSON.stringify({
-              type: 'DRAW',
-              player: player, // {id, username, deck, score, card}
-          })))
-
-            if (allDecksEmpty(game))
-            {
-              game.winner = game.players.reduce((best, current) => 
-                current.score > best.score ? current : best)
-              game.ws.forEach(websocket => websocket.send(JSON.stringify({
-              type: 'WINNER',
-              winner: game.winner, // {id, username, deck, score, card}
-              })))
-            }
-        }
-
-        //
-        // if (message.type === 'SMASH')
-    })
+    // if (message.type === 'SMASH')
+  })
 }

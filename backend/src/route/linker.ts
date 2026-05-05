@@ -3,7 +3,7 @@ import {loginRoute} from "../route/authentication/login.js" //this the import fo
 import {registerRoute} from "../route/authentication/register.js"//same but for the register route. NOTE : the path start from the main which is index.ts
 import {logoutRoute} from "../route/authentication/logout.js"
 import {homePageRoute} from "../route/pages/homePage.js"
-import { joinGameRoute , createGameRoute, gameSocketRoute } from './game/websocket.js'
+import { joinGameHTTP , createGameHTTP, gameSocketRoute } from './game/websocket.js'
 import { allFriendsRoute } from './friends/friends.js'
 import { createFriendshipRoute } from './friends/friends.js'
 import { AcceptFriendshipRoute } from './friends/friends.js'
@@ -37,8 +37,8 @@ export async function linker(server: FastifyInstance)
 	server.get('/api/home', {onRequest : [authenticate]}, async (request, reply) => { return homePageRoute(request, reply)});	// homePage display route
 	
 	//HTTP game routes
-	server.post<{Body:any}>('/api/game/join', async (request, reply) => { return joinGameRoute(request, reply)});								// public random game route
-	server.post<{Body:any}>('/api/game/create', async (request, reply) => { return createGameRoute(request, reply)});			// private game creation route
+	server.post<{Body:any}>('/api/game/join', async (request, reply) => { return joinGameHTTP(request, reply)});								// public random game route
+	server.post<{Body:any}>('/api/game/create', async (request, reply) => { return createGameHTTP(request, reply)});			// private game creation route
 
 	//Websockets
 	server.register(() => {
