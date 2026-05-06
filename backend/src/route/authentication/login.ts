@@ -38,7 +38,6 @@ export async function loginRoute(request : FastifyRequest<{Body: LoginBody}>, re
 
 	//3. Set the Cookie and JWT Token
 	const token = await reply.jwtSign({id:user.id, username: user.username}, {expiresIn: '1h' });
-	console.log("token : ", token);
 	reply.setCookie('token', token, {
         path: '/',
         httpOnly: true,

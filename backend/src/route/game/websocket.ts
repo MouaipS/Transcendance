@@ -127,12 +127,14 @@ function launchGame(lobby : Lobby)
 
 async function sendStatstoDB(player : Player)
 {
+  console.log('player:', player)
   const user = await prisma.user.findUnique({
   where: { username: player.username }
   })
   if (!user)
     return
 
+  console.log('userId:', user.id)
   const update = await prisma.statsUser.update({
     where: {player_id: user.id},
     data: {
@@ -143,10 +145,6 @@ async function sendStatstoDB(player : Player)
   console.log('update : ', update)
 }
 
-async function sendGameStats()
-{
-
-}
 
 function endGame(message : any)
 {
@@ -165,7 +163,6 @@ function endGame(message : any)
 
   //Store player's stats and game stats in DB
   game.players.forEach(player => sendStatstoDB(player))
-  sendGameStats()
 }
 
 function broadcastNewPlayer(lobby : Lobby)
@@ -174,9 +171,16 @@ function broadcastNewPlayer(lobby : Lobby)
         type: 'JOIN',
         users: lobby.users,
       })))
+  
+  if (lobby.nb_players === 4)
+  {
+    lobby.code = generateGameCode()
+    console.log(lobby)
+    lobby.ws.forEach(websocket => websocket.send(JSON.stringify({type: 'START', code: lobby.code})))
+  }
 }
 
-function broadcastDrawedCard(message : any)
+function broadcastDrawnCard(message : any)
 {
   const game = games.get(message.code)!
   const player = drawCard(game, message.username)
@@ -202,7 +206,6 @@ export function gameSocketRoute(websocket:  WebSocket, request: FastifyRequest)
   lobby.ws.add(websocket)
   if (lobby.nb_players === 4)
   {
-    lobby.ws.forEach(websocket => websocket.send(JSON.stringify({type: 'START', code: lobby.code})))
     launchGame(lobby)
   }
   
@@ -212,13 +215,15 @@ export function gameSocketRoute(websocket:  WebSocket, request: FastifyRequest)
     const message = JSON.parse(data.toString())
 
     if (message.type === 'JOIN') // message : {type, username}
+    {
       broadcastNewPlayer(lobby)
+    }
 
     if (message.type === 'DRAW') // message : {type, code, username}
-      broadcastDrawedCard(message)
+      broadcastDrawnCard(message)
 
-      if (message.type === 'END')
-        endGame(message)
+    if (message.type === 'END')
+      endGame(message)
 
     // if (message.type === 'SMASH')
   })

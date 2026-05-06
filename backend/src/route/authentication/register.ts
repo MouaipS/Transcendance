@@ -47,7 +47,6 @@ export async function registerRoute(request : FastifyRequest<{Body: RegisterBody
 
 	//3. Set the Cookie and JWT token
 	const token = await reply.jwtSign({id:user.id, username: user.username}, {expiresIn: '1h' });
-	console.log("token : ", token);
 	reply.setCookie('token', token, {
         path: '/',
         httpOnly: true,
