@@ -1,4 +1,6 @@
+import { QueryClient, QueryClientProvider, useQuery} from '@tanstack/react-query'
 
+const queryClient = new QueryClient()
 
 const RulesCard = () => (
 	<div className="text-sm space-y-2">
@@ -14,12 +16,36 @@ const RulesCard = () => (
 	</div>
 )
 
-const StatsCard = () => (
-	<div className="text-gray-500 italic">
-		Stats en cours de développement...
-	</div>
+const StatsCard = () => {
+	const {data, error, isLoading} = useQuery({
+		queryKey: ['stat'],
+		queryFn: () =>
+			fetch('/api/home', {credentials: 'include'})
+				.then(res => res.json())
+	})
 
-)
+	if (isLoading) return <div className="text-gray-500 italic">Chargement</div>
+	if (error) return <div>Erreur</div>
+	if(!data || !data.stats) return <div>Aucune donnée</div>
+
+	const ratio = data.stats.nb_defeats === 0 ? (data.stats.nb_victories > 0 ? "∞" : "0") : (data.stats.nb_victories / data.stats.nb_defeats).toFixed(2)
+
+	const Row = ({ label, value }) => (
+		<div className="flex items-center justify-between 
+			border border-slate-400 px-4 py-2">
+			<span className="font-semibold text-gray-700">{label}</span>
+			<span className="font-bold text-lg">{value}</span>
+		</div>
+	)
+
+	return <div className="flex flex-col gap-2">
+		<Row label="RANK" value={data.stats.rank}/>
+		<Row label="VICTOIRES" value={data.stats.nb_victories}/>
+		<Row label="DEFAITES" value={data.stats.nb_defeats}/>
+		<Row label="RATIO V/D" value={ratio}/>
+		<Row label="MATCHS JOUÉS" value={data.stats.nb_games}/>
+	</div>
+}
 
 const RecipesCard = () => {
 
@@ -72,7 +98,7 @@ const BrigadeCard = () => {
 		{member.map((m, i) => (
 			<div key={i} className="flex items-center gap-3 border border-slate-400 px-3 py-2">
 				<span className={`h-3 w-3 rounded-full ${statusColor[m.status]}`}></span>
-				<span className="font-seimbold">{m.name}</span>
+				<span className="font-semibold">{m.name}</span>
 				<span className="ml-auto text-xs text-gray-500 italic">{m.status}</span>
 			</div>
 		))}
@@ -84,7 +110,9 @@ const BrigadeCard = () => {
 const cardsData = [
 	{
 		title: "Un peu de stats dans votre plat ?",
-		content: <StatsCard/>,
+		content: <QueryClientProvider client={queryClient}>
+				<StatsCard />
+			</QueryClientProvider>,
 	},
 	{
 		title: "Puis-je prendre votre commande ?",
