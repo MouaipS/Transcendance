@@ -18,7 +18,7 @@ export default function CardStack () {
 				<div 
 					key={index}
 					onClick={() => setActiveIndex(idx)}
-					className="absolute inset-0 border border-slate-400 bg-white cursor-pointer hover:bg-slate-50"
+					className="absolute inset-0 bg-stone-300  bg-amber-50/80 border-2 border-stone-900 shadow-md cursor-pointer hover:bg-amber-100 transition-colors"
 					style={{
 						transform: `translate(${index * 6}px, ${index * 6}px)`,
 						zIndex: 10 - index,
@@ -30,25 +30,28 @@ export default function CardStack () {
 
 			{/**fiche premier plan */}
 			<div
-				className="absolute inset-0 border border-slate-400 bg-white p-4 flex flex-col"
+				className="absolute inset-0 bg-stone-900 border-2 border-stone-900 shadow-[3px_3px_0_0_rgba(28,25,23,1)] p-4 flex flex-col"
 				style={{
 					zIndex: 20
 				}}
 			>
 				<div className="flex items-center justify-between mb-1 shrink-0">
-					<h3 className="font-serif text-lg mb-2"> {card.title}</h3>
-					<span className="text-xs text-gray-400 font-mono">
+					<h3 className="font-caprasimo text-sm uppercase tracking-[0.2em] text-amber-300">
+						{card.title}
+					</h3>
+					<span className="text-xs text-amber-300 font-bold font-mono">
 						{activeIndex + 1}/{total}
 					</span>
 				</div>
-				<div className="border-b border-gray-300 mb-3 shrink-0"></div>
-				<div className="flex-1 min-h-0 overflow-auto">
+				<div className="h-px bg-amber-400/40 mb-3 shrink-0"></div>
+				<div className="flex-1 min-h-0 overflow-auto text-amber-50">
 					{card.content}
 				</div>
-				<div className="flex justify-between items-center mt-3 pt-2 border-t border-gray-200 shrink-0">
+				<div className="flex justify-between items-center mt-3 pt-2 border-t border-amber-400/30 shrink-0">
 					<button 
 						onClick={prevCard}
-						className="px-3 py-1 border border-slate-400 bg-white hover:bg-slate-100 text-lg font-bold">
+						className="px-3 py-1 border-2 border-stone-900 bg-amber-50 text-stone-900 text-lg font-bold
+					hover:bg-amber-100 hover:-translate-y-0.5 transition-all">
 							←
 					</button>
 					<div className="flex gap-1.5">
@@ -56,15 +59,16 @@ export default function CardStack () {
 							<button
 								key={i}
 								onClick={() => setActiveIndex(i)}
-								className={`h-2 w-2  border border-slate-400 
-									${	i === activeIndex ? 'bg-slate-700' : 'bg-white hover:bg-slate-200'}`}
+								className={`h-2.5 w-2.5  rounded-full border transition-colors
+									${	i === activeIndex ? 'bg-amber-300 border-stone-900' : 'bg-stone-700 border-amber-400/40 hover:bg-stone-600'}`}
 								arial-label={`Aller à la fiche ${i+1}`}
 							/>
 						))}
 					</div>
 					<button 
 						onClick={nextCard}
-						className="px-3 py-1 border border-slate-400 bg-white hover:bg-slate-100 text-lg font-bold">
+						className="px-3 py-1 border-2 border-stone-900 bg-amber-50 text-stone-900 text-lg font-bold
+					hover:bg-amber-100 hover:-translate-y-0.5 transition-all">
 							→
 						</button>
 				</div>

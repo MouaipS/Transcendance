@@ -3,11 +3,15 @@ import { useNavigate } from 'react-router-dom'
 const queryClient = new QueryClient()
 
 const RulesCard = () => (
-	<div className="text-sm space-y-2">
-		<p>Le but : <span className="font-bold">accumuler le plus de points</span> 
-			en remportant des plis.</p>
-		<p>Façons de gagner un pli :</p>
-		<ul className="list-disc ml-5 space-y-1">
+	<div className="text-sm text-amber-300 text-justify space-y-2">
+		<p>
+			Objectif : <span className="font-caprasimo text-amber-300">
+				accumuler le plus de points
+			</span> en remportant des plis.</p>
+		<p>
+			Façons de gagner un pli :
+		</p>
+		<ul className="list-disc ml-6 space-y-2 text-amber-300">
 			<li>Smasher en cas de paire</li>
 			<li>Smasher en cas de sandwich</li>
 			<li>Smasher un combo</li>
@@ -24,17 +28,17 @@ const StatsCard = () => {
 				.then(res => res.json())
 	})
 
-	if (isLoading) return <div className="text-gray-500 italic">Chargement</div>
-	if (error) return <div>Erreur</div>
-	if(!data || !data.stats) return <div>Aucune donnée</div>
+	if (isLoading) return <div className="text-amber-200/70 italic">Chargement</div>
+	if (error) return <div className="text-red-400">Erreur</div>
+	if(!data || !data.stats) return <div className="text-amber-200/70 italic">Aucune donnée</div>
 
 	const ratio = data.stats.nb_defeats === 0 ? (data.stats.nb_victories > 0 ? "∞" : "0") : (data.stats.nb_victories / data.stats.nb_defeats).toFixed(2)
 
 	const Row = ({ label, value }) => (
 		<div className="flex items-center justify-between 
-			border border-slate-400 px-4 py-2">
-			<span className="font-semibold text-gray-700">{label}</span>
-			<span className="font-bold text-lg">{value}</span>
+			border-2 border-stone-900 bg-amber-50 px-4 py-2">
+			<span className="font-bold text-xs uppercase tracking-[0.2em] text-stone-700">{label}</span>
+			<span className="font-caprasimo text-xl text-stone-900">{value}</span>
 		</div>
 	)
 
@@ -54,15 +58,19 @@ const RecipesCard = () => {
 		{ name: 'Recette B', ingredients: ['concombre', 'cheval'] },
 		{ name: 'Recette C', ingredients: ['poivron', 'oignon', 'tomate'] },
 		{ name: 'Recette C', ingredients: ['poivron', 'oignon', 'tomate'] },
+				{ name: 'Recette A', ingredients: ['navet', 'carotte'] },
+		{ name: 'Recette B', ingredients: ['concombre', 'cheval'] },
+		{ name: 'Recette C', ingredients: ['poivron', 'oignon', 'tomate'] },
+		{ name: 'Recette C', ingredients: ['poivron', 'oignon', 'tomate'] },
 	]
 
 	return <div className="space-y-3">
 		{recipes.map((r, i) => (
 			<div key ={i}>
-				<p className="font-bold text-lg">
+				<p className="font-caprasimo text-lg text-amber-300">
 					{r.name} :
 				</p>
-				<ul className="ml-4 text-sm">
+				<ul className="ml-4 text-sm text-amber-300">
 					{r.ingredients.map((ing, j) => (
 						<li key={j}>
 							|→ {ing}
@@ -75,10 +83,11 @@ const RecipesCard = () => {
 }
 
 const ChatCard = () => (
-	<div className="text-gray-500 italic">
-		Chat en cours de développement...
+	<div className="flex items-center justify-center h-full min-h-32">
+		<p className="text-amber-300 italic text-lg uppercase tracking-[0.3em]">
+			in coming
+		</p>
 	</div>
-
 )
 
 const BrigadeCard = () => {
@@ -86,6 +95,8 @@ const BrigadeCard = () => {
 	const member = [
 
 	]
+	
+	//const member = []
 
 	const statusColor = {
 		'online': 'bg-green-500',
@@ -94,11 +105,11 @@ const BrigadeCard = () => {
 	}
 
 	if(member.length === 0) {
-		return <div className="flex flex-col items-center text-center justify-center gap-4 py-4">
-			<p>T'as besoin de recruter des membres dans ta brigade, chef !</p>
+		return <div className="flex flex-col items-center text-center justify-center h-full min-h-32 gap-4 py-4">
+			<p className="text-base text-amber-300">T'as besoin de recruter des membres dans ta brigade, chef !</p>
 			<button
 				onClick={() => navigate('/profile')}
-				className="border border-slate-400 px-4 py-2 hover:bg-state-100">
+				className="bg-amber-300 border-2 border-stone-900 px-4 py-2 text-xs text-stone-900 font-bold uppercase hover:bg-state-100 transition-all">
 					Gérer les amis
 			</button>
 		</div>
@@ -106,10 +117,10 @@ const BrigadeCard = () => {
 
 	return <div className="flex flex-col gap-2">
 		{member.map((m, i) => (
-			<div key={i} className="flex items-center gap-3 border border-slate-400 px-3 py-2">
-				<span className={`h-3 w-3 rounded-full ${statusColor[m.status]}`}></span>
-				<span className="font-semibold">{m.name}</span>
-				<span className="ml-auto text-xs text-gray-500 italic">{m.status}</span>
+			<div key={i} className="flex items-center gap-3 border-2 border-stone-900 bg-amber-50 px-3 py-2">
+				<span className={`h-3 w-3 rounded-full order border-stone-900 ${statusColor[m.status]}`}></span>
+				<span className="font-caprasimo text-lg text-stone-900">{m.name}</span>
+				<span className="ml-auto text-xs uppercase tracking-[0.2em] text-stone-700 font-bold">{m.status}</span>
 			</div>
 		))}
 	</div>
