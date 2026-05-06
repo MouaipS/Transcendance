@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider, useQuery} from '@tanstack/react-query'
-
+import { useNavigate } from 'react-router-dom'
 const queryClient = new QueryClient()
 
 const RulesCard = () => (
@@ -82,16 +82,26 @@ const ChatCard = () => (
 )
 
 const BrigadeCard = () => {
+	const navigate = useNavigate()
 	const member = [
-		{name : 'Jean', status: 'online'},
-		{name : 'Jeanne', status: 'in-game'},
-		{name : 'Jul', status: 'offline'},
+
 	]
 
 	const statusColor = {
 		'online': 'bg-green-500',
 		'in-game': 'bg-yellow-500',
 		'offline': 'bg-gray-400',
+	}
+
+	if(member.length === 0) {
+		return <div className="flex flex-col items-center text-center justify-center gap-4 py-4">
+			<p>T'as besoin de recruter des membres dans ta brigade, chef !</p>
+			<button
+				onClick={() => navigate('/profile')}
+				className="border border-slate-400 px-4 py-2 hover:bg-state-100">
+					Gérer les amis
+			</button>
+		</div>
 	}
 
 	return <div className="flex flex-col gap-2">
