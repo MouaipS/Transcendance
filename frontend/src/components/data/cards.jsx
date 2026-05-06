@@ -27,6 +27,7 @@ const RecipesCard = () => {
 		{ name: 'Recette A', ingredients: ['navet', 'carotte'] },
 		{ name: 'Recette B', ingredients: ['concombre', 'cheval'] },
 		{ name: 'Recette C', ingredients: ['poivron', 'oignon', 'tomate'] },
+		{ name: 'Recette C', ingredients: ['poivron', 'oignon', 'tomate'] },
 	]
 
 	return <div className="space-y-3">
@@ -54,12 +55,29 @@ const ChatCard = () => (
 
 )
 
-const BrigadeCard = () => (
-	<div className="text-gray-500 italic">
-		Stats en cours de développement...
-	</div>
+const BrigadeCard = () => {
+	const member = [
+		{name : 'Jean', status: 'online'},
+		{name : 'Jeanne', status: 'in-game'},
+		{name : 'Jul', status: 'offline'},
+	]
 
-)
+	const statusColor = {
+		'online': 'bg-green-500',
+		'in-game': 'bg-yellow-500',
+		'offline': 'bg-gray-400',
+	}
+
+	return <div className="flex flex-col gap-2">
+		{member.map((m, i) => (
+			<div key={i} className="flex items-center gap-3 border border-slate-400 px-3 py-2">
+				<span className={`h-3 w-3 rounded-full ${statusColor[m.status]}`}></span>
+				<span className="font-seimbold">{m.name}</span>
+				<span className="ml-auto text-xs text-gray-500 italic">{m.status}</span>
+			</div>
+		))}
+	</div>
+}
 
 
 //tbleau avec les fiches de la pile
