@@ -160,6 +160,7 @@ function endGame(message : any)
   game.winner.stats.defeat = 0
 
   //Broadcast winner's name to all players
+  console.log("\n\nJe broadcast le winner ma gueule : \n\n", game.winner)
   game.ws.forEach(websocket => websocket.send(JSON.stringify({
     type: 'WINNER',
     winner: game.winner, // {id, username, deck, score, card}
@@ -230,6 +231,7 @@ export function gameSocketRoute(websocket:  WebSocket, request: FastifyRequest)
     if (message.type === 'END' && gameEnd === false)
     {
       gameEnd = true
+      console.log("\n\nbien reçu mon capitaine\n\n")
       endGame(message)
     }
 

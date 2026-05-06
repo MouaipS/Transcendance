@@ -58,7 +58,7 @@ export function Game () {
       })
     }
 
-    fetchProfile();
+    fetchProfile()
   }, []);
 
 
@@ -95,6 +95,7 @@ export function Game () {
       }
 
       if (data.type === 'START') {
+        //setCode(data.code)
         setStarting(true)
       }
       
@@ -209,6 +210,8 @@ export function Game () {
           cards.shift()
         setWinner(data.winner.username)
         setEnd(true)
+        if (cards.length != 0)
+          cards.shift()
       }
     }
 
@@ -236,38 +239,53 @@ export function Game () {
   }, [starting, timerStart])
 
 
+  const timerRef = useRef(10)
+  const intervalRef = useRef(null)
 
-  useEffect(()=> {
+  useEffect(() => {
 
-    if (!start) return
+    if (!start) {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+      return
+    }
 
-    const intervalId = setInterval( () => {
+    timerRef.current = 10
+    setTimer(10)
+    setIndex(0)
 
-      if (decks[index % 4] !== 0)
-      {
-        if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN)
-          socketRef.current.send(JSON.stringify({ type: 'DRAW' , username: players[index % 4], code: code}))
-        else
-          console.error("Le socket n'est pas connecté.")
-      }
-      
-      setIndex(prev => prev + 1)
-      setTimer(prev => prev - 1)
+    intervalRef.current = setInterval(() => {
 
-      if (timer === 0)
-      {
-        if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN)
-          socketRef.current.send(JSON.stringify({ type: 'END' , code: code}))
-        else
-          console.error("Le socket n'est pas connecté.")
+      timerRef.current -= 1
+
+      if (timerRef.current <= -1) {
+        if (socketRef.current?.readyState === WebSocket.OPEN) {
+          socketRef.current.send(JSON.stringify({ type: 'END', code }))
+        }
         setStart(false)
+        clearInterval(intervalRef.current)
         return
       }
 
+      setIndex((prevIndex) => {
+        const currIdx = prevIndex % 4
+       
+        if (decks[currIdx] !== 0 && players[currIdx] === username) {
+          if (socketRef.current?.readyState === WebSocket.OPEN) {
+            socketRef.current.send(JSON.stringify({ type: 'DRAW', username, code }))
+          }
+        }
+        return prevIndex + 1
+      })
+
+      setTimer(timerRef.current)
+
     }, 1000)
-    
-    return () => clearInterval(intervalId)
-  }, [start, index, timer])
+
+    return () => {
+      if (intervalRef.current)
+        clearInterval(intervalRef.current)
+    }
+  }, [start, code, username])
 
 
   useEffect(() => {
@@ -329,7 +347,7 @@ export function Game () {
     <div className="flex flex-col">
       <p className="px-5 py-5 absolute text-2xl font-semibold">{code}</p>
 
-      <p className="px-10 py-20 absolute" onClick={() => setStarting(!start)}>start</p>
+      <p className="px-10 py-20 absolute">{timer}</p>
 
       <div dir="ltr" className="px-120 flex py-5">
         <button
