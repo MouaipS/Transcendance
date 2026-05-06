@@ -64,6 +64,9 @@ export interface Game {
 
 const games = new Map<string, Game>()
 
+let gameEnd = false
+
+
 //Creation of arrays Lobbies[] (Game waiting) and Games[] (Games running)
 const lobbies: Lobby[] = [{
   owner: "public",
@@ -135,6 +138,7 @@ async function sendStatstoDB(player : Player)
     return
 
   console.log('userId:', user.id)
+  let gameEnd = false
   const update = await prisma.statsUser.update({
     where: {player_id: user.id},
     data: {
@@ -163,6 +167,7 @@ function endGame(message : any)
 
   //Store player's stats and game stats in DB
   game.players.forEach(player => sendStatstoDB(player))
+  // games.delete(message.code)
 }
 
 function broadcastNewPlayer(lobby : Lobby)
@@ -222,8 +227,11 @@ export function gameSocketRoute(websocket:  WebSocket, request: FastifyRequest)
     if (message.type === 'DRAW') // message : {type, code, username}
       broadcastDrawnCard(message)
 
-    if (message.type === 'END')
+    if (message.type === 'END' && gameEnd === false)
+    {
+      gameEnd = true
       endGame(message)
+    }
 
     // if (message.type === 'SMASH')
   })
