@@ -78,7 +78,7 @@ export function Home () {
         <CardStack/>
         <button
           className=" mt-6 self-start rounded-md bg-yellow-400 px-3 py-1.5 text-sm font-semibold
-                      border border-black shadow-md hover;bg-yellow-300"
+                      border border-black shadow-md hover:bg-yellow-300"
           onClick={logout}>
             Log out
         </button>

@@ -9,7 +9,7 @@ export default function CardStack () {
 	const nextCard = () => setActiveIndex((prev) => (prev + 1) % total)
 	const prevCard = () => setActiveIndex((prev) => (prev -1 + total )% total)
 
-	return <div className="relative max-w-87.5 mt-4">
+	return <div className="relative flex-1 mt-4 mb-10 min-h-0 w-full">
 
 			{/**les fiches en fond */}
 			{[1, 2, 3].map((index) => {
@@ -30,20 +30,22 @@ export default function CardStack () {
 
 			{/**fiche premier plan */}
 			<div
-				className="relative border border-slate-400 bg-white p-4"
+				className="absolute inset-0 border border-slate-400 bg-white p-4 flex flex-col"
 				style={{
 					zIndex: 20
 				}}
 			>
-				<div className="flex items-center justify-between mb-1">
+				<div className="flex items-center justify-between mb-1 shrink-0">
 					<h3 className="font-serif text-lg mb-2"> {card.title}</h3>
 					<span className="text-xs text-gray-400 font-mono">
 						{activeIndex + 1}/{total}
 					</span>
 				</div>
-				<div className="border-b border-gray-300 mb-3"></div>
-				<div>{card.content}</div>
-				<div className="flex justify-between items-center mt-3 pt-2 border-t border-gray-200">
+				<div className="border-b border-gray-300 mb-3 shrink-0"></div>
+				<div className="flex-1 min-h-0 overflow-auto">
+					{card.content}
+				</div>
+				<div className="flex justify-between items-center mt-3 pt-2 border-t border-gray-200 shrink-0">
 					<button 
 						onClick={prevCard}
 						className="px-3 py-1 border border-slate-400 bg-white hover:bg-slate-100 text-lg font-bold">
