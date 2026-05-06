@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import carotImg        from '../images/carot.png'
 import poivronImg      from '../images/poivron.png'
@@ -202,7 +202,8 @@ const FriendCard = ({ entry, index, onAccept, onDelete}) => {
 
 const ProfilContent = () => {
 	const navigate = useNavigate()
-	const [actifTab, setActifTab] = useState('stats')
+	const location = useLocation()
+	const [actifTab, setActifTab] = useState(location.state?.tab || 'stats')
 	
 	const { data, error, isLoading } = useQuery({
 		queryKey: ['profile'],

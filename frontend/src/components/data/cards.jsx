@@ -108,7 +108,7 @@ const BrigadeCard = () => {
 		return <div className="flex flex-col items-center text-center justify-center h-full min-h-32 gap-4 py-4">
 			<p className="text-base text-amber-300">T'as besoin de recruter des membres dans ta brigade, chef !</p>
 			<button
-				onClick={() => navigate('/profile')}
+				onClick={() => navigate('/profile', {state: {tab: 'friends'}})}
 				className="bg-amber-300 border-2 border-stone-900 px-4 py-2 text-xs text-stone-900 font-bold uppercase hover:bg-state-100 transition-all">
 					Gérer les amis
 			</button>
@@ -125,7 +125,6 @@ const BrigadeCard = () => {
 		))}
 	</div>
 }
-
 
 //tbleau avec les fiches de la pile
 const cardsData = [
