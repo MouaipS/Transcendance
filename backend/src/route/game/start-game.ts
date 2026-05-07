@@ -55,19 +55,11 @@ function buildDecks(): Card[][]
 
 //Draw the first card and broadcast informations to all websockets registered
 //  {typeOfEvent, username, score updated, nb_cards, cardName, cardValue}
-export function drawCard(game : Game, username: string) : Player | undefined
+export function drawCard(player : Player) : Card
 {
-    const player: Player | undefined = game.players.find(p => p.username === username)
-    if(!player)
-        return
-    if (player.deck.length === 0)
-        return
-    const card = player.deck.shift()
-    if (!card)
-        return
+    const card = player.deck.shift()!
     player.card = card
-    player.score += card.value   
-    return player
+    return card
 }
 
 //receive Lobby {owner: string; code: string; nb_players: number; users: string[]; ws: set<ws>}
@@ -84,6 +76,7 @@ export function setGame(lobby: Lobby)
     const game: Game = {
         owner: lobby.owner,
         players: [p1, p2, p3, p4],
+        discard: [],
         ws: lobby.ws
     }
     addGame(lobby.code, game)

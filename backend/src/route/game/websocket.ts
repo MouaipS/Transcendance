@@ -56,6 +56,7 @@ export interface Lobby {
 export interface Game {
     owner: string;
     players: Player[];
+    discard: Card[];
     ws: Set<WebSocket>    //we use a Set because only unique values
     winner?: Player;
 }
@@ -192,16 +193,71 @@ function broadcastNewPlayer(lobby : Lobby)
 function broadcastDrawnCard(message : any)
 {
   const game = games.get(message.code)!
-  const player = drawCard(game, message.username)
+  const player = game.players.find(p => p.username === message.username)!
+  game.discard.unshift(drawCard(player))
 
   //Broadcast
   game.ws.forEach(websocket => websocket.send(JSON.stringify({
     type: 'DRAW',
     player: player, // {id, username, deck, score, card}
   })))
+}
 
-  //End of the Game?
-    
+function isSandwichCombo(discard: Card[]) : Boolean
+{
+  if (discard.length < 3)
+    return false
+  return (discard[0].value === discard[2].value)
+}
+
+function isDoubleCombo(discard: Card[]) : Boolean
+{
+  if (discard.length < 2)
+    return false
+  return (discard[0].value === discard[1].value)
+}
+
+// TO BE COMPLETED
+//Analyse discard to verify if smash is good or not
+function validSmash(discard: Card[]) : Boolean
+{
+  if (isDoubleCombo(discard) || isSandwichCombo(discard))
+    return true
+  return false
+}
+
+//Receive message : {type, code, username, cards (3 last)}
+function smashManagement(message: any)
+{
+  let   response : string
+  const game = games.get(message.code)!
+  const player = game.players.find(p => p.username === message.username)!
+  let   trickValue = game.discard.reduce((sum, card) => sum + card.value, 0)
+
+  //Smash verification
+  if (validSmash(game.discard))
+  {
+    player.score += trickValue
+    player.deck.push(...game.discard.reverse())
+    game.discard = []
+    trickValue = 0
+    response = 'SUCCESS'
+  }
+  else if (player.deck.length > 0)
+  {
+    const card = drawCard(player)
+    game.discard.push(card)
+    trickValue += card.value
+    player.deck.shift()
+    response = 'FAIL'
+  }
+
+  //Broadcast
+  game.ws.forEach(websocket => websocket.send(JSON.stringify({
+    type: response,
+    player: player, // Player : {id, username, deck, score, card}
+    trick: trickValue  // Value of the discard
+  })))
 }
 
 export function gameSocketRoute(websocket:  WebSocket, request: FastifyRequest)
@@ -224,9 +280,7 @@ export function gameSocketRoute(websocket:  WebSocket, request: FastifyRequest)
     const message = JSON.parse(data.toString())
 
     if (message.type === 'JOIN') // message : {type, username}
-    {
       broadcastNewPlayer(lobby)
-    }
 
     if (message.type === 'DRAW') // message : {type, code, username}
       broadcastDrawnCard(message)
@@ -237,6 +291,7 @@ export function gameSocketRoute(websocket:  WebSocket, request: FastifyRequest)
       endGame(message)
     }
 
-    // if (message.type === 'SMASH')
+    if (message.type === 'SMASH')
+      smashManagement(message)
   })
 }
