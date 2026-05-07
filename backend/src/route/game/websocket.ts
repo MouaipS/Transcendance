@@ -128,17 +128,14 @@ function launchGame(lobby : Lobby)
     lobbies.splice(index, 1)
 }
 
-async function sendStatstoDB(player : Player)
+async function sendStatstoDB(player : Player, game: Game, code: string)
 {
-  console.log('player:', player)
   const user = await prisma.user.findUnique({
   where: { username: player.username }
   })
   if (!user)
     return
 
-  console.log('userId:', user.id)
-  let gameEnd = false
   const update = await prisma.statsUser.update({
     where: {player_id: user.id},
     data: {
@@ -146,13 +143,20 @@ async function sendStatstoDB(player : Player)
       nb_victories: {increment: player.stats.victory},
       nb_defeats: {increment: player.stats.defeat},
   }})
-  console.log('update : ', update)
+  deleteGame(game, code)
+  gameEnd = false
 }
 
+function deleteGame(game: Game, code: string)
+{
+  game.ws.forEach(ws => ws.close())
+  games.delete(code)
+}
 
 function endGame(message : any)
 {
-  const game = games.get(message.code)!
+  const code = message.code
+  const game = games.get(code)!
   //Find the winner with the biggest score
   game.winner = game.players.reduce((best, current) => 
     current.score > best.score ? current : best)
@@ -160,15 +164,14 @@ function endGame(message : any)
   game.winner.stats.defeat = 0
 
   //Broadcast winner's name to all players
-  console.log("\n\nJe broadcast le winner ma gueule : \n\n", game.winner)
   game.ws.forEach(websocket => websocket.send(JSON.stringify({
     type: 'WINNER',
     winner: game.winner, // {id, username, deck, score, card}
    })))
 
   //Store player's stats and game stats in DB
-  game.players.forEach(player => sendStatstoDB(player))
-  // games.delete(message.code)
+  game.players.forEach(player => sendStatstoDB(player, game, code))
+  
 }
 
 function broadcastNewPlayer(lobby : Lobby)
@@ -231,7 +234,6 @@ export function gameSocketRoute(websocket:  WebSocket, request: FastifyRequest)
     if (message.type === 'END' && gameEnd === false)
     {
       gameEnd = true
-      console.log("\n\nbien reçu mon capitaine\n\n")
       endGame(message)
     }
 
