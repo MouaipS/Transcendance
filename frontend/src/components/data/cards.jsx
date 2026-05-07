@@ -145,6 +145,7 @@ const cardsData = [
 	{
 		title: "Les règles en cuisine",
 		content: <RulesCard/>,
+		seeMore: "/rules"
 	},
 	{
 		title: "La brigade",
