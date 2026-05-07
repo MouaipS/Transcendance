@@ -2,6 +2,7 @@ import Fastify, { FastifyInstance, FastifyRequest, FastifyReply, FastifyPluginAs
 import {loginRoute} from "../route/authentication/login.js" //this the import for loginRoute function that is in the login.js
 import {registerRoute} from "../route/authentication/register.js"//same but for the register route. NOTE : the path start from the main which is index.ts
 import {logoutRoute} from "../route/authentication/logout.js"
+import {refreshRoute} from "../route/authentication/refresh.js"
 import {homePageRoute} from "../route/pages/homePage.js"
 import { joinGameHTTP , createGameHTTP, gameSocketRoute } from './game/websocket.js'
 import { allFriendsRoute } from './friends/friends.js'
@@ -15,16 +16,12 @@ export async function linker(server: FastifyInstance)
 	
 	const authenticate = async (request: FastifyRequest, reply: FastifyReply) => { //authenticate token function that is called at on request hook
 
-		try {
-
-    		// Get token from Cookies, if no token -> throw
-        	const token = request.cookies.token;
-        	if (!token) throw new Error("Missing token");
-        
-        	// Check if Token incorrect / modified -> throw
-        	const decoded = await server.jwt.verify(token);
+		// check for accesToken in Cookies
+		try {    
+        	const decoded = await request.jwtVerify()
         	request.user = decoded;
-    	} catch (err) { reply.code(401).send({ error: "Authentification required" }) }
+
+    	} catch (err: any) { return reply.code(401).send({ message: "Authenticate: no cookies or accessToken expired"}); }
 	};
 
 	server.decorate("authenticate", authenticate);
@@ -32,7 +29,8 @@ export async function linker(server: FastifyInstance)
 	//HTTP routes
 	server.post<{Body: any}>('/api/login', async (request, reply) => { return loginRoute(request, reply)}); 					//login route
 	server.post<{Body: any}>('/api/register', async (request, reply) => { return registerRoute(request, reply)}); 				// registration route
-	server.post('/api/logout', async (request, reply) => { return logoutRoute(reply)}); 										// logout route
+	server.post('/api/refresh/logout', async (request, reply) => { return logoutRoute(request, reply)});
+	server.post('/api/refresh', async (request, reply) => { return refreshRoute(request, reply)}); 									// logout route
 	server.get('/api/home', {onRequest : [authenticate]}, async (request, reply) => { return homePageRoute(request, reply)});	// homePage display route
 	
 	//HTTP game routes

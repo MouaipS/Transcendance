@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Tabs from "../tools/Tabs";
+import CardStack from "../tools/CardStack";
 import michelImg from '../images/michel.jpg';
 import { NavigateButtons } from "../tools/NavigateButtons";
 import { Game } from "../tools/Game";
-
 
 export function Home () {
 
@@ -13,7 +13,7 @@ export function Home () {
   const [diff, setDiff] = useState(0)
 
   const logout = async () => {
-    fetch("/api/logout", {
+    fetch("/api/refresh/logout", {
       method: "POST",
       credentials: "include",
     })
@@ -26,87 +26,91 @@ export function Home () {
     })
   };
 
-  useEffect(() => {
+	useEffect(() => {
 
-    const fetchProfile = async () => {
+    	const fetchProfile = async () => {
 
-      console.log("Profile - fetch")
-      fetch('/api/home',
-      {
-        method: "GET",
-        credentials: "include"
-      })
-      .then ((Response) => {
-        if (Response.status === 401) 
-        {
-          console.log("non ", Response.status);
-          navigate("/login")
-        }
-        console.log("Profile - fetch ok");
-        const data = Response.json();
-        return data;           
-      })
-      .then ((data) => {
-        setUsername(data.username)
-      })
-      .catch ((err) => { 
-          console.error("error:", err)
-          navigate("/login")
-      })
-    }
+			try {
+				let response = await fetch("/api/home", {
+					method: "GET",
+					credentials: "include"
+				})
 
-    fetchProfile();
-  }, [navigate]);
+				if (response.status === 401)
+				{
+					try {
+						let refresh = await fetch('/api/refresh', {
+							method: "POST",
+							credentials: "include"
+						})
+						
+						if (refresh.ok) 
+						{
+							try {
+								response = await fetch("/api/home", {
+									method: "GET",
+									credentials: "include"
+								})
+							} catch (err) { console.error("fetch /api/home(2): ", err); }
+
+						} else { console.error("reresh not ok", err) }
+			
+					} catch (err) { console.error("fetch /api/refresh: ", err)}
+				}
+				if (response.ok)
+				{
+					const data = await response.json()
+					setUsername(data.username)
+
+				} else { navigate("/login") }
+
+			} catch (err) { 
+				console.error("fetch /api/home(1): ", err)
+				navigate("/login")
+			}
+		}
+    	fetchProfile();
+  	}, []);
 
 	return <>
-	<div className="relative w-full h-screen overflow-hidden">
-		<div
-			className="absolute inset-0 bg-cover bg-center"
-			//style={{ backgroundImage: `url(${michelImg})` }}
-		>
-			<div className="gap-50 flex">
-				<div className="absolute flex flex-col left-4">
-					<h2 
-            className="font-serif italic mt-10 mb-2 
-            text-center text-2xl/9 font-bold tracking-tight 
-            text-black">VegeBattle FruitFight bagarre</h2>
+	<div className="relative w-full h-screen overflow-hidden bg-amber-50">
 
-					<div dir="ltr">
-						<button
-							onClick={() => navigate('/profile')}
-							className="flex items-center gap-6 rounded-md 
-							border border-black shadow-md bg-white 
-							text-sm font-medium text-gray-700 hover:bg-gray-50 
-							focus:outline-none mt-5 min-w-40"
-						>
-							<img
-								alt="avatar par défaut"
-								src="src/components/images/default_avatar.webp"
-								className="h-14 w-14 object-cover rounded-s-lg"
-							/>
-							<span className="pr-4 text-2xl">{username}</span>
-						</button>
-					</div>
-
-					<Tabs/>
-				
-					<NavigateButtons/>
-          
-					<div>
-						<h2 className="font-serif text-xl">name: </h2>
-						<button className="bg-yellow-400 border border-black
-							shadow-md hover:shadow-none hover:inset-shadow-xs
-							hover:inset-shadow-black/50" onClick={logout}>Log out</button>
-					</div>
-
-          <div className="absolute min-w-340 min-h-200 rounded border-4 border-black mt-4 
-                flex flex-col left-120 top-10 max-h-200">
-            <Game/>
+    <h1 className="font-caprasimo text-center text-3xl  tracking-tight text-stone-900 pt-6">
+      VEGEBATTLE
+    </h1>
+    <div className="flex gap-8 px-8 pt-6 h-[calc(100vh-100p)]">
+      <div className="flex flex-col w-90 shrink-0 min-h-0">
+        <button
+          onClick={() => navigate('/profile')}
+          className="flex items-center gap-4 border-2 border-stone-900 bg-amber-50/80 hover:bg-amber-100 hover:-translate-y-0.5 transition-all">
+            <img
+              src="src/components/images/default_avatar.webp"
+              className="h-14 w-14 object-cover border-r-2 border-stone-900"
+            />
+          <div className="flex flex-col items-start pr-4 py-1">
+					  <span className=" text-[10px] uppercase tracking-[0.3em] 
+						                  font-bold text-stone-700">
+						Chef en service
+					  </span>
+					  <span className=" font-caprasimo text-2xl text-stone-900 
+                  						leading-none">
+						{username}
+					</span>
           </div>
-
-        </div>
-			</div>
-		</div>
-	</div>
-	</>
+        </button>
+        <CardStack/>
+        <button
+          className=" self-start bg-stone-900 px-4 py-2 text-xs font-bold 
+					            uppercase tracking-[0.3em] text-amber-50 
+					            border-2 border-stone-900"
+          onClick={logout}>
+            Log out
+        </button>
+      </div>
+      <div className="flex-1 border-2 border-stone-900 bg-amber-50/60 overflow-hidden">
+        <Game/>
+      </div>
+    </div>
+  </div>
+</>
 }
