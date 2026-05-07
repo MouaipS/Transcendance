@@ -6,9 +6,9 @@ import {refreshRoute} from "../route/authentication/refresh.js"
 import {homePageRoute} from "../route/pages/homePage.js"
 import { joinGameHTTP , createGameHTTP, gameSocketRoute } from './game/websocket.js'
 import { allFriendsRoute } from './friends/friends.js'
-import { createFriendshipRoute } from './friends/friends.js'
-import { AcceptFriendshipRoute } from './friends/friends.js'
-import { deleteFriendshipRoute } from './friends/friends.js'
+import { createFriendshipRoute, AcceptFriendshipRoute, deleteFriendshipRoute} from './friends/friends.js'
+import { dmHistoryRoute } from './chat/dm.js'
+import { dmSocketRoute } from './chat/dmSocket.js'
 
 //This linker function takes the server as parameter which is a FastifyInstance type (our server)
 export async function linker(server: FastifyInstance)
@@ -47,5 +47,11 @@ export async function linker(server: FastifyInstance)
 	server.post<{Body:any}>('/api/friends',{onRequest: [authenticate]} , async (request, reply) => {return createFriendshipRoute(request, reply)});
 	server.post<{Params: any}>('/api/friends/:id/accept',{onRequest: [authenticate]}, async (request, reply) => {return AcceptFriendshipRoute(request, reply)});
 	server.delete<{Params: any}>('/api/friends/:id',{onRequest: [authenticate]}, async (request, reply) => { return deleteFriendshipRoute(request, reply) });
+
+	//chat
+	server.get<{Params: {friendId: string}}>('/api/chat/:friendId', {onRequest: [authenticate]}, async (request, reply) => dmHistoryRoute(request, reply));
+	server.register(async () => {
+		server.get('/ws/chat', {websocket: true, onRequest: [authenticate]}, dmSocketRoute);
+	})
 }
 
