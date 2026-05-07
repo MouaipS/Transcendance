@@ -57,7 +57,6 @@ function buildDecks(): Card[][]
 //  {typeOfEvent, username, score updated, nb_cards, cardName, cardValue}
 export function drawCard(game : Game, username: string) : Player | undefined
 {
-    console.log('player who draw', username)
     const player: Player | undefined = game.players.find(p => p.username === username)
     if(!player)
         return
@@ -75,19 +74,17 @@ export function drawCard(game : Game, username: string) : Player | undefined
 //  -> set a game instance in the games Map <code, Game>
 export function setGame(lobby: Lobby)
 {
-    console.log("setGame")
     const decks: Card[][] = buildDecks()
 
-    const p1: Player = {id: 0, username:lobby.users[0], deck: decks[0], score: 0, card: undefined}
-    const p2: Player = {id: 1, username:lobby.users[1], deck: decks[1], score: 0, card: undefined}
-    const p3: Player = {id: 2, username:lobby.users[2], deck: decks[2], score: 0, card: undefined}
-    const p4: Player = {id: 3, username:lobby.users[3], deck: decks[3], score: 0, card: undefined}
+    const p1: Player = {id: 0, username:lobby.users[0], deck: decks[0], score: 0, card: undefined, stats: {victory: 0, defeat: 1}}
+    const p2: Player = {id: 1, username:lobby.users[1], deck: decks[1], score: 0, card: undefined, stats: {victory: 0, defeat: 1}}
+    const p3: Player = {id: 2, username:lobby.users[2], deck: decks[2], score: 0, card: undefined, stats: {victory: 0, defeat: 1}}
+    const p4: Player = {id: 3, username:lobby.users[3], deck: decks[3], score: 0, card: undefined, stats: {victory: 0, defeat: 1}}
 
     const game: Game = {
         owner: lobby.owner,
         players: [p1, p2, p3, p4],
         ws: lobby.ws
     }
-    console.log(game)
     addGame(lobby.code, game)
 }

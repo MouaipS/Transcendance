@@ -1,11 +1,17 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, use } from "react";
 import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
 
 
-let cards = ["src/components/images/Dragon.webp",
-   "src/components/images/angel.jpg",
-   "src/components/images/varudras.png" 
-  ]
+const deck = [
+  { nb: 1, src: "src/components/images/card1.png" },
+  { nb: 2, src: "src/components/images/card2.png" },
+  { nb: 3, src: "src/components/images/card3.png" },
+  { nb: 4, src: "src/components/images/card4.png" },
+  { nb: 5, src: "src/components/images/card5.png" },
+  { nb: 6, src: "src/components/images/card6.png" },
+]
+
+let cards = []
 
 const queryClient = new QueryClient()
 
@@ -14,14 +20,16 @@ export function Game () {
 	const [page, setPage] = useState(0)
 	const [code, setCode] = useState('')
   const [username, setUsername] = useState('Michel')
-  const [number, setNumber] = useState(0)
   const [players, setPlayers] = useState()
   const [decks, setDecks] = useState([3, 3, 3, 3])
   const [score, setScore] = useState([0, 0, 0, 0])
   const [start, setStart] = useState(false)
-  const [timer, setTimer] = useState(0)
   const [index, setIndex] = useState(0)
-  const [number2, setNumber2] = useState(0)
+  const [timer, setTimer] = useState(10)
+  const [winner, setWinner] = useState("Michel")
+  const [starting, setStarting] = useState(false)
+  const [timerStart, setTimerStart] = useState(3)
+  const [end, setEnd] = useState(false)
 
   const socketRef = useRef(null)
 
@@ -50,7 +58,7 @@ export function Game () {
       })
     }
 
-    fetchProfile();
+    fetchProfile()
   }, []);
 
 
@@ -85,6 +93,11 @@ export function Game () {
       if (data.type === 'JOIN') {
         setPlayers(data.users)
       }
+
+      if (data.type === 'START') {
+        //setCode(data.code)
+        setStarting(true)
+      }
       
       if (data.type === 'DRAW') {
         
@@ -93,8 +106,6 @@ export function Game () {
         let newNumber = 0
         while (newNumber !== data.player.id)
           newNumber++
-
-        setNumber2(newNumber)
         
         setDecks((prevDecks) => {
           const newDecks = [...prevDecks]
@@ -107,11 +118,25 @@ export function Game () {
           newScore[newNumber] = data.player.score
           return newScore
         })
+        
+        if (cards.length === 3)
+          cards.shift()
+
+        if (cards.length === 0)
+        {
+          cards.push("")
+          cards.push("")
+        }
+
+        cards.push(deck[data.player.card.value - 1].src)
 
       }
 
       if (data.type === 'WINNER') {
-        alert(`bravo ${data.winner.username}`)
+        while (cards.length > 0)
+          cards.shift()
+        setWinner(data.winner.username)
+        setEnd(true)
       }
     }
 
@@ -131,8 +156,6 @@ export function Game () {
 
     const data = await response.json()
 
-    //console.log(data)
-
     setCode(data.code)
     setPlayers(data.users)
 
@@ -151,12 +174,11 @@ export function Game () {
 
       if (data.type === 'DRAW') {
 
-        console.log(data.player)
+        console.log(data)
+
         let newNumber = 0
         while (newNumber !== data.player.id)
           newNumber++
-
-        setNumber2(newNumber)
         
         setDecks((prevDecks) => {
           const newDecks = [...prevDecks]
@@ -169,10 +191,27 @@ export function Game () {
           newScore[newNumber] = data.player.score
           return newScore
         })
+        
+        if (cards.length === 3)
+          cards.shift()
+
+        if (cards.length === 0)
+        {
+          cards.push("")
+          cards.push("")
+        }
+
+        cards.push(deck[data.player.card.value - 1].src)
+
       }
 
       if (data.type === 'WINNER') {
-        alert("bravo ", data.winner)
+        while (cards.length > 0)
+          cards.shift()
+        setWinner(data.winner.username)
+        setEnd(true)
+        if (cards.length != 0)
+          cards.shift()
       }
     }
 
@@ -180,37 +219,74 @@ export function Game () {
     setPage(1)
   }
 
-  useEffect(()=> {
+  useEffect(() => {
 
-    if (!start) return
+    if (!starting) return
 
-    
-    // setDecks((prevDecks) => {
-      //   const newDecks = [...prevDecks]
-      //   newDecks[index % 4] = newDecks[index % 4] - 1
-      //   return newDecks
-      // })
-      
-      // const card = cards[0]
-      // cards.shift()
-      // cards.push(card)
-      
-      // setIndex(prev => prev + 1)
-      const intervalId = setInterval( () => {
+    const intervalId = setInterval ( () => {
+     
+      setTimerStart(prev => prev - 1)
 
-      if (decks[index % 4] !== 0)
+      if (timerStart === 0)
       {
-        if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN)
-          socketRef.current.send(JSON.stringify({ type: 'DRAW' , username: players[index % 4], code: code}))
-        else
-          console.error("Le socket n'est pas connecté.")
+        setStart(true)
+        setStarting(false)
+        return
       }
-      
-      setIndex(prev => prev + 1)
     }, 1000)
-    
+
     return () => clearInterval(intervalId)
-  }, [start, index])
+  }, [starting, timerStart])
+
+
+  const timerRef = useRef(10)
+  const intervalRef = useRef(null)
+
+  useEffect(() => {
+
+    if (!start) {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+      return
+    }
+
+    timerRef.current = 10
+    setTimer(10)
+    setIndex(0)
+
+    intervalRef.current = setInterval(() => {
+
+      timerRef.current -= 1
+
+      if (timerRef.current <= -1) {
+        if (socketRef.current?.readyState === WebSocket.OPEN) {
+          socketRef.current.send(JSON.stringify({ type: 'END', code }))
+        }
+        setStart(false)
+        clearInterval(intervalRef.current)
+        return
+      }
+
+      setIndex((prevIndex) => {
+        const currIdx = prevIndex % 4
+       
+        if (decks[currIdx] !== 0 && players[currIdx] === username) {
+          if (socketRef.current?.readyState === WebSocket.OPEN) {
+            socketRef.current.send(JSON.stringify({ type: 'DRAW', username, code }))
+          }
+        }
+        return prevIndex + 1
+      })
+
+      setTimer(timerRef.current)
+
+    }, 1000)
+
+    return () => {
+      if (intervalRef.current)
+        clearInterval(intervalRef.current)
+    }
+  }, [start, code, username])
+
 
   useEffect(() => {
 
@@ -284,7 +360,7 @@ export function Game () {
     <div className="flex flex-col">
       <p className="px-5 py-5 absolute text-2xl font-semibold">{code}</p>
 
-      <p className="px-10 py-20 absolute" onClick={() => setStart(!start)}>start</p>
+      <p className="px-10 py-20 absolute">{timer}</p>
 
       <div dir="ltr" className="px-120 flex py-5">
         <button
@@ -361,6 +437,10 @@ export function Game () {
           className="h-80 absolute px-140"
         />
 
+        {end && <p className="absolute px-120 py-30 text-4xl">{winner.toUpperCase()} A GAGNÉ !!!</p>}
+
+        {starting && <p className="absolute px-120 py-30 text-3xl">LA PARTIE COMMENCE DANS {timerStart} SECONDES</p>}
+
         <div className="mt-15">
           <button
             className="flex items-center gap-6 rounded-md 
@@ -419,7 +499,6 @@ export function Game () {
         </div>
         <div>{score[2]}</div>
       </div>
-      
 
     </div>
 
