@@ -30,6 +30,10 @@ export function Game () {
   const [starting, setStarting] = useState(false)
   const [timerStart, setTimerStart] = useState(3)
   const [end, setEnd] = useState(false)
+  const [pause, setPause] = useState(false)
+  const [smasher, setSmasher] = useState('Michel')
+  const [success, setSuccess] = useState(false)
+  const [fail, setFail] = useState(false)
 
   const socketRef = useRef(null)
 
@@ -102,20 +106,16 @@ export function Game () {
       if (data.type === 'DRAW') {
         
         console.log (data)
-
-        let newNumber = 0
-        while (newNumber !== data.player.id)
-          newNumber++
         
         setDecks((prevDecks) => {
           const newDecks = [...prevDecks]
-          newDecks[newNumber] = data.player.deck.length
+          newDecks[data.player.id] = data.player.deck.length
           return newDecks
         })
 
         setScore((prevScore) => {
           const newScore = [...prevScore]
-          newScore[newNumber] = data.player.score
+          newScore[data.player.id] = data.player.score
           return newScore
         })
         
@@ -129,7 +129,74 @@ export function Game () {
         }
 
         cards.push(deck[data.player.card.value - 1].src)
+      }
 
+      if (data.type === 'FAIL') {
+        setPause(true)
+        setFail(true)
+        
+        setDecks((prevDecks) => {
+          const newDecks = [...prevDecks]
+          newDecks[data.player.id] = data.player.deck.length
+          return newDecks
+        })
+
+        setScore((prevScore) => {
+          const newScore = [...prevScore]
+          newScore[data.player.id] = data.player.score
+          return newScore
+        })
+
+        setSmasher(data.player.username)
+
+        setTimerStart(2)
+        const intervalId = setInterval ( () => {
+          setTimerStart(prev => prev - 1)
+
+          if (timerStart === 0)
+            return
+
+        }, 1000)
+
+        clearInterval(intervalId)
+
+        setFail(false)
+        setPause(false)
+      }
+
+      if (data.type === 'SUCCESS') {
+        setPause(true)
+        setSuccess(true)
+        
+        setDecks((prevDecks) => {
+          const newDecks = [...prevDecks]
+          newDecks[data.player.id] = data.player.deck.length
+          return newDecks
+        })
+        
+        setScore((prevScore) => {
+          const newScore = [...prevScore]
+          newScore[data.player.id] = data.player.score
+          return newScore
+        })
+        
+        setSmasher(data.player.username)
+        while (cards.length > 0)
+          cards.shift()
+        
+        setTimerStart(2)
+        const intervalId = setInterval ( () => {
+          setTimerStart(prev => prev - 1)
+          
+          if (timerStart === 0)
+            return
+          
+        }, 1000)
+
+        clearInterval(intervalId)
+
+        setSuccess(false)
+        setPause(false)
       }
 
       if (data.type === 'WINNER') {
@@ -197,8 +264,8 @@ export function Game () {
 
         if (cards.length === 0)
         {
-          cards.push("")
-          cards.push("")
+          cards.push("oui")
+          cards.push("oui")
         }
 
         cards.push(deck[data.player.card.value - 1].src)
@@ -239,6 +306,19 @@ export function Game () {
   }, [starting, timerStart])
 
 
+  useEffect(() => {
+    if (!start) return
+    document.addEventListener('keyup', detectKeyUp, true)
+  }, [start])
+
+  const detectKeyUp = (e) => {
+    if (e.key === " ")
+      if (socketRef.current?.readyState === WebSocket.OPEN) {
+        socketRef.current.send(JSON.stringify({ type: 'SMASH', code, username }))
+      }
+  }
+
+
   const timerRef = useRef(10)
   const intervalRef = useRef(null)
 
@@ -249,11 +329,13 @@ export function Game () {
       return
     }
 
-    timerRef.current = 10
-    setTimer(10)
-    setIndex(0)
+    //timerRef.current = 10
+    //setTimer(timerRef.current)
+    //setIndex(0)
 
     intervalRef.current = setInterval(() => {
+
+      if (pause) return
 
       timerRef.current -= 1
 
@@ -285,7 +367,7 @@ export function Game () {
       if (intervalRef.current)
         clearInterval(intervalRef.current)
     }
-  }, [start, code, username])
+  }, [start, code, username, pause])
 
 
   useEffect(() => {
@@ -300,7 +382,7 @@ export function Game () {
 
 	return <>
 		{page === 0 && 
-<div className="flex flex-col gap-30 px-8 py-12 max-w-2xl mx-auto h-full justify-center">
+    <div className="flex flex-col gap-30 px-8 py-12 max-w-2xl mx-auto h-full justify-center">
       <button 
 				className=" bg-amber-300 px-8 py-6 text-stone-900 font-caprasimo text-3xl uppercase tracking-[0.2em] 
                     border-2 border-stone-900 shadow-[4px_4px_0_0_rgba(28,25,23,1)] hover:bg-amber-400 hover:-translate-y-1 
@@ -440,6 +522,9 @@ export function Game () {
         {end && <p className="absolute px-120 py-30 text-4xl">{winner.toUpperCase()} A GAGNÉ !!!</p>}
 
         {starting && <p className="absolute px-120 py-30 text-3xl">LA PARTIE COMMENCE DANS {timerStart} SECONDES</p>}
+
+        {pause && fail && <p className="absolute px-120 py-30 text-3xl">{smasher.toUpperCase()} A SMASH !!! EPIC FAIL BRUH ! </p>}
+        {pause && success && <p className="absolute px-120 py-30 text-3xl">{smasher.toUpperCase()} A SMASH !!! EPIC WIN WOW ! </p>}
 
         <div className="mt-15">
           <button
