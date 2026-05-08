@@ -129,12 +129,13 @@ export function Game () {
         }
 
         cards.push(deck[data.player.card.value - 1].src)
+        console.log('cards front: ', cards)
       }
 
       if (data.type === 'FAIL') {
         setPause(true)
         setFail(true)
-        
+
         setDecks((prevDecks) => {
           const newDecks = [...prevDecks]
           newDecks[data.player.id] = data.player.deck.length
@@ -307,13 +308,13 @@ export function Game () {
 
 
   useEffect(() => {
-    if (!start) return
     document.addEventListener('keyup', detectKeyUp, true)
-  }, [start])
+  }, [])
 
   const detectKeyUp = (e) => {
     if (e.key === " ")
       if (socketRef.current?.readyState === WebSocket.OPEN) {
+        console.log("j'a tapé")
         socketRef.current.send(JSON.stringify({ type: 'SMASH', code, username }))
       }
   }
@@ -332,10 +333,13 @@ export function Game () {
     //timerRef.current = 10
     //setTimer(timerRef.current)
     //setIndex(0)
+    if (pause) {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+      return
+    }
 
     intervalRef.current = setInterval(() => {
 
-      if (pause) return
 
       timerRef.current -= 1
 
