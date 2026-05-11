@@ -338,10 +338,10 @@ const FriendsTab = () => {
             }
             return res.json()
         }),
-    onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['friends'] })
-    }
-})
+    	onSuccess: () => {
+        	queryClient.invalidateQueries({ queryKey: ['friends'] })
+    		}
+	})
 
 	if (isLoading) return <div>Loading...</div>
 	if (error) return <div>Error : {error.message}</div>
