@@ -9,6 +9,8 @@ export async function homePageRoute(request : FastifyRequest, reply : FastifyRep
 			username: username,
 		},
         select: {
+			//permet au front de savoir l'identité de l'expediteur
+			id : true,
             username: true,
             stats: {
                 select: {
