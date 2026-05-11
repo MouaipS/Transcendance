@@ -3,6 +3,7 @@ import {useQuery} from '@tanstack/react-query'
 
 export function ChatCard() {
 
+	
 	const [activeFriend, setActiveFriend] = useState(null)
 	const [messagesByFriend, setMessagesByFriend] = useState({})
 	const socketRef = useRef(null)
@@ -19,6 +20,7 @@ export function ChatCard() {
 
 	const currentUserId = homeData?.id ?? null
 
+	//recuperer la liste des amis
 	const {data: friendsData, isLoading, error } = useQuery ({
 		queryKey: ['friends'],
 		queryFn: () => fetch('/api/friends', {credentials : 'include'})
@@ -27,17 +29,21 @@ export function ChatCard() {
 
 	const friends = friendsData?.friends ?? []
 
+	//connexion WebSocket persistante
 	useEffect(() => {
 		if (!currentUserId) return
 
+		//creation du websok
 		const socket = new WebSocket(`wss://${window.location.host}/ws/chat`)
 		socketRef.current = socket
 
+		//si tout va bien
 		socket.onopen = () => {
 			setIsConnected(true) 
 			console.log('[DMSocket] connecté')
 		}
 
+		//declenché en cas de message
 		socket.onmessage = (event) => {
 			const data = JSON.parse(event.data)
 			if(data.type !== 'DM') return
@@ -46,6 +52,7 @@ export function ChatCard() {
 
 			const otherId = data.sender_id === currentUserId ? data.receiver_id : data.sender_id
 
+			//update et ajout du message
 			setMessagesByFriend(prev => ({
 				...prev, [otherId]: [...(prev[otherId] ?? []), data],
 			}))
@@ -61,6 +68,7 @@ export function ChatCard() {
 
 	}, [currentUserId])
 
+	//chargement de l'historique HTTP
 	useEffect(() => {
 		if (!activeFriend) return
 
@@ -76,9 +84,11 @@ export function ChatCard() {
 			})
 	}, [activeFriend])
 
+	//auto scroll vers le dernier obj
 	useEffect(() => {
 		messageEndRef.current?.scrollIntoView({behavior: 'smooth'})
 	}, [activeFriend ? messagesByFriend[activeFriend.user_id]?.length : 0])
+
 
 	useEffect(() => {
         if (activeFriend && isConnected) {
@@ -86,6 +96,7 @@ export function ChatCard() {
         }
     }, [activeFriend, isConnected])
 
+	//pour envoyer le message
 	const sendMessage = () => {
 		const content = draft.trim()
 		if(!content || !activeFriend) return
@@ -117,23 +128,23 @@ export function ChatCard() {
 
 
 		return (
-    		<div className="flex flex-col gap-2">
-    		    <p className="text-amber-300 text-xs uppercase tracking-[0.2em] mb-1">
-    		        Tes contacts
-    		    </p>
-    		    {friends.map(f => (
-    		        <button
-    		            key={f.user_id}
-    		            onClick={() => setActiveFriend(f)}
-    		            className="flex items-center gap-3 border-2 border-stone-900 bg-amber-50 px-3 py-2
-    		                hover:bg-amber-100 hover:-translate-y-0.5 transition-all">
-    		            <span className="font-caprasimo text-lg text-stone-900">
-    		                {f.username}
-    		            </span>
-    		            <span className="ml-auto text-stone-700 font-bold">→</span>
-    		        </button>
-    		    ))}
-    		</div>
+			<div className="flex flex-col gap-2">
+				<p className="text-amber-300 text-xs uppercase tracking-[0.2em] mb-1">
+					Tes contacts
+				</p>
+				{friends.map(f => (
+					<button
+						key={f.user_id}
+						onClick={() => setActiveFriend(f)}
+						className="flex items-center gap-3 border-2 border-stone-900 bg-amber-50 px-3 py-2
+							hover:bg-amber-100 hover:-translate-y-0.5 transition-all">
+						<span className="font-caprasimo text-lg text-stone-900">
+							{f.username}
+						</span>
+						<span className="ml-auto text-stone-700 font-bold">→</span>
+					</button>
+				))}
+			</div>
 		)
 	}
 

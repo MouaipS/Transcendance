@@ -109,20 +109,27 @@ model Friendship {
 }
 
 model Message {
+	//clef primaire auto-incrémentée (augmente à chaque insert)
 	id							Int		@id @default(autoincrement())
 
-	//Expediteur
+	///expéditeur
+	//clef etrenagère vers User.id
 	sender_id					String
+	//relation entre Message et User
 	sender						User	@relation("MessageSender", fields:[sender_id], references: [id], onDelete: Cascade)
 
-	//Desti
+	///Destinataire - meme chose mais avec un autre User
 	receiver_id					String
 	reciever					User	@relation("MessageReceiver", fields:[receiver_id], references: [id], onDelete: Cascade)
 
+	//contenu du message avec limite de 1000 char
 	content						String	@db.VarChar(1000)
+	//timestamp de creation du message
 	created_at					DateTime @default(now())
+	//message status
 	is_read						Boolean	@default(false)
 
+	//Pour la performance de PostgreSQL qui cherche avec un OR
 	@@index([sender_id, receiver_id, created_at])
 	@@index([receiver_id, sender_id, created_at])
 }
