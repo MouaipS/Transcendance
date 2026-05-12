@@ -7,18 +7,32 @@ const DECK_CONFIG: Card[] = [
     {name:"2", value: 2, nb: 4},
     {name:"3", value: 3, nb: 4},
     {name:"4", value: 4, nb: 4},
-    // {name:"A", value: 1, nb: 2},
-    // {name:"B", value: 1, nb: 2},
-    // {name:"C", value: 1, nb: 2},
-    // {name:"D", value: 1, nb: 2},
+    {name:"A", value: 1, nb: 2},
+    {name:"B", value: 1, nb: 2},
+    {name:"C", value: 1, nb: 2},
+    {name:"D", value: 1, nb: 2},
 ]
 
 export const PENALTY: number = 5
 
-export function isHead(card : Card) : Boolean
+export function isHead(card : Card, head : number) : number
 {
     const regex = /^[A-Z]$/
-    return (regex.test(card.name))
+    if (regex.test(card.name))
+    {
+        switch (card.name)
+        {
+            case "A":
+                return 1
+            case "B":
+                return 2
+            case "C":
+                return 3
+            case "D":
+                return 4
+        }
+    }
+    return head
 }
 
 export function previousIndex(index : number) : number

@@ -84,7 +84,7 @@ const lobbies: Lobby[] = [{
 export function addGame(code: string, game: Game)
 {
     games.set(code, game)
-    launchGameRoutine(game)
+    gameRoutine(game)
 }
 
 function launchTimer(lobby : Lobby)
@@ -95,23 +95,40 @@ function launchTimer(lobby : Lobby)
       type: 'TIME',
       time: time,
     })))
-    if (time == 0)
+    if (time === 0)
       clearInterval(interval)
-  }, 1000);
+  }, 2000);
 }
 
-function launchGameRoutine(game : Game)
+function gameRoutine(game : Game)
 {
   let i = 0;
+  let headOn = false
+  let head = 0;
   const interval = setInterval(() => {
-    drawCard(game, game.players[i++])  
-    if (time == 0)
+    if (head != 0)
+      head--
+    const card = drawCard(game, game.players[i % 4])
+    head = isHead(card, head)
+    if (headOn == false && head != 0)
+      headOn = true
+    console.log('card : ', card)
+    console.log('headOn : ', headOn)
+    console.log('head :', head)
+    if (headOn == true && head == 0)
+    {
+        headOn = false
+        endTrick(game, game.players[--i % 4])
+    }
+    else if (headOn == false)
+      i++
+    if (time === 0)
     {
       gameEnd = true
       endGame(game)
       clearInterval(interval)
     }
-  }, 1000)
+  }, 2000)
 }
 
 //Route for private game creation : code generation et setup game variables
@@ -219,7 +236,7 @@ function broadcastNewPlayer(lobby : Lobby)
   }
 }
 
-function drawCard(game : Game, player : Player)
+function drawCard(game : Game, player : Player) : Card
 {
   smashOk = true
   const card = player.deck.shift()!
@@ -231,20 +248,16 @@ function drawCard(game : Game, player : Player)
   {
     gameEnd = true
     endGame(game)
-    return
   }
-  game.ws.forEach(websocket => websocket.send(JSON.stringify({
-    type: 'DRAW',
-    player: player, // {id, username, deck, score, card}
-    discard_value: game.discard_value,
-  })))
-  // if(isHead(card))
-  // {
-    
-  // }
-  // else 
-  // {
-  // }
+  else
+  {
+    game.ws.forEach(websocket => websocket.send(JSON.stringify({
+      type: 'DRAW',
+      player: player, // {id, username, deck, score, card}
+      discard_value: game.discard_value,
+    })))
+  }
+  return card
 }
 
 
@@ -287,12 +300,8 @@ function smashManagement(message: any)
   smashOk = false
 }
 
-function endTrick(message : any)
+function endTrick(game : Game, winner : Player)
 {
-  const game = games.get(message.code)!
-  const looser = game.players.find(p => p.username === message.username)!
-  const winner = game.players[previousIndex(looser.id)]
-
   winTrick(game, winner)
 
   //Broadcast

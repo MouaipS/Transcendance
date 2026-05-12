@@ -39,6 +39,7 @@ export function Game () {
   const [success, setSuccess] = useState(false)
   const [fail, setFail] = useState(false)
   const [discard, setDiscard] = useState()
+  const [player, setPlayer] = useState(0)
 
   const socketRef = useRef(null)
 
@@ -99,6 +100,8 @@ export function Game () {
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data)
+      console.log (data)
+
       if (data.type === 'JOIN') {
         setPlayers(data.users)
       }
@@ -109,8 +112,6 @@ export function Game () {
       }
       
       if (data.type === 'DRAW') {
-        
-        console.log (data)
         
         setDecks((prevDecks) => {
           const newDecks = [...prevDecks]
@@ -125,6 +126,8 @@ export function Game () {
           newScore[data.player.id] = data.player.score
           return newScore
         })
+
+        setPlayer(data.player.id)
         
         if (cards.length === 3)
           cards.shift()
@@ -244,7 +247,6 @@ export function Game () {
 
       if (data.type === 'WINNER') {
         setStart(false)
-        clearInterval(intervalRef.current)
         while (cards.length > 0)
           cards.shift()
         setWinner(data.winner.username)
@@ -332,24 +334,24 @@ export function Game () {
     setPage(1)
   }
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    if (!starting) return
+  //   if (!starting) return
 
-    const intervalId = setInterval ( () => {
+  //   const intervalId = setInterval ( () => {
      
-      setTimerStart(prev => prev - 1)
+  //     setTimerStart(prev => prev - 1)
 
-      if (timerStart === 0)
-      {
-        setStart(true)
-        setStarting(false)
-        return
-      }
-    }, 1000)
+  //     if (timerStart === 0)
+  //     {
+  //       setStart(true)
+  //       setStarting(false)
+  //       return
+  //     }
+  //   }, 1000)
 
-    return () => clearInterval(intervalId)
-  }, [starting, timerStart])
+  //   return () => clearInterval(intervalId)
+  // }, [starting, timerStart])
 
 
   useEffect(() => {
@@ -369,64 +371,74 @@ export function Game () {
   }, [username])
 
 
-  const timerRef = useRef(30)
-  const intervalRef = useRef(null)
+  // const timerRef = useRef(30)
+  // const intervalRef = useRef(null)
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    if (!start || pause) {
-      if (intervalRef.current) clearInterval(intervalRef.current)
-      return
-    }
+  //   if (!start || pause) {
+  //     if (intervalRef.current) clearInterval(intervalRef.current)
+  //     return
+  //   }
 
-    intervalRef.current = setInterval(() => {
+  //   intervalRef.current = setInterval(() => {
 
-      if (timerRef.current <= 0) {
-        if (socketRef.current?.readyState === WebSocket.OPEN) {
-          socketRef.current.send(JSON.stringify({ type: 'END', code }))
-        }
-        return
-      }
+  //     if (timerRef.current <= 0) {
+  //       if (socketRef.current?.readyState === WebSocket.OPEN) {
+  //         socketRef.current.send(JSON.stringify({ type: 'END', code }))
+  //       }
+  //       return
+  //     }
 
-      timerRef.current -= 1
-      setTimer(timerRef.current)
+  //     timerRef.current -= 1
+  //     setTimer(timerRef.current)
 
-      setIndex((prevIndex) => {
-        let nextIdx = prevIndex % 4
+  //     setIndex((prevIndex) => {
+  //       let nextIdx = prevIndex % 4
       
-        let attempts = 0
-        while (decks[nextIdx] === 0 && attempts < 4) {
-          nextIdx = (nextIdx + 1) % 4
-          attempts++
-        }
+  //       let attempts = 0
+  //       while (decks[nextIdx] === 0 && attempts < 4) {
+  //         nextIdx = (nextIdx + 1) % 4
+  //         attempts++
+  //       }
 
-        if (decks[nextIdx] !== 0 && players[nextIdx] === username) {
-          if (socketRef.current?.readyState === WebSocket.OPEN) {
-            socketRef.current.send(JSON.stringify({ type: 'DRAW', username, code }))
-          }
-        }
-        return nextIdx + 1
-      })
+  //       if (decks[nextIdx] !== 0 && players[nextIdx] === username) {
+  //         if (socketRef.current?.readyState === WebSocket.OPEN) {
+  //           socketRef.current.send(JSON.stringify({ type: 'DRAW', username, code }))
+  //         }
+  //       }
+  //       return nextIdx + 1
+  //     })
 
-      setTimer(timerRef.current)
+  //     setTimer(timerRef.current)
 
-    }, 1000)
+  //   }, 1000)
 
-    return () => {
-      if (intervalRef.current)
-        clearInterval(intervalRef.current)
-    }
-  }, [start, pause, code, username])
+  //   return () => {
+  //     if (intervalRef.current)
+  //       clearInterval(intervalRef.current)
+  //   }
+  // }, [start, pause, code, username])
 
 
   const Replay = () => {
 
-    if (socketRef.current) {
-      socketRef.current.close()
-    }
     setEnd(false)
     setStart(false)
-    handleJoin()
+    setPlayers([])
+    setDecks([6, 6, 6, 6])
+    setTimer(30)
+    timerRef.current = 30
+
+    if (socketRef.current?.readyState === WebSocket.OPEN) {
+      socketRef.current.send(JSON.stringify({ 
+        type: 'JOIN', 
+        username: username, 
+        code: ''
+      }))
+    } else {
+      handleJoin(); 
+    }
   }
 
 
@@ -532,6 +544,9 @@ export function Game () {
         </div>
 
         <div>{score[0]}</div>
+
+        {player === 0 && <p className=" bg-amber-300 px-2 py-10 text-stone-900 font-caprasimo text-2xl uppercase tracking-[0.2em] 
+                    border-2 border-stone-900">Joueur</p>}
       </div>
 
       <div dir="ltr" className="flex justify-between w-full px-4 mt-15">
@@ -562,6 +577,9 @@ export function Game () {
             </span>
           </div>
           <div>{score[3]}</div>
+
+          {player === 3 && <p className=" bg-amber-300 px-2 py-10 text-stone-900 font-caprasimo text-2xl uppercase tracking-[0.2em] 
+                    border-2 border-stone-900">Joueur</p>}
         </div>
         
         <img
@@ -591,7 +609,7 @@ export function Game () {
                 onClick={Replay}>Rejouer</button>
         </div>}
 
-        {starting && <p className="absolute px-120 py-30 text-3xl">LA PARTIE COMMENCE DANS {timerStart} SECONDES</p>}
+        {/*starting && <p className="absolute px-120 py-30 text-3xl">LA PARTIE COMMENCE DANS {timerStart} SECONDES</p>*/}
 
         {pause && fail && <p className="absolute px-120 py-30 text-3xl">{smasher.toUpperCase()} A SMASH !!! EPIC FAIL BRUH ! </p>}
         {pause && success && <p className="absolute px-120 py-30 text-3xl">{smasher.toUpperCase()} A SMASH !!! EPIC WIN WOW ! </p>}
@@ -623,6 +641,9 @@ export function Game () {
             </span>
           </div>
           <div>{score[1]}</div>
+
+          {player === 1 && <p className=" bg-amber-300 px-2 py-10 text-stone-900 font-caprasimo text-2xl uppercase tracking-[0.2em] 
+                    border-2 border-stone-900">Joueur</p>}
         </div>
       </div>
 
@@ -653,6 +674,9 @@ export function Game () {
           </span>
         </div>
         <div>{score[2]}</div>
+
+        {player === 2 && <p className=" bg-amber-300 px-2 py-10 text-stone-900 font-caprasimo text-2xl uppercase tracking-[0.2em] 
+                    border-2 border-stone-900">Joueur</p>}
       </div>
 
     </div>
