@@ -1,8 +1,8 @@
 import {FastifyInstance, FastifyRequest, FastifyReply} from 'fastify'
 import { WebSocket } from '@fastify/websocket'
 import { prisma } from "../../server/prisma.js"
-import { setGame , isHead , previousIndex, PENALTY } from "./start-game.js"
-import { isValidSmash , winTrick , applyCardMalus , onePlayerAlive , lastPlayerName } from "./game-utils.js"
+import { setGame , PENALTY } from "./start-game.js"
+import { isValidSmash , winTrick , applyCardMalus , onePlayerAlive , lastPlayerName , isHead , whichHead } from "./game-utils.js"
 import { joinLobby , codeAlreadyExists , generateGameCode } from "./lobby.js"
 
 /**
@@ -71,7 +71,6 @@ let time = 10
 let gameEnd = false
 let smashOk = true
 
-
 //Creation of arrays Lobbies[] (Game waiting) and Games[] (Games running)
 const lobbies: Lobby[] = [{
   owner: "public",
@@ -109,9 +108,11 @@ function gameRoutine(game : Game)
     if (head != 0)
       head--
     const card = drawCard(game, game.players[i % 4])
-    head = isHead(card, head)
-    if (headOn == false && head != 0)
+    if (isHead(card))
+    {
+      head = whichHead(card)
       headOn = true
+    }
     console.log('card : ', card)
     console.log('headOn : ', headOn)
     console.log('head :', head)
@@ -120,7 +121,7 @@ function gameRoutine(game : Game)
         headOn = false
         endTrick(game, game.players[--i % 4])
     }
-    else if (headOn == false)
+    else if (headOn == false || isHead(card))
       i++
     if (time === 0)
     {

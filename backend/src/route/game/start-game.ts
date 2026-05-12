@@ -15,33 +15,7 @@ const DECK_CONFIG: Card[] = [
 
 export const PENALTY: number = 5
 
-export function isHead(card : Card, head : number) : number
-{
-    const regex = /^[A-Z]$/
-    if (regex.test(card.name))
-    {
-        switch (card.name)
-        {
-            case "A":
-                return 1
-            case "B":
-                return 2
-            case "C":
-                return 3
-            case "D":
-                return 4
-        }
-    }
-    return head
-}
 
-export function previousIndex(index : number) : number
-{
-    if (index === 0)
-        return 3
-    else
-        return index - 1
-}
 
 function createSuperDeck(): Card[]
 {

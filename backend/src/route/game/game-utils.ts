@@ -1,5 +1,26 @@
 import { Game , Player , Card } from "./websocket.js"
 
+export function whichHead(card : Card) : number
+{
+  switch (card.name)
+  {
+    case "A":
+      return 1
+    case "B":
+      return 2
+    case "C":
+      return 3
+    case "D":
+      return 4
+  }
+  return 0
+}
+
+export function isHead(card : Card) : boolean
+{
+    const regex = /^[A-Z]$/
+    return (regex.test(card.name))
+}
 
 function isSandwichCombo(discard: Card[]) : Boolean
 {
