@@ -3,12 +3,16 @@ import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-quer
 
 
 const deck = [
-  { nb: 1, src: "src/components/images/card1.png" },
-  { nb: 2, src: "src/components/images/card2.png" },
-  { nb: 3, src: "src/components/images/card3.png" },
-  { nb: 4, src: "src/components/images/card4.png" },
-  { nb: 5, src: "src/components/images/card5.png" },
-  { nb: 6, src: "src/components/images/card6.png" },
+  { name: "1", src: "src/components/images/card1.png" },
+  { name: "2", src: "src/components/images/card2.png" },
+  { name: "3", src: "src/components/images/card3.png" },
+  { name: "4", src: "src/components/images/card4.png" },
+  { name: "5", src: "src/components/images/card5.png" },
+  { name: "6", src: "src/components/images/card6.png" },
+  { name: "A", src: "src/components/images/cardA.png" },
+  { name: "B", src: "src/components/images/cardB.png" },
+  { name: "C", src: "src/components/images/cardC.png" },
+  { name: "D", src: "src/components/images/cardD.png" },
 ]
 
 let cards = []
@@ -21,11 +25,11 @@ export function Game () {
 	const [code, setCode] = useState('')
   const [username, setUsername] = useState('Michel')
   const [players, setPlayers] = useState()
-  const [decks, setDecks] = useState([3, 3, 3, 3])
+  const [decks, setDecks] = useState([6, 6, 6, 6])
   const [score, setScore] = useState([0, 0, 0, 0])
   const [start, setStart] = useState(false)
   const [index, setIndex] = useState(0)
-  const [timer, setTimer] = useState(10)
+  const [timer, setTimer] = useState(30)
   const [winner, setWinner] = useState("Michel")
   const [starting, setStarting] = useState(false)
   const [timerStart, setTimerStart] = useState(3)
@@ -34,6 +38,7 @@ export function Game () {
   const [smasher, setSmasher] = useState('Michel')
   const [success, setSuccess] = useState(false)
   const [fail, setFail] = useState(false)
+  const [discard, setDiscard] = useState()
 
   const socketRef = useRef(null)
 
@@ -113,6 +118,8 @@ export function Game () {
           return newDecks
         })
 
+        setDiscard(data.discard_value)
+
         setScore((prevScore) => {
           const newScore = [...prevScore]
           newScore[data.player.id] = data.player.score
@@ -128,9 +135,37 @@ export function Game () {
           cards.push("")
         }
 
-        cards.push(deck[data.player.card.value - 1].src)
+        const idx = deck.findIndex(d => d.name == data.player.card.name)
+
+        cards.push(deck[idx].src)
         console.log('cards front: ', cards)
       }
+
+      // if (data.type === 'HEAD') {
+      //   //setPause(true)
+      //   console.log(data)
+
+      //   if (cards.length === 3)
+      //     cards.shift()
+
+      //   if (cards.length === 0)
+      //   {
+      //     cards.push("")
+      //     cards.push("")
+      //   }
+
+      //   const idx = deck.findIndex(d => d.name == data.player.card.name)
+      //   cards.push(deck[idx].src)
+
+      //   let ind = data.player.id + 1
+
+      //   let draws = 0
+      //   if (data.player.card.name === 'A') draws = 1
+      //   else if (data.player.card.name === 'B') draws = 2
+      //   else if (data.player.card.name === 'C') draws = 3
+      //   else if (data.player.card.name === 'D') draws = 4
+
+      // }
 
       if (data.type === 'FAIL') {
         setPause(true)
@@ -141,6 +176,8 @@ export function Game () {
           newDecks[data.player.id] = data.player.deck.length
           return newDecks
         })
+
+        setDiscard(data.discard_value)
 
         setScore((prevScore) => {
           const newScore = [...prevScore]
@@ -174,6 +211,8 @@ export function Game () {
           newDecks[data.player.id] = data.player.deck.length
           return newDecks
         })
+
+        setDiscard(data.discard_value)
         
         setScore((prevScore) => {
           const newScore = [...prevScore]
@@ -201,6 +240,8 @@ export function Game () {
       }
 
       if (data.type === 'WINNER') {
+        setStart(false)
+        clearInterval(intervalRef.current)
         while (cards.length > 0)
           cards.shift()
         setWinner(data.winner.username)
@@ -278,6 +319,7 @@ export function Game () {
           cards.shift()
         setWinner(data.winner.username)
         setEnd(true)
+        setStart(false)
         if (cards.length != 0)
           cards.shift()
       }
@@ -308,59 +350,59 @@ export function Game () {
 
 
   useEffect(() => {
+    const detectKeyUp = (e) => {
+      if (e.key === " ")
+        if (socketRef.current?.readyState === WebSocket.OPEN) {
+          console.log("j'a tapé")
+          socketRef.current.send(JSON.stringify({ type: 'SMASH', code, username }))
+        }
+    }
+
     document.addEventListener('keyup', detectKeyUp, true)
-  }, [])
 
-  const detectKeyUp = (e) => {
-    if (e.key === " ")
-      if (socketRef.current?.readyState === WebSocket.OPEN) {
-        console.log("j'a tapé")
-        socketRef.current.send(JSON.stringify({ type: 'SMASH', code, username }))
-      }
-  }
+    return () => {
+      document.removeEventListener('keyup', detectKeyUp, true)
+    }
+  }, [username])
 
 
-  const timerRef = useRef(10)
+  const timerRef = useRef(30)
   const intervalRef = useRef(null)
 
   useEffect(() => {
 
-    if (!start) {
-      if (intervalRef.current) clearInterval(intervalRef.current)
-      return
-    }
-
-    //timerRef.current = 10
-    //setTimer(timerRef.current)
-    //setIndex(0)
-    if (pause) {
+    if (!start || pause) {
       if (intervalRef.current) clearInterval(intervalRef.current)
       return
     }
 
     intervalRef.current = setInterval(() => {
 
-
-      timerRef.current -= 1
-
-      if (timerRef.current <= -1) {
+      if (timerRef.current <= 0) {
         if (socketRef.current?.readyState === WebSocket.OPEN) {
           socketRef.current.send(JSON.stringify({ type: 'END', code }))
         }
-        setStart(false)
-        clearInterval(intervalRef.current)
         return
       }
 
+      timerRef.current -= 1
+      setTimer(timerRef.current)
+
       setIndex((prevIndex) => {
-        const currIdx = prevIndex % 4
-       
-        if (decks[currIdx] !== 0 && players[currIdx] === username) {
+        let nextIdx = prevIndex % 4
+      
+        let attempts = 0
+        while (decks[nextIdx] === 0 && attempts < 4) {
+          nextIdx = (nextIdx + 1) % 4
+          attempts++
+        }
+
+        if (decks[nextIdx] !== 0 && players[nextIdx] === username) {
           if (socketRef.current?.readyState === WebSocket.OPEN) {
             socketRef.current.send(JSON.stringify({ type: 'DRAW', username, code }))
           }
         }
-        return prevIndex + 1
+        return nextIdx + 1
       })
 
       setTimer(timerRef.current)
@@ -371,7 +413,18 @@ export function Game () {
       if (intervalRef.current)
         clearInterval(intervalRef.current)
     }
-  }, [start, code, username, pause])
+  }, [start, pause, code, username])
+
+
+  const Replay = () => {
+
+    if (socketRef.current) {
+      socketRef.current.close()
+    }
+    setEnd(false)
+    setStart(false)
+    handleJoin()
+  }
 
 
   useEffect(() => {
@@ -523,7 +576,17 @@ export function Game () {
           className="h-80 absolute px-140"
         />
 
-        {end && <p className="absolute px-120 py-30 text-4xl">{winner.toUpperCase()} A GAGNÉ !!!</p>}
+        <p>{discard}</p>
+
+        {end && <div className="flex flex-col items-center justify-center absolute inset-0 z-50">
+        {<p className="mb-10 text-4xl text-center font-bold">{winner.toUpperCase()} A GAGNÉ !!!</p>}
+        <button 
+                className="bg-amber-300 px-8 py-6 text-stone-900 font-caprasimo text-3xl uppercase tracking-[0.2em] 
+                    border-2 border-stone-900 shadow-[4px_4px_0_0_rgba(28,25,23,1)] hover:bg-amber-400 hover:-translate-y-1 
+                    hover:shadow-[6px_6px_0_0_rgba(28,25,23,1)] active:translate-y-0 active:shadow-[2px_2px_0_0_rgba(28,25,23,1)]
+                    transition-all"
+                onClick={Replay}>Rejouer</button>
+        </div>}
 
         {starting && <p className="absolute px-120 py-30 text-3xl">LA PARTIE COMMENCE DANS {timerStart} SECONDES</p>}
 

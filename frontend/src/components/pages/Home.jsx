@@ -107,7 +107,7 @@ export function Home () {
             Log out
         </button>
       </div>
-      <div className="flex-1 border-2 border-stone-900 bg-amber-50/60 overflow-hidden">
+      <div className="relative flex-1 border-2 border-stone-900 bg-amber-50/60 overflow-hidden">
         <Game/>
       </div>
     </div>

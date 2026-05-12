@@ -40,3 +40,15 @@ export function applyCardMalus(game : Game, player : Player)
     game.discard_value += card.value
     player.deck.shift()
 }
+
+export function onePlayerAlive(game : Game) : Boolean
+{
+  const playersAlive = game.players.filter(player => player.deck.length !== 0)
+  return playersAlive.length === 1
+}
+
+export function lastPlayerName(game: Game) : String
+{
+  const lastPlayer = game.players.filter(player => player.deck.length !== 0)
+  return lastPlayer[0].username
+}
