@@ -67,6 +67,7 @@ export interface Game {
 
 const games = new Map<string, Game>()
 
+let time = 10
 let gameEnd = false
 let smashOk = true
 
@@ -83,6 +84,34 @@ const lobbies: Lobby[] = [{
 export function addGame(code: string, game: Game)
 {
     games.set(code, game)
+    launchGameRoutine(game)
+}
+
+function launchTimer(lobby : Lobby)
+{
+  const interval = setInterval(() => {
+    time--;
+    lobby.ws.forEach(websocket => websocket.send(JSON.stringify({
+      type: 'TIME',
+      time: time,
+    })))
+    if (time == 0)
+      clearInterval(interval)
+  }, 1000);
+}
+
+function launchGameRoutine(game : Game)
+{
+  let i = 0;
+  const interval = setInterval(() => {
+    drawCard(game, game.players[i++])  
+    if (time == 0)
+    {
+      gameEnd = true
+      endGame(game)
+      clearInterval(interval)
+    }
+  }, 1000)
 }
 
 //Route for private game creation : code generation et setup game variables
@@ -132,7 +161,7 @@ function launchGame(lobby : Lobby)
     lobbies.splice(index, 1)
 }
 
-async function sendStatstoDB(player : Player, game: Game, code: string)
+async function sendStatstoDB(player : Player, game: Game)
 {
   const user = await prisma.user.findUnique({
   where: { username: player.username }
@@ -147,20 +176,18 @@ async function sendStatstoDB(player : Player, game: Game, code: string)
       nb_victories: {increment: player.stats.victory},
       nb_defeats: {increment: player.stats.defeat},
   }})
-  deleteGame(game, code)
+  deleteGame(game, user)
   gameEnd = false
 }
 
-function deleteGame(game: Game, code: string)
+function deleteGame(game: Game, user : any)
 {
   game.ws.forEach(ws => ws.close())
-  games.delete(code)
+  games.delete(user)
 }
 
-function endGame(message : any)
+function endGame(game : Game)
 {
-  const code = message.code
-  const game = games.get(code)!
   //Find the winner with the biggest score
   game.winner = game.players.reduce((best, current) => 
     current.score > best.score ? current : best)
@@ -174,7 +201,7 @@ function endGame(message : any)
    })))
 
   //Store player's stats and game stats in DB
-  game.players.forEach(player => sendStatstoDB(player, game, code))
+  game.players.forEach(player => sendStatstoDB(player, game))
 }
 
 function broadcastNewPlayer(lobby : Lobby)
@@ -187,16 +214,14 @@ function broadcastNewPlayer(lobby : Lobby)
   if (lobby.nb_players === 4)
   {
     lobby.code = generateGameCode()
-    console.log(lobby)
+    launchTimer(lobby);
     lobby.ws.forEach(websocket => websocket.send(JSON.stringify({type: 'START', code: lobby.code})))
   }
 }
 
-function drawCard(message : any)
+function drawCard(game : Game, player : Player)
 {
   smashOk = true
-  const game = games.get(message.code)!
-  const player = game.players.find(p => p.username === message.username)!
   const card = player.deck.shift()!
   player.card = card
   game.discard.unshift(card)
@@ -204,25 +229,23 @@ function drawCard(message : any)
 
   if (onePlayerAlive(game) && lastPlayerName(game) === player.username)
   {
-    console.log("plus qu'un joueur")
     gameEnd = true
-    endGame(message)
+    endGame(game)
     return
   }
-  if(isHead(card))
-    {
-      game.ws.forEach(websocket => websocket.send(JSON.stringify({
-        type: 'HEAD',
-        player: player, // {id, username, deck, score, card}
-      })))}
-      else 
-      {
-        game.ws.forEach(websocket => websocket.send(JSON.stringify({
-          type: 'DRAW',
-          player: player, // {id, username, deck, score, card}
-          discard_value: game.discard_value,
-      })))}
-    }
+  game.ws.forEach(websocket => websocket.send(JSON.stringify({
+    type: 'DRAW',
+    player: player, // {id, username, deck, score, card}
+    discard_value: game.discard_value,
+  })))
+  // if(isHead(card))
+  // {
+    
+  // }
+  // else 
+  // {
+  // }
+}
 
 
 
@@ -301,28 +324,17 @@ export function gameSocketRoute(websocket:  WebSocket, request: FastifyRequest)
     if (message.type === 'JOIN') // message : {type, username}
       broadcastNewPlayer(lobby)
 
-    //A player draw a card
-    if (message.type === 'DRAW') // message : {type, code, username}
-      drawCard(message)
-
     //A player smash
     if (message.type === 'SMASH') {
       smashManagement(message)
     }
 
     //A player loose after drawing several cards without heads
-    if (message.type === 'LOSE') // message : {type, code, username}
-    {
-      console.log('player lose: ', message)
-      endTrick(message)
-    }
-
-    //Timer reach 0, the game ends
-    if (message.type === 'END' && gameEnd === false)
-    {
-      gameEnd = true
-      endGame(message)
-    }
+    // if (message.type === 'LOSE') // message : {type, code, username}
+    // {
+    //   console.log('player lose: ', message)
+    //   endTrick(message)
+    // }
 
   })
 }

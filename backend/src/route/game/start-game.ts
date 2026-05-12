@@ -7,10 +7,10 @@ const DECK_CONFIG: Card[] = [
     {name:"2", value: 2, nb: 4},
     {name:"3", value: 3, nb: 4},
     {name:"4", value: 4, nb: 4},
-    {name:"A", value: 1, nb: 2},
-    {name:"B", value: 1, nb: 2},
-    {name:"C", value: 1, nb: 2},
-    {name:"D", value: 1, nb: 2},
+    // {name:"A", value: 1, nb: 2},
+    // {name:"B", value: 1, nb: 2},
+    // {name:"C", value: 1, nb: 2},
+    // {name:"D", value: 1, nb: 2},
 ]
 
 export const PENALTY: number = 5

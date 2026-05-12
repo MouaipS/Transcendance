@@ -167,6 +167,9 @@ export function Game () {
 
       // }
 
+      if (data.type === 'TIME')
+        setTimer(data.time)
+
       if (data.type === 'FAIL') {
         setPause(true)
         setFail(true)
