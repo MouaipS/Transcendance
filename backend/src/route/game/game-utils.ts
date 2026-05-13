@@ -26,14 +26,14 @@ function isSandwichCombo(discard: Card[]) : Boolean
 {
   if (discard.length < 3)
     return false
-  return (discard[0].value === discard[2].value)
+  return (discard[0].name === discard[2].name)
 }
 
 function isDoubleCombo(discard: Card[]) : Boolean
 {
   if (discard.length < 2)
     return false
-  return (discard[0].value === discard[1].value)
+  return (discard[0].name === discard[1].name)
 }
 
 // WIP : add combos
@@ -47,6 +47,8 @@ export function isValidSmash(discard: Card[]) : Boolean
 
 export function winTrick(game : Game , player : Player)
 {
+    console.log('player: ', player)
+
     player.score += game.discard_value
     player.deck.push(...game.discard.reverse())
     game.discard = []
@@ -66,13 +68,13 @@ export function endTrick(game : Game, winner : Player)
   })))
 }
 
-export function applyCardMalus(game : Game, player : Player)
-{
-    const card = player.deck.shift()!
-    player.card = card
-    game.discard.push(card)
-    game.discard_value += card.value
-}
+// export function applyCardMalus(game : Game, player : Player)
+// {
+//     const card = player.deck.shift()!
+//     player.card = card
+//     game.discard.push(card)
+//     game.discard_value += card.value
+// }
 
 export function onePlayerAlive(game : Game) : Boolean
 {

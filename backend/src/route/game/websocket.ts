@@ -2,7 +2,7 @@ import {FastifyInstance, FastifyRequest, FastifyReply} from 'fastify'
 import { WebSocket } from '@fastify/websocket'
 import { prisma } from "../../server/prisma.js"
 import { setGame , PENALTY } from "./start-game.js"
-import { isValidSmash , winTrick , applyCardMalus , onePlayerAlive , lastPlayerName , isHead , whichHead, endTrick } from "./game-utils.js"
+import { isValidSmash , winTrick , onePlayerAlive , lastPlayerName , isHead , whichHead, endTrick } from "./game-utils.js"
 import { joinLobby , codeAlreadyExists , generateGameCode } from "./lobby.js"
 
 /**
@@ -117,11 +117,17 @@ function gameRoutine(game : Game)
     if (trickEnd == true)
     {
       headOn = false
-      endTrick(game, game.players[--pos % 4])
+      console.log('endTrick routine')
+      pos += 3
+      while (game.players[pos % 4].deck.length <= 0)
+        pos += 3;
+      endTrick(game, game.players[pos % 4])
       trickEnd = false
     }
     else if (head != 0)
       head--
+    while (game.players[pos % 4].deck.length <= 0)
+      pos++;
     const card = drawCard(game, game.players[pos % 4])
     if (isHead(card))
     {
@@ -294,8 +300,6 @@ function smashManagement(message: any)
   else
   {
     console.log('...bad SMASH!!!')
-    if (player.deck.length > 0)
-      applyCardMalus(game, player)
     player.score -= PENALTY
     response = 'FAIL'
   }
