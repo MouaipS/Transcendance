@@ -74,7 +74,8 @@ export function Game () {
 
   const handleJoin = async (e) => {
 
-    e.preventDefault()
+    if (e)
+      e.preventDefault()
     const body = { username, code }
 
     const response = await fetch('/api/game/join',

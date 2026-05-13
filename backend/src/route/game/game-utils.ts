@@ -1,4 +1,5 @@
 import { Game , Player , Card } from "./websocket.js"
+import { endGame } from "./end-game.js"
 
 export function whichHead(card : Card) : number
 {
@@ -26,14 +27,14 @@ function isSandwichCombo(discard: Card[]) : Boolean
 {
   if (discard.length < 3)
     return false
-  return (discard[0].value === discard[2].value)
+  return (discard[0].name === discard[2].name)
 }
 
 function isDoubleCombo(discard: Card[]) : Boolean
 {
   if (discard.length < 2)
     return false
-  return (discard[0].value === discard[1].value)
+  return (discard[0].name === discard[1].name)
 }
 
 // WIP : add combos
@@ -53,14 +54,62 @@ export function winTrick(game : Game , player : Player)
     game.discard_value = 0
 }
 
-export function applyCardMalus(game : Game, player : Player)
+export function drawCard(game : Game, player : Player) : Card
 {
-    const card = player.deck.shift()!
-    player.card = card
-    game.discard.push(card)
-    game.discard_value += card.value
-    player.deck.shift()
+  const card = player.deck.shift()!
+  player.card = card
+  game.discard.unshift(card)
+  game.discard_value += card.value
+
+  if (onePlayerAlive(game) && lastPlayerName(game) === player.username)
+    endGame(game)
+  else
+  {
+    game.ws.forEach(websocket => websocket.send(JSON.stringify({
+      type: 'DRAW',
+      player: player, // {id, username, deck, score, card}
+      discard_value: game.discard_value,
+      discard: game.discard
+    })))
+  }
+  return card
 }
+
+export function endTrick(game : Game, winner : Player)
+{
+  winTrick(game, winner)
+
+  //Broadcast
+  game.ws.forEach(websocket => websocket.send(JSON.stringify({
+    type: 'SUCCESS',
+    player: winner, // Player : {id, username, deck, score, card}
+    discard_value: 0,  // Value of the discard
+    discard: game.discard
+  })))
+}
+
+export function findPreviousPlayer(game : Game, pos : number) : number
+{
+  pos += 3
+  while (game.players[pos % 4].deck.length <= 0)
+    pos += 3;
+  return pos
+}
+
+export function findNextPlayer(game : Game, pos : number) : number
+{
+  while (game.players[pos % 4].deck.length <= 0)
+      pos++;
+  return pos
+}
+
+// export function applyCardMalus(game : Game, player : Player)
+// {
+//     const card = player.deck.shift()!
+//     player.card = card
+//     game.discard.push(card)
+//     game.discard_value += card.value
+// }
 
 export function onePlayerAlive(game : Game) : Boolean
 {
