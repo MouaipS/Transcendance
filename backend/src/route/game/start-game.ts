@@ -1,18 +1,21 @@
 import { Game, Player , Card, Lobby , addGame} from "./websocket.js"
 
-interface PlayerBody {
-  username: string;
-  code: string;
-}
-
-
+//GLOBAL VARIABLES
 
 const DECK_CONFIG: Card[] = [
-    {name:"1", value: 1, nb: 3},
-    {name:"2", value: 2, nb: 3},
-    {name:"3", value: 3, nb: 3},
-    {name:"4", value: 4, nb: 3},
+    {name:"1", value: 1, nb: 4},
+    {name:"2", value: 2, nb: 4},
+    {name:"3", value: 3, nb: 4},
+    {name:"4", value: 4, nb: 4},
+    {name:"A", value: 1, nb: 2},
+    {name:"B", value: 1, nb: 2},
+    {name:"C", value: 1, nb: 2},
+    {name:"D", value: 1, nb: 2},
 ]
+
+export const PENALTY: number = 5
+
+
 
 function createSuperDeck(): Card[]
 {
@@ -53,23 +56,6 @@ function buildDecks(): Card[][]
     return decks
 }
 
-//Draw the first card and broadcast informations to all websockets registered
-//  {typeOfEvent, username, score updated, nb_cards, cardName, cardValue}
-export function drawCard(game : Game, username: string) : Player | undefined
-{
-    const player: Player | undefined = game.players.find(p => p.username === username)
-    if(!player)
-        return
-    if (player.deck.length === 0)
-        return
-    const card = player.deck.shift()
-    if (!card)
-        return
-    player.card = card
-    player.score += card.value   
-    return player
-}
-
 //receive Lobby {owner: string; code: string; nb_players: number; users: string[]; ws: set<ws>}
 //  -> set a game instance in the games Map <code, Game>
 export function setGame(lobby: Lobby)
@@ -84,6 +70,8 @@ export function setGame(lobby: Lobby)
     const game: Game = {
         owner: lobby.owner,
         players: [p1, p2, p3, p4],
+        discard: [],
+        discard_value: 0,
         ws: lobby.ws
     }
     addGame(lobby.code, game)

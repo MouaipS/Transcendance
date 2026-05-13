@@ -1,0 +1,75 @@
+import { Game , Player , Card } from "./websocket.js"
+
+export function whichHead(card : Card) : number
+{
+  switch (card.name)
+  {
+    case "A":
+      return 1
+    case "B":
+      return 2
+    case "C":
+      return 3
+    case "D":
+      return 4
+  }
+  return 0
+}
+
+export function isHead(card : Card) : boolean
+{
+    const regex = /^[A-Z]$/
+    return (regex.test(card.name))
+}
+
+function isSandwichCombo(discard: Card[]) : Boolean
+{
+  if (discard.length < 3)
+    return false
+  return (discard[0].value === discard[2].value)
+}
+
+function isDoubleCombo(discard: Card[]) : Boolean
+{
+  if (discard.length < 2)
+    return false
+  return (discard[0].value === discard[1].value)
+}
+
+// WIP : add combos
+//Analyse discard to verify if smash is good or not
+export function isValidSmash(discard: Card[]) : Boolean
+{
+  if (isDoubleCombo(discard) || isSandwichCombo(discard))
+    return true
+  return false
+}
+
+export function winTrick(game : Game , player : Player)
+{
+    player.score += game.discard_value
+    player.deck.push(...game.discard.reverse())
+    game.discard = []
+    game.discard_value = 0
+}
+
+export function applyCardMalus(game : Game, player : Player)
+{
+    const card = player.deck.shift()!
+    player.card = card
+    game.discard.push(card)
+    game.discard_value += card.value
+    player.deck.shift()
+}
+
+export function onePlayerAlive(game : Game) : Boolean
+{
+  const playersAlive = game.players.filter(player => player.deck.length !== 0)
+  return playersAlive.length === 1
+}
+
+export function lastPlayerName(game: Game) : String
+{
+  const lastPlayer = game.players.filter(player => player.deck.length !== 0)
+  return lastPlayer[0].username
+}

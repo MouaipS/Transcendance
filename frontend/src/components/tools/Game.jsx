@@ -3,12 +3,16 @@ import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-quer
 
 
 const deck = [
-  { nb: 1, src: "src/components/images/card1.png" },
-  { nb: 2, src: "src/components/images/card2.png" },
-  { nb: 3, src: "src/components/images/card3.png" },
-  { nb: 4, src: "src/components/images/card4.png" },
-  { nb: 5, src: "src/components/images/card5.png" },
-  { nb: 6, src: "src/components/images/card6.png" },
+  { name: "1", src: "src/components/images/card1.png" },
+  { name: "2", src: "src/components/images/card2.png" },
+  { name: "3", src: "src/components/images/card3.png" },
+  { name: "4", src: "src/components/images/card4.png" },
+  { name: "5", src: "src/components/images/card5.png" },
+  { name: "6", src: "src/components/images/card6.png" },
+  { name: "A", src: "src/components/images/cardA.png" },
+  { name: "B", src: "src/components/images/cardB.png" },
+  { name: "C", src: "src/components/images/cardC.png" },
+  { name: "D", src: "src/components/images/cardD.png" },
 ]
 
 let cards = []
@@ -21,15 +25,21 @@ export function Game () {
 	const [code, setCode] = useState('')
   const [username, setUsername] = useState('Michel')
   const [players, setPlayers] = useState()
-  const [decks, setDecks] = useState([3, 3, 3, 3])
+  const [decks, setDecks] = useState([6, 6, 6, 6])
   const [score, setScore] = useState([0, 0, 0, 0])
   const [start, setStart] = useState(false)
   const [index, setIndex] = useState(0)
-  const [timer, setTimer] = useState(10)
+  const [timer, setTimer] = useState(30)
   const [winner, setWinner] = useState("Michel")
   const [starting, setStarting] = useState(false)
   const [timerStart, setTimerStart] = useState(3)
   const [end, setEnd] = useState(false)
+  const [pause, setPause] = useState(false)
+  const [smasher, setSmasher] = useState('Michel')
+  const [success, setSuccess] = useState(false)
+  const [fail, setFail] = useState(false)
+  const [discard, setDiscard] = useState()
+  const [player, setPlayer] = useState(0)
 
   const socketRef = useRef(null)
 
@@ -90,6 +100,8 @@ export function Game () {
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data)
+      console.log (data)
+
       if (data.type === 'JOIN') {
         setPlayers(data.users)
       }
@@ -101,23 +113,21 @@ export function Game () {
       
       if (data.type === 'DRAW') {
         
-        console.log (data)
-
-        let newNumber = 0
-        while (newNumber !== data.player.id)
-          newNumber++
-        
         setDecks((prevDecks) => {
           const newDecks = [...prevDecks]
-          newDecks[newNumber] = data.player.deck.length
+          newDecks[data.player.id] = data.player.deck.length
           return newDecks
         })
 
+        setDiscard(data.discard_value)
+
         setScore((prevScore) => {
           const newScore = [...prevScore]
-          newScore[newNumber] = data.player.score
+          newScore[data.player.id] = data.player.score
           return newScore
         })
+
+        setPlayer(data.player.id)
         
         if (cards.length === 3)
           cards.shift()
@@ -128,11 +138,115 @@ export function Game () {
           cards.push("")
         }
 
-        cards.push(deck[data.player.card.value - 1].src)
+        const idx = deck.findIndex(d => d.name == data.player.card.name)
 
+        cards.push(deck[idx].src)
+        console.log('cards front: ', cards)
+      }
+
+      // if (data.type === 'HEAD') {
+      //   //setPause(true)
+      //   console.log(data)
+
+      //   if (cards.length === 3)
+      //     cards.shift()
+
+      //   if (cards.length === 0)
+      //   {
+      //     cards.push("")
+      //     cards.push("")
+      //   }
+
+      //   const idx = deck.findIndex(d => d.name == data.player.card.name)
+      //   cards.push(deck[idx].src)
+
+      //   let ind = data.player.id + 1
+
+      //   let draws = 0
+      //   if (data.player.card.name === 'A') draws = 1
+      //   else if (data.player.card.name === 'B') draws = 2
+      //   else if (data.player.card.name === 'C') draws = 3
+      //   else if (data.player.card.name === 'D') draws = 4
+
+      // }
+
+      if (data.type === 'TIME')
+        setTimer(data.time)
+
+      if (data.type === 'FAIL') {
+        setPause(true)
+        setFail(true)
+
+        setDecks((prevDecks) => {
+          const newDecks = [...prevDecks]
+          newDecks[data.player.id] = data.player.deck.length
+          return newDecks
+        })
+
+        setDiscard(data.discard_value)
+
+        setScore((prevScore) => {
+          const newScore = [...prevScore]
+          newScore[data.player.id] = data.player.score
+          return newScore
+        })
+
+        setSmasher(data.player.username)
+
+        setTimerStart(2)
+        const intervalId = setInterval ( () => {
+          setTimerStart(prev => prev - 1)
+
+          if (timerStart === 0)
+            return
+
+        }, 1000)
+
+        clearInterval(intervalId)
+
+        setFail(false)
+        setPause(false)
+      }
+
+      if (data.type === 'SUCCESS') {
+        setPause(true)
+        setSuccess(true)
+        
+        setDecks((prevDecks) => {
+          const newDecks = [...prevDecks]
+          newDecks[data.player.id] = data.player.deck.length
+          return newDecks
+        })
+
+        setDiscard(data.discard_value)
+        
+        setScore((prevScore) => {
+          const newScore = [...prevScore]
+          newScore[data.player.id] = data.player.score
+          return newScore
+        })
+        
+        setSmasher(data.player.username)
+        while (cards.length > 0)
+          cards.shift()
+        
+        setTimerStart(2)
+        const intervalId = setInterval ( () => {
+          setTimerStart(prev => prev - 1)
+          
+          if (timerStart === 0)
+            return
+          
+        }, 1000)
+
+        clearInterval(intervalId)
+
+        setSuccess(false)
+        setPause(false)
       }
 
       if (data.type === 'WINNER') {
+        setStart(false)
         while (cards.length > 0)
           cards.shift()
         setWinner(data.winner.username)
@@ -197,8 +311,8 @@ export function Game () {
 
         if (cards.length === 0)
         {
-          cards.push("")
-          cards.push("")
+          cards.push("oui")
+          cards.push("oui")
         }
 
         cards.push(deck[data.player.card.value - 1].src)
@@ -210,6 +324,7 @@ export function Game () {
           cards.shift()
         setWinner(data.winner.username)
         setEnd(true)
+        setStart(false)
         if (cards.length != 0)
           cards.shift()
       }
@@ -219,73 +334,110 @@ export function Game () {
     setPage(1)
   }
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    if (!starting) return
+  //   if (!starting) return
 
-    const intervalId = setInterval ( () => {
+  //   const intervalId = setInterval ( () => {
      
-      setTimerStart(prev => prev - 1)
+  //     setTimerStart(prev => prev - 1)
 
-      if (timerStart === 0)
-      {
-        setStart(true)
-        setStarting(false)
-        return
-      }
-    }, 1000)
+  //     if (timerStart === 0)
+  //     {
+  //       setStart(true)
+  //       setStarting(false)
+  //       return
+  //     }
+  //   }, 1000)
 
-    return () => clearInterval(intervalId)
-  }, [starting, timerStart])
+  //   return () => clearInterval(intervalId)
+  // }, [starting, timerStart])
 
-
-  const timerRef = useRef(10)
-  const intervalRef = useRef(null)
 
   useEffect(() => {
-
-    if (!start) {
-      if (intervalRef.current) clearInterval(intervalRef.current)
-      return
+    const detectKeyUp = (e) => {
+      if (e.key === " ")
+        if (socketRef.current?.readyState === WebSocket.OPEN) {
+          console.log("j'a tapé")
+          socketRef.current.send(JSON.stringify({ type: 'SMASH', code, username }))
+        }
     }
 
-    timerRef.current = 10
-    setTimer(10)
-    setIndex(0)
-
-    intervalRef.current = setInterval(() => {
-
-      timerRef.current -= 1
-
-      if (timerRef.current <= -1) {
-        if (socketRef.current?.readyState === WebSocket.OPEN) {
-          socketRef.current.send(JSON.stringify({ type: 'END', code }))
-        }
-        setStart(false)
-        clearInterval(intervalRef.current)
-        return
-      }
-
-      setIndex((prevIndex) => {
-        const currIdx = prevIndex % 4
-       
-        if (decks[currIdx] !== 0 && players[currIdx] === username) {
-          if (socketRef.current?.readyState === WebSocket.OPEN) {
-            socketRef.current.send(JSON.stringify({ type: 'DRAW', username, code }))
-          }
-        }
-        return prevIndex + 1
-      })
-
-      setTimer(timerRef.current)
-
-    }, 1000)
+    document.addEventListener('keyup', detectKeyUp, true)
 
     return () => {
-      if (intervalRef.current)
-        clearInterval(intervalRef.current)
+      document.removeEventListener('keyup', detectKeyUp, true)
     }
-  }, [start, code, username])
+  }, [username])
+
+
+  // const timerRef = useRef(30)
+  // const intervalRef = useRef(null)
+
+  // useEffect(() => {
+
+  //   if (!start || pause) {
+  //     if (intervalRef.current) clearInterval(intervalRef.current)
+  //     return
+  //   }
+
+  //   intervalRef.current = setInterval(() => {
+
+  //     if (timerRef.current <= 0) {
+  //       if (socketRef.current?.readyState === WebSocket.OPEN) {
+  //         socketRef.current.send(JSON.stringify({ type: 'END', code }))
+  //       }
+  //       return
+  //     }
+
+  //     timerRef.current -= 1
+  //     setTimer(timerRef.current)
+
+  //     setIndex((prevIndex) => {
+  //       let nextIdx = prevIndex % 4
+      
+  //       let attempts = 0
+  //       while (decks[nextIdx] === 0 && attempts < 4) {
+  //         nextIdx = (nextIdx + 1) % 4
+  //         attempts++
+  //       }
+
+  //       if (decks[nextIdx] !== 0 && players[nextIdx] === username) {
+  //         if (socketRef.current?.readyState === WebSocket.OPEN) {
+  //           socketRef.current.send(JSON.stringify({ type: 'DRAW', username, code }))
+  //         }
+  //       }
+  //       return nextIdx + 1
+  //     })
+
+  //     setTimer(timerRef.current)
+
+  //   }, 1000)
+
+  //   return () => {
+  //     if (intervalRef.current)
+  //       clearInterval(intervalRef.current)
+  //   }
+  // }, [start, pause, code, username])
+
+
+  const Replay = () => {
+
+    setEnd(false)
+    setStart(false)
+    setPlayers([])
+    setDecks([6, 6, 6, 6])
+
+    if (socketRef.current?.readyState === WebSocket.OPEN) {
+      socketRef.current.send(JSON.stringify({ 
+        type: 'JOIN', 
+        username: username, 
+        code: ''
+      }))
+    } else {
+      handleJoin(); 
+    }
+  }
 
 
   useEffect(() => {
@@ -300,7 +452,7 @@ export function Game () {
 
 	return <>
 		{page === 0 && 
-<div className="flex flex-col gap-30 px-8 py-12 max-w-2xl mx-auto h-full justify-center">
+    <div className="flex flex-col gap-30 px-8 py-12 max-w-2xl mx-auto h-full justify-center">
       <button 
 				className=" bg-amber-300 px-8 py-6 text-stone-900 font-caprasimo text-3xl uppercase tracking-[0.2em] 
                     border-2 border-stone-900 shadow-[4px_4px_0_0_rgba(28,25,23,1)] hover:bg-amber-400 hover:-translate-y-1 
@@ -390,6 +542,9 @@ export function Game () {
         </div>
 
         <div>{score[0]}</div>
+
+        {player === 0 && <p className=" bg-amber-300 px-2 py-10 text-stone-900 font-caprasimo text-2xl uppercase tracking-[0.2em] 
+                    border-2 border-stone-900">Joueur</p>}
       </div>
 
       <div dir="ltr" className="flex justify-between w-full px-4 mt-15">
@@ -420,6 +575,9 @@ export function Game () {
             </span>
           </div>
           <div>{score[3]}</div>
+
+          {player === 3 && <p className=" bg-amber-300 px-2 py-10 text-stone-900 font-caprasimo text-2xl uppercase tracking-[0.2em] 
+                    border-2 border-stone-900">Joueur</p>}
         </div>
         
         <img
@@ -437,9 +595,22 @@ export function Game () {
           className="h-80 absolute px-140"
         />
 
-        {end && <p className="absolute px-120 py-30 text-4xl">{winner.toUpperCase()} A GAGNÉ !!!</p>}
+        <p>{discard}</p>
 
-        {starting && <p className="absolute px-120 py-30 text-3xl">LA PARTIE COMMENCE DANS {timerStart} SECONDES</p>}
+        {end && <div className="flex flex-col items-center justify-center absolute inset-0 z-50">
+        {<p className="mb-10 text-4xl text-center font-bold">{winner.toUpperCase()} A GAGNÉ !!!</p>}
+        <button 
+                className="bg-amber-300 px-8 py-6 text-stone-900 font-caprasimo text-3xl uppercase tracking-[0.2em] 
+                    border-2 border-stone-900 shadow-[4px_4px_0_0_rgba(28,25,23,1)] hover:bg-amber-400 hover:-translate-y-1 
+                    hover:shadow-[6px_6px_0_0_rgba(28,25,23,1)] active:translate-y-0 active:shadow-[2px_2px_0_0_rgba(28,25,23,1)]
+                    transition-all"
+                onClick={Replay}>Rejouer</button>
+        </div>}
+
+        {/*starting && <p className="absolute px-120 py-30 text-3xl">LA PARTIE COMMENCE DANS {timerStart} SECONDES</p>*/}
+
+        {pause && fail && <p className="absolute px-120 py-30 text-3xl">{smasher.toUpperCase()} A SMASH !!! EPIC FAIL BRUH ! </p>}
+        {pause && success && <p className="absolute px-120 py-30 text-3xl">{smasher.toUpperCase()} A SMASH !!! EPIC WIN WOW ! </p>}
 
         <div className="mt-15">
           <button
@@ -468,6 +639,9 @@ export function Game () {
             </span>
           </div>
           <div>{score[1]}</div>
+
+          {player === 1 && <p className=" bg-amber-300 px-2 py-10 text-stone-900 font-caprasimo text-2xl uppercase tracking-[0.2em] 
+                    border-2 border-stone-900">Joueur</p>}
         </div>
       </div>
 
@@ -498,6 +672,9 @@ export function Game () {
           </span>
         </div>
         <div>{score[2]}</div>
+
+        {player === 2 && <p className=" bg-amber-300 px-2 py-10 text-stone-900 font-caprasimo text-2xl uppercase tracking-[0.2em] 
+                    border-2 border-stone-900">Joueur</p>}
       </div>
 
     </div>

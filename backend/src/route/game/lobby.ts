@@ -28,8 +28,6 @@ export function joinLobby(lobbies : Lobby[], lobby: Lobby, username: string)
 {
   lobby.nb_players += 1
   lobby.users[lobby.nb_players - 1] = username
-  // if (lobby.nb_players === 4)
-  //   lobby.code = generateGameCode()
 }
 
 
