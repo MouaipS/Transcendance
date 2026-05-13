@@ -1,5 +1,7 @@
 import { QueryClient, QueryClientProvider, useQuery} from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
+import { ChatCard } from '../tools/ChatCard'
+
 const queryClient = new QueryClient()
 
 const RulesCard = () => (
@@ -82,14 +84,6 @@ const RecipesCard = () => {
 	</div>
 }
 
-const ChatCard = () => (
-	<div className="flex items-center justify-center h-full min-h-32">
-		<p className="text-amber-300 italic text-lg uppercase tracking-[0.3em]">
-			in coming
-		</p>
-	</div>
-)
-
 const BrigadeCard = () => {
 	const navigate = useNavigate()
 	const member = [
@@ -136,7 +130,9 @@ const cardsData = [
 	},
 	{
 		title: "Puis-je prendre votre commande ?",
-		content: <ChatCard/>,
+		content: <QueryClientProvider client={queryClient}>
+            <ChatCard/>
+        </QueryClientProvider>,
 	},
 	{
 		title: "Les recettes du jour",
@@ -145,6 +141,7 @@ const cardsData = [
 	{
 		title: "Les règles en cuisine",
 		content: <RulesCard/>,
+		seeMore: "/rules"
 	},
 	{
 		title: "La brigade",

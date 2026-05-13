@@ -5,6 +5,9 @@ import CardStack from "../tools/CardStack";
 import michelImg from '../images/michel.jpg';
 import { NavigateButtons } from "../tools/NavigateButtons";
 import { Game } from "../tools/Game";
+import { ChatCard } from "../tools/ChatCard"
+
+
 
 export function Home () {
 

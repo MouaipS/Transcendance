@@ -342,5 +342,22 @@ export function gameSocketRoute(websocket:  WebSocket, request: FastifyRequest)
     if (message.type === 'SMASH') {
       smashManagement(message)
     }
+    if (message.type === 'CHATMSG') {
+      const content = String(message.content ?? '').trim().slice(0,350)
+      if(!content) return
+
+      const currentLobby = lobbies.find(lobby => lobby.code == code)
+      const currentGame = games.get(code)
+      const target = currentGame ?? currentLobby
+      if(!target) return
+
+      const payload = JSON.stringify({
+        type: 'CHATMSG',
+        username: String(message.username ?? 'unknow'),
+        content,
+        timestamp: Date.now(),
+      })
+      target.ws.forEach(ws => ws.send(payload))
+    }
   })
 }

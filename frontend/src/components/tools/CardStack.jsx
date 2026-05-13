@@ -1,7 +1,10 @@
 import { cardsData } from "../data/cards";
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 export default function CardStack () {
+	const navigate = useNavigate()
+
 	const [ activeIndex, setActiveIndex ] = useState(0)
 	const total = cardsData.length
 	const card = cardsData[activeIndex]
@@ -47,6 +50,20 @@ export default function CardStack () {
 				<div className="flex-1 min-h-0 overflow-auto text-amber-50">
 					{card.content}
 				</div>
+				{card.seeMore && (
+				    <button
+				        onClick={() => navigate(card.seeMore)}
+				        className="mt-4 mx-auto bg-amber-300 
+				            px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] 
+				            text-stone-900 border-2 border-stone-900
+				            shadow-[2px_2px_0_0_rgba(28,25,23,1)]
+				            hover:bg-amber-400 hover:-translate-y-0.5 
+				            transition-all shrink-0"
+				    >
+				        Voir plus
+				    </button>
+				)}
+
 				<div className="flex justify-between items-center mt-3 pt-2 border-t border-amber-400/30 shrink-0">
 					<button 
 						onClick={prevCard}
