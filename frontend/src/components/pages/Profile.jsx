@@ -233,7 +233,7 @@ const ProfilContent = () => {
 			<Tabs actifTab={actifTab} onChange={setActifTab} />
 			{actifTab ==='friends' && <FriendsTab/>}
 			{actifTab ==='stats' && <FetchStats stats={s}/>}
-			{actifTab ==='settings' && <SettingsTab/>}
+			{actifTab ==='settings' && <SettingsTab username={data.username}/>}
 		</div>
 	)
 }
@@ -370,10 +370,50 @@ const FriendsTab = () => {
 	)
 }
 
-const SettingsTab = () => {
+const AvatarUpload = ({ username }) => {
+  const [preview, setPreview] = useState(null)
+  const [status, setStatus] = useState('')
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    // Local preview while uploading
+    setPreview(URL.createObjectURL(file))
+
+    const formData = new FormData()
+    formData.append('file', file)
+
+    try {
+      setStatus('Uploading...')
+      const res = await fetch('/api/avatar', {
+        method: 'POST',
+        body: formData,
+        // Don't set Content-Type header — the browser sets it with the boundary
+      })
+      const data = await res.json()
+      setStatus('Avatar updated!')
+      console.log('New avatar URL:', data.avatarUrl)
+    } catch (err) {
+      setStatus('Upload failed.')
+      console.error(err)
+    }
+  }
+
+  return (
+    <div>
+      {preview && <img src={preview} alt="Avatar preview" style={{ width: 80, borderRadius: '50%' }} />}
+      <input type="file" accept="image/*" onChange={handleFileChange} />
+      <p>{status}</p>
+    </div>
+  )
+}
+
+const SettingsTab = ({username}) => {
 	return (
 		<div>
 			<SectionTitle number="II" icon={cuttingboardImg} subtitle={"page temporaire"}>SETTINGS</SectionTitle>
+			<AvatarUpload currentUser={username} />
 			<p>test setting</p>
 		</div>
 	)
