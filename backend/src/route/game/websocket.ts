@@ -67,7 +67,8 @@ export interface Game {
 
 const games = new Map<string, Game>()
 
-let time = 10
+const TIME = 10
+let time = TIME
 let gameEnd = false
 let smashOk = true
 
@@ -88,15 +89,17 @@ export function addGame(code: string, game: Game)
 
 function launchTimer(lobby : Lobby)
 {
+  time = TIME
   const interval = setInterval(() => {
     time--;
     lobby.ws.forEach(websocket => websocket.send(JSON.stringify({
       type: 'TIME',
       time: time,
     })))
-    if (time === 0)
+    if (time <= 0)
       clearInterval(interval)
   }, 2000);
+  time = TIME
 }
 
 // console.log('card : ', card)
@@ -127,7 +130,7 @@ function gameRoutine(game : Game)
       trickEnd = true
     else if (headOn == false || isHead(card))
       i++
-    if (time === 0)
+    if (time <= 0)
     {
       gameEnd = true
       endGame(game)

@@ -13,21 +13,21 @@ export function Home () {
 
 	const navigate = useNavigate()
 	const [username, setUsername] = useState('login ?')
-  const [diff, setDiff] = useState(0)
+  	const [diff, setDiff] = useState(0)
 
-  const logout = async () => {
-    fetch("/api/refresh/logout", {
-      method: "POST",
-      credentials: "include",
-    })
-    .then((Response) => {
-      if (Response.status === 200)
-      {
-        console.log("logged out")
-        navigate("/login")
-      }
-    })
-  };
+	const logout = async () => {
+		fetch("/api/refresh/logout", {
+			method: "POST",
+			credentials: "include",
+		})
+		.then((Response) => {
+			if (Response.status === 200)
+			{
+				console.log("logged out")
+				navigate("/login")
+			}
+		})
+	};
 
 	useEffect(() => {
 
@@ -76,7 +76,7 @@ export function Home () {
   	}, []);
 
 	return <>
-	<div className="relative w-full h-screen overflow-hidden bg-amber-50">
+	{username !== 'login ?' && <div className="relative w-full h-screen overflow-hidden bg-amber-50">
 
     <h1 className="font-caprasimo text-center text-3xl  tracking-tight text-stone-900 pt-6">
       VEGEBATTLE
@@ -110,10 +110,10 @@ export function Home () {
             Log out
         </button>
       </div>
-      <div className="relative flex-1 border-2 border-stone-900 bg-amber-50/60 overflow-hidden">
+      <div className="relative flex-1 border-2 border-stone-900 bg-amber-50/60 overflow-hidden w-full h-[85vh]">
         <Game/>
       </div>
     </div>
-  </div>
+  </div>}
 </>
 }
