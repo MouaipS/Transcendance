@@ -1,4 +1,5 @@
 import { Game , Player , Card } from "./websocket.js"
+import { endGame } from "./end-game.js"
 
 export function whichHead(card : Card) : number
 {
@@ -47,12 +48,31 @@ export function isValidSmash(discard: Card[]) : Boolean
 
 export function winTrick(game : Game , player : Player)
 {
-    console.log('player: ', player)
-
     player.score += game.discard_value
     player.deck.push(...game.discard.reverse())
     game.discard = []
     game.discard_value = 0
+}
+
+export function drawCard(game : Game, player : Player) : Card
+{
+  const card = player.deck.shift()!
+  player.card = card
+  game.discard.unshift(card)
+  game.discard_value += card.value
+
+  if (onePlayerAlive(game) && lastPlayerName(game) === player.username)
+    endGame(game)
+  else
+  {
+    game.ws.forEach(websocket => websocket.send(JSON.stringify({
+      type: 'DRAW',
+      player: player, // {id, username, deck, score, card}
+      discard_value: game.discard_value,
+      discard: game.discard
+    })))
+  }
+  return card
 }
 
 export function endTrick(game : Game, winner : Player)
@@ -66,6 +86,21 @@ export function endTrick(game : Game, winner : Player)
     discard_value: 0,  // Value of the discard
     discard: game.discard
   })))
+}
+
+export function findPreviousPlayer(game : Game, pos : number) : number
+{
+  pos += 3
+  while (game.players[pos % 4].deck.length <= 0)
+    pos += 3;
+  return pos
+}
+
+export function findNextPlayer(game : Game, pos : number) : number
+{
+  while (game.players[pos % 4].deck.length <= 0)
+      pos++;
+  return pos
 }
 
 // export function applyCardMalus(game : Game, player : Player)
