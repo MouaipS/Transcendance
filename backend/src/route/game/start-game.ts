@@ -67,6 +67,10 @@ export function setGame(lobby: Lobby)
     const p3: Player = {id: 2, username:lobby.users[2], deck: decks[2], score: 0, card: undefined, stats: {victory: 0, defeat: 1}}
     const p4: Player = {id: 3, username:lobby.users[3], deck: decks[3], score: 0, card: undefined, stats: {victory: 0, defeat: 1}}
 
+    console.log('deck p1:', decks[0])
+    console.log('deck p2:', decks[1])
+    console.log('deck p3:', decks[2])
+    console.log('deck p4:', decks[3])
     const game: Game = {
         owner: lobby.owner,
         players: [p1, p2, p3, p4],

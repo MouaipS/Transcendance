@@ -53,13 +53,25 @@ export function winTrick(game : Game , player : Player)
     game.discard_value = 0
 }
 
+export function endTrick(game : Game, winner : Player)
+{
+  winTrick(game, winner)
+
+  //Broadcast
+  game.ws.forEach(websocket => websocket.send(JSON.stringify({
+    type: 'SUCCESS',
+    player: winner, // Player : {id, username, deck, score, card}
+    discard_value: 0,  // Value of the discard
+    discard: game.discard
+  })))
+}
+
 export function applyCardMalus(game : Game, player : Player)
 {
     const card = player.deck.shift()!
     player.card = card
     game.discard.push(card)
     game.discard_value += card.value
-    player.deck.shift()
 }
 
 export function onePlayerAlive(game : Game) : Boolean

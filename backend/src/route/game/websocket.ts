@@ -2,7 +2,7 @@ import {FastifyInstance, FastifyRequest, FastifyReply} from 'fastify'
 import { WebSocket } from '@fastify/websocket'
 import { prisma } from "../../server/prisma.js"
 import { setGame , PENALTY } from "./start-game.js"
-import { isValidSmash , winTrick , applyCardMalus , onePlayerAlive , lastPlayerName , isHead , whichHead } from "./game-utils.js"
+import { isValidSmash , winTrick , applyCardMalus , onePlayerAlive , lastPlayerName , isHead , whichHead, endTrick } from "./game-utils.js"
 import { joinLobby , codeAlreadyExists , generateGameCode } from "./lobby.js"
 
 /**
@@ -15,6 +15,8 @@ import { joinLobby , codeAlreadyExists , generateGameCode } from "./lobby.js"
  * Dès qu'une game est ready (4 joueurs), elle est lancée via la fonction
  * startGame().
  */
+
+
 
 interface CreationRequestBody {
   username: string;
@@ -67,11 +69,14 @@ export interface Game {
 
 const games = new Map<string, Game>()
 
-let time = 10
-let gameEnd = false
-let smashOk = true
+const TIME = 10
+let time = TIME
 
-//Creation of arrays Lobbies[] (Game waiting) and Games[] (Games running)
+let smash_available = true    //  False after someone smash (to avoid multiple smash). Available when a new card is drawn 
+let pos = 0                   //  position of the player who plays
+let headOn = false            //  true when game is in "Head Mode"
+
+//Creation of arrays Lobbies[]
 const lobbies: Lobby[] = [{
   owner: "public",
   code: '',
@@ -88,6 +93,7 @@ export function addGame(code: string, game: Game)
 
 function launchTimer(lobby : Lobby)
 {
+  time = TIME
   const interval = setInterval(() => {
     time--;
     lobby.ws.forEach(websocket => websocket.send(JSON.stringify({
@@ -97,27 +103,26 @@ function launchTimer(lobby : Lobby)
     if (time === 0)
       clearInterval(interval)
   }, 2000);
+  time = TIME
 }
 
-// console.log('card : ', card)
-// console.log('headOn : ', headOn)
-// console.log('head :', head)
+
 function gameRoutine(game : Game)
 {
   let i = 0;
-  let headOn = false
+  
   let trickEnd = false
   let head = 0;
   const interval = setInterval(() => {
     if (trickEnd == true)
     {
       headOn = false
-      endTrick(game, game.players[--i % 4])
+      endTrick(game, game.players[--pos % 4])
       trickEnd = false
     }
     else if (head != 0)
       head--
-    const card = drawCard(game, game.players[i % 4])
+    const card = drawCard(game, game.players[pos % 4])
     if (isHead(card))
     {
       head = whichHead(card)
@@ -126,15 +131,15 @@ function gameRoutine(game : Game)
     if (headOn == true && head == 0)
       trickEnd = true
     else if (headOn == false || isHead(card))
-      i++
+      pos++
     if (time === 0)
     {
-      gameEnd = true
       endGame(game)
       clearInterval(interval)
     }
   }, 2000)
 }
+//LOBBY MANAGEMENT
 
 //Route for private game creation : code generation et setup game variables
 //  receive body : {username, websocket}
@@ -199,7 +204,6 @@ async function sendStatstoDB(player : Player, game: Game)
       nb_defeats: {increment: player.stats.defeat},
   }})
   deleteGame(game, user)
-  gameEnd = false
 }
 
 function deleteGame(game: Game, user : any)
@@ -243,23 +247,21 @@ function broadcastNewPlayer(lobby : Lobby)
 
 function drawCard(game : Game, player : Player) : Card
 {
-  smashOk = true
+  smash_available = true
   const card = player.deck.shift()!
   player.card = card
   game.discard.unshift(card)
   game.discard_value += card.value
 
   if (onePlayerAlive(game) && lastPlayerName(game) === player.username)
-  {
-    gameEnd = true
     endGame(game)
-  }
   else
   {
     game.ws.forEach(websocket => websocket.send(JSON.stringify({
       type: 'DRAW',
       player: player, // {id, username, deck, score, card}
       discard_value: game.discard_value,
+      discard: game.discard
     })))
   }
   return card
@@ -270,7 +272,7 @@ function drawCard(game : Game, player : Player) : Card
 //Receive message : {type, code, username}
 function smashManagement(message: any)
 {
-  if (smashOk === false)
+  if (smash_available === false)
     return
   
   console.log('SMASH!!!')
@@ -286,6 +288,8 @@ function smashManagement(message: any)
     console.log('...valid SMASH!!!')
     winTrick(game, player)
     response = 'SUCCESS'
+    pos = player.id
+    headOn = false
   }
   else
   {
@@ -300,22 +304,13 @@ function smashManagement(message: any)
   game.ws.forEach(websocket => websocket.send(JSON.stringify({
     type: response,
     player: player, // Player : {id, username, deck, score, card}
-    discard: game.discard_value  // Value of the discard
+    discard_value: game.discard_value,  // Value of the discard
+    discard: game.discard
   })))
-  smashOk = false
+  smash_available = false
 }
 
-function endTrick(game : Game, winner : Player)
-{
-  winTrick(game, winner)
 
-  //Broadcast
-  game.ws.forEach(websocket => websocket.send(JSON.stringify({
-    type: 'SUCCESS',
-    player: winner, // Player : {id, username, deck, score, card}
-    discard: 0  // Value of the discard
-  })))
-}
 
 export function gameSocketRoute(websocket:  WebSocket, request: FastifyRequest)
 {
