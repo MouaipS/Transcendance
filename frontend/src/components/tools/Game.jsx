@@ -427,8 +427,6 @@ export function Game () {
     setStart(false)
     setPlayers([])
     setDecks([6, 6, 6, 6])
-    setTimer(30)
-    timerRef.current = 30
 
     if (socketRef.current?.readyState === WebSocket.OPEN) {
       socketRef.current.send(JSON.stringify({ 

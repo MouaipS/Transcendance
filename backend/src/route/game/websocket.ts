@@ -99,13 +99,23 @@ function launchTimer(lobby : Lobby)
   }, 2000);
 }
 
+// console.log('card : ', card)
+// console.log('headOn : ', headOn)
+// console.log('head :', head)
 function gameRoutine(game : Game)
 {
   let i = 0;
   let headOn = false
+  let trickEnd = false
   let head = 0;
   const interval = setInterval(() => {
-    if (head != 0)
+    if (trickEnd == true)
+    {
+      headOn = false
+      endTrick(game, game.players[--i % 4])
+      trickEnd = false
+    }
+    else if (head != 0)
       head--
     const card = drawCard(game, game.players[i % 4])
     if (isHead(card))
@@ -113,14 +123,8 @@ function gameRoutine(game : Game)
       head = whichHead(card)
       headOn = true
     }
-    console.log('card : ', card)
-    console.log('headOn : ', headOn)
-    console.log('head :', head)
     if (headOn == true && head == 0)
-    {
-        headOn = false
-        endTrick(game, game.players[--i % 4])
-    }
+      trickEnd = true
     else if (headOn == false || isHead(card))
       i++
     if (time === 0)
@@ -338,13 +342,5 @@ export function gameSocketRoute(websocket:  WebSocket, request: FastifyRequest)
     if (message.type === 'SMASH') {
       smashManagement(message)
     }
-
-    //A player loose after drawing several cards without heads
-    // if (message.type === 'LOSE') // message : {type, code, username}
-    // {
-    //   console.log('player lose: ', message)
-    //   endTrick(message)
-    // }
-
   })
 }
