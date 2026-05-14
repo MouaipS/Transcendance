@@ -386,7 +386,7 @@ const AvatarUpload = ({ username }) => {
 
     try {
       setStatus('Uploading...')
-      const res = await fetch('/api/avatar', {
+      const res = await fetch('/api/settings/avatar', {
         method: 'POST',
         body: formData,
         // Don't set Content-Type header — the browser sets it with the boundary

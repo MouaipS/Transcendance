@@ -4,6 +4,8 @@ import {registerRoute} from "../route/authentication/register.js"//same but for 
 import {logoutRoute} from "../route/authentication/logout.js"
 import {refreshRoute} from "../route/authentication/refresh.js"
 import {homePageRoute} from "../route/pages/homePage.js"
+import {avatarUploadRoute} from "../route/pages/avatarUpload.js"
+import {avatarRoute} from "../route/pages/avatar.js"
 import { joinGameHTTP , createGameHTTP, gameSocketRoute } from './game/websocket.js'
 import { allFriendsRoute } from './friends/friends.js'
 import { createFriendshipRoute, AcceptFriendshipRoute, deleteFriendshipRoute} from './friends/friends.js'
@@ -32,6 +34,10 @@ export async function linker(server: FastifyInstance)
 	server.post('/api/refresh/logout', async (request, reply) => { return logoutRoute(request, reply)});
 	server.post('/api/refresh', async (request, reply) => { return refreshRoute(request, reply)}); 									// logout route
 	server.get('/api/home', {onRequest : [authenticate]}, async (request, reply) => { return homePageRoute(request, reply)});	// homePage display route
+	server.post('/api/avatar', {onRequest : [authenticate]}, async (request, reply) => {return avatarRoute(request, reply)});
+
+	//HTTP settings route
+	server.post('/api/settings/avatar', {onRequest : [authenticate]}, async (request, reply) => {return avatarUploadRoute(request, reply)});
 	
 	//HTTP game routes
 	server.post<{Body:any}>('/api/game/join', async (request, reply) => { return joinGameHTTP(request, reply)});								// public random game route
