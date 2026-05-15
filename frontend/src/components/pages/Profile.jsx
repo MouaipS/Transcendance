@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect , useRef} from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import carotImg        from '../images/carot.png'
@@ -371,50 +371,112 @@ const FriendsTab = () => {
 }
 
 const AvatarUpload = ({ username }) => {
-  const [preview, setPreview] = useState(null)
-  const [status, setStatus] = useState('')
+	const [preview, setPreview] = useState(null) 			//avatar preview 
+	const [status, setStatus] = useState('') 				//use effect if the updload is taking some time
+	const inputRef = useRef(null) 							// the ref to call the button
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0]
-    if (!file) return
+  const handleFileChange = async (e) => { 					//the actual logic that opens the file explorer
+    const file = e.target.files[0] 							//the index 0 is the first file chosen in the file explorer (in case of multifile choice)
+    if (!file) return 										//if the user cancelled the avatar change
 
-    // Local preview while uploading
-    setPreview(URL.createObjectURL(file))
+    setPreview(URL.createObjectURL(file)) 					//the preview when the avatar is chosen
 
-    const formData = new FormData()
+    const formData = new FormData() 						//this is where we set the format to send files over http, the multipart plugin will read from that in the backend
     formData.append('file', file)
 
     try {
       setStatus('Uploading...')
       const res = await fetch('/api/settings/avatar', {
         method: 'POST',
-        body: formData,
-        // Don't set Content-Type header — the browser sets it with the boundary
+        body: formData, 									//no need of content type only the forData for multipart
       })
       const data = await res.json()
-      setStatus('Avatar updated!')
-      console.log('New avatar URL:', data.avatarUrl)
     } catch (err) {
       setStatus('Upload failed.')
       console.error(err)
     }
   }
+	  return (
+    <div className="border-2 border-stone-900 bg-amber-50/60 p-4
+                    flex flex-col gap-3 mb-4 animate-slide-in-left">
 
-  return (
-    <div>
-      {preview && <img src={preview} alt="Avatar preview" style={{ width: 80, borderRadius: '50%' }} />}
-      <input type="file" accept="image/*" onChange={handleFileChange} />
-      <p>{status}</p>
-    </div>
+      <img
+        src={preview || 'src/components/images/default_avatar.webp'}
+        alt="avatar"
+        className="h-20 w-20 object-cover border-2 border-stone-900"
+		style={{alignSelf: 'center'}}
+      />
+
+      <input
+        type="file"
+        accept="image/*"
+        ref={inputRef}
+        onChange={handleFileChange}
+        style={{ display: 'none' }}
+      />
+
+        <button
+          onClick={() => inputRef.current.click()}
+          className="px-6 py-3 border-2 border-stone-900 bg-amber-300
+                     font-bold text-xs uppercase tracking-[0.3em] text-stone-900
+                     hover:-translate-y-0.5 transition-all
+                     disabled:opacity-50 disabled:cursor-not-allowed">
+          Change avatar
+        </button>
+      </div>
   )
+}
+
+const UsernameChange = ({username}) =>
+{
+	const [newUsername, setNewUsername] = useState("");
+
+	const handleUserChange = async (e) =>
+	{
+		console.log(newUsername);
+//		try {
+//		  const res = await fetch('/api/userUpdate', {
+//			method: 'POST',
+//			body: formData, 									//no need of content type only the forData for multipart
+//		  })
+//		  const data = await res.json()
+//		} catch (err) {
+//		  console.error(err)
+//		}
+//	  }
+	}
+	return (
+		<div className="border-2 border-stone-900 bg-amber-50/60 p-4
+                        flex flex-col gap-3 mb-4 animate-slide-in-left">
+			<div className="flex flex-col sm:flex-row gap-3">
+				<input
+					type="text"
+					value={newUsername}
+					onChange={(e) => setNewUsername(e.target.value)}
+					className="flex-grow px-4 py-3 bg-amber-50 border-2 border-stone-900
+                                font-caprasimo text-lg text-stone-900
+                                focus:outline-none focus:bg-white"
+					placeholder="Username"
+				/>
+				<button
+          			onClick={handleUserChange}
+					className="px-10 py-3 border-2 border-stone-900 bg-amber-300
+                                font-bold text-xs uppercase tracking-[0.3em] text-stone-900
+                                hover:-translate-y-0.5 transition-all
+                                disabled:opacity-50 disabled:cursor-not-allowed">
+					Change Username
+				</button>
+			</div>
+		</div>
+	)
 }
 
 const SettingsTab = ({username}) => {
 	return (
 		<div>
-			<SectionTitle number="II" icon={cuttingboardImg} subtitle={"page temporaire"}>SETTINGS</SectionTitle>
+			<SectionTitle number="II" icon={cuttingboardImg} subtitle={"Petit relooking ?"}>SETTINGS</SectionTitle>
 			<AvatarUpload currentUser={username} />
-			<p>test setting</p>
+			<UsernameChange currentUser={username}/>
 		</div>
 	)
 }
