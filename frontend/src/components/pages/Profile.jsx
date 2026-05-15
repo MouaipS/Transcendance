@@ -12,25 +12,25 @@ import cuttingboardImg from '../images/cuttingboard.png'
 const queryClient = new QueryClient()
 
 const IdentityCard = ({ username, rank, rank_max}) => (
-	<div className="border-2 border-stone-900 bg-amber-50/60 p-6 sm:p-10 mb-4 animate-slide-in-left">
+	<div className="border-2 border-primary bg-background/60 p-6 sm:p-10 mb-4 animate-slide-in-left">
 		<div className="text-[10px] sm:text-xs uppercase tracking-[0.3em]
-						text-stone-700 font-bold mb-2">
+						text-primary-light font-bold mb-2">
 							Fiche du chef - Service en cours
 		</div>
 		<div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
 			<h2 className="	font-caprasimo text-5xl sm:text-7xl
-							text-stone-900 leading-none">
+							text-primary leading-none">
 				{username}
 			</h2>
 			<div className="text-right">
-				<div className="font-caprasimo text-4xl sm:text-5xl text-stone-900">
+				<div className="font-caprasimo text-4xl sm:text-5xl text-primary">
 					{rank} /
-					<span className="text-stone-700/40">
+					<span className="text-primary-light/40">
 						/ {rank_max}
 					</span>
 				</div>
 				<div className="text-[10px] uppercase tracking-[0.2em]
-								text-stone-700 font-bold mt-1">
+								text-primary-light font-bold mt-1">
 					Rang actuel // Meilleur
 				</div>
 			</div>
@@ -50,8 +50,8 @@ const Tabs = ({actifTab, onChange}) => {
 			{tab.map((tabN) => {
 				const isActif = actifTab === tabN.id
 
-				const baseClass = "flex-1 px-6 py-3 border-2 border-stone-900 font-bold text-xs sm:text-sm uppercase tracking-[0.3em] transition-all duration-200 hover:-translate-y-0.5"
-				const variantClass = isActif ? 'bg-amber-300 text-stone-900 shadow-[3px_3px_0_0_rgba(28,25,23,1)]' : 'bg-amber-50/80 text-stone-900 hover:bg-amber-100'
+				const baseClass = "flex-1 px-6 py-3 border-2 border-primary font-bold text-xs sm:text-sm uppercase tracking-[0.3em] transition-all duration-200 hover:-translate-y-0.5"
+				const variantClass = isActif ? 'bg-secondary text-primary shadow-[3px_3px_0_0_rgba(28,25,23,1)]' : 'bg-background/80 text-primary hover:bg-secondary-light'
 
 				return (
 					<button
@@ -70,22 +70,22 @@ const SectionTitle = ({ children, number, icon, subtitle}) => (
 	<div className="pt-16 pb-8 animate-slide-in-left">
 		<div className="flex items-end gap-4 mb-3">
 			<div className="font-caprasimo text-5xl sm:text-6xl
-							text-stone-900 leading-none">
+							text-primary leading-none">
 				№{number}
 			</div>
 			<div className="flex-1 pb-2">
-				<div className="h-[3px] bg-stone-900 w-full animate-slide-in-left" />
+				<div className="h-[3px] bg-primary w-full animate-slide-in-left" />
 			</div>
 			{icon && (<img src={icon} alt=""
 					className="h-10 w-10 sm:h-12 sm:w-12 object-contain"/>)}
 		</div>
 		<div className="flex items-baseline gap-3">
 			<h2 className="	font-caprasimo text-3xl sm:text-5xl
-							tracking-wide text-stone-900">
+							tracking-wide text-primary">
 				{children}
 			</h2>
 			{subtitle && (
-			<span className="italic text-stone-700/70 text-sm sm:text-base">
+			<span className="italic text-primary-light/70 text-sm sm:text-base">
 				— {subtitle}
 			</span>
 			)}
@@ -94,15 +94,15 @@ const SectionTitle = ({ children, number, icon, subtitle}) => (
 )
 
 const StatCard = ({label, value, index = 0, isHighlighted = false}) => {
-	const wrapperClass = isHighlighted ? 'bg-stone-900 border-stone-900' : 'bg-amber-50/80 border-stone-900'
+	const wrapperClass = isHighlighted ? 'bg-primary border-primary' : 'bg-background/80 border-primary'
 
-	const numberClass = isHighlighted ? 'text-amber-400/70' : 'text-stone-900/40'
+	const numberClass = isHighlighted ? 'text-amber-400/70' : 'text-primary/40'
 
-	const valueClass = isHighlighted ? 'text-4xl sm:text-5xl lg:text-6xl text-amber-50' : 'text-3xl sm:text-4xl lg:text-5xl text-stone-900'
+	const valueClass = isHighlighted ? 'text-4xl sm:text-5xl lg:text-6xl text-background' : 'text-3xl sm:text-4xl lg:text-5xl text-primary'
 
-	const dividerClass = isHighlighted ? 'bg-amber-400/60' : 'bg-stone-900/40'
+	const dividerClass = isHighlighted ? 'bg-amber-400/60' : 'bg-primary/40'
 
-	const labelClass = isHighlighted ? 'text-amber-200/90' : 'text-stone-900/70'
+	const labelClass = isHighlighted ? 'text-amber-200/90' : 'text-primary/70'
 
 	const cardNumber = String(index + 1).padStart(2, '0')
 
@@ -142,7 +142,7 @@ const FriendCard = ({ entry, index, onAccept, onDelete}) => {
 	const isReceived = entry.source === 'received'
 	const isSent = entry.source === 'sent'
 
-	const cardClass = isFriend ? 'bg-amber-50/80 border-stone-900' : 'bg-stone-200/60 border-stone-400 opacity-80'
+	const cardClass = isFriend ? 'bg-background/80 border-primary' : 'bg-stone-200/60 border-stone-400 opacity-80'
 
 	const state = isReceived ? "Demannde reçue" : isSent ? "Demande envoyée" : null
 
@@ -152,15 +152,15 @@ const FriendCard = ({ entry, index, onAccept, onDelete}) => {
                          ${cardClass}`}
              style={{ animationDelay: `${index * 60}ms` }}>
 
-            <div className="h-14 w-14 rounded-full border-2 border-stone-900
-                            bg-amber-50 shrink-0" />
+            <div className="h-14 w-14 rounded-full border-2 border-primary
+                            bg-background shrink-0" />
 
             <div className="flex-1 min-w-0">
-                <div className="font-caprasimo text-2xl sm:text-3xl text-stone-900 leading-none">
+                <div className="font-caprasimo text-2xl sm:text-3xl text-primary leading-none">
                     {entry.username}
                 </div>
                 {state && (
-                    <div className="text-xs uppercase tracking-[0.2em] text-stone-700 mt-1">
+                    <div className="text-xs uppercase tracking-[0.2em] text-primary-light mt-1">
                         {state}
                     </div>
                 )}
@@ -171,12 +171,12 @@ const FriendCard = ({ entry, index, onAccept, onDelete}) => {
                     <>
                         <button
 						onClick={onAccept}
-						className="px-3 py-2 border-2 border-stone-900 bg-amber-300 text-xs font-bold uppercase tracking-[0.2em]">
+						className="px-3 py-2 border-2 border-primary bg-secondary text-xs font-bold uppercase tracking-[0.2em]">
                             Accepter
                         </button>
                         <button
 						onClick={onDelete}
-						className="px-3 py-2 border-2 border-stone-900 bg-amber-50 text-xs font-bold uppercase tracking-[0.2em]">
+						className="px-3 py-2 border-2 border-primary bg-background text-xs font-bold uppercase tracking-[0.2em]">
                             Refuser
                         </button>
                     </>
@@ -184,14 +184,14 @@ const FriendCard = ({ entry, index, onAccept, onDelete}) => {
                 {isSent && (
                     <button 
 					onClick={onDelete}
-					className="px-3 py-2 border-2 border-stone-400 bg-stone-50 text-xs font-bold uppercase tracking-[0.2em] text-stone-700">
+					className="px-3 py-2 border-2 border-stone-400 bg-stone-50 text-xs font-bold uppercase tracking-[0.2em] text-primary-light">
                         Annuler
                     </button>
                 )}
                 {isFriend && (
                     <button
 					onClick={onDelete}
-					className="px-3 py-2 border-2 border-stone-900 bg-amber-50 text-xs font-bold uppercase tracking-[0.2em]">
+					className="px-3 py-2 border-2 border-primary bg-background text-xs font-bold uppercase tracking-[0.2em]">
                         Supprimer
                     </button>
                 )}
@@ -248,23 +248,23 @@ const AddFriendForm = ({ onSubmit, isWaiting, errorMessage}) => {
 	}
 
 	return (
-		<div className="border-2 border-stone-900 bg-amber-50/60 p-4
+		<div className="border-2 border-primary bg-background/60 p-4
                         flex flex-col gap-3 mb-4 animate-slide-in-left">
 			<div className="flex flex-col sm:flex-row gap-3">
 				<input
 					type="text"
 					value={username}
 					onChange={(e) => setUsername(e.target.value)}
-					className="flex-1 px-4 py-3 bg-amber-50 border-2 border-stone-900
-                                font-caprasimo text-lg text-stone-900
+					className="flex-1 px-4 py-3 bg-background border-2 border-primary
+                                font-caprasimo text-lg text-primary
                                 focus:outline-none focus:bg-white"
 					disable={isWaiting}
 				/>
 				<button
 					onClick={handleClick}
 					disable={isWaiting || !username.trim()}
-					className="px-6 py-3 border-2 border-stone-900 bg-amber-300
-                                font-bold text-xs uppercase tracking-[0.3em] text-stone-900
+					className="px-6 py-3 border-2 border-primary bg-secondary
+                                font-bold text-xs uppercase tracking-[0.3em] text-primary
                                 hover:-translate-y-0.5 transition-all
                                 disabled:opacity-50 disabled:cursor-not-allowed">
 					{isWaiting ? '...' : '+Ajouter'}
@@ -437,10 +437,10 @@ export function Profile () {
 			{/*wrappeur exterieur - prend tout l'ecran et donne le fond
 				inset-0 pour recouvrir tout l'ecran
 				min-h-full permet le scroll vertical car affichage à 100%
-				bg-amber-50 couleur du fond
+				bg-background couleur du fond
 				overflow-y-auto active le scroll vertical
 				*/}
-			<div className="absolute inset-0 min-h-full bg-amber-50 overflow-y-auto">
+			<div className="absolute inset-0 min-h-full bg-background overflow-y-auto">
 				{/* wrappeur interieur
 					max-w-6xl limite de largeur pour la lisibilité - environ 100 caracteres par ligne
 					mx-auto pour le centrage horizontal
@@ -454,8 +454,8 @@ export function Profile () {
 							items-center : centre les enfants
 							gap-2 : espace entre les 2 enfants
 							mb-8 : espace entre le button et la suite
-							text-stone-900 c'est la couleur du texte
-							hover:text-stone-700 : modification de la couleur en cas de survol
+							text-primary c'est la couleur du texte
+							hover:text-primary-light : modification de la couleur en cas de survol
 							transition-colors : gestion de la transition de couleurs
 							 */}
 						{/* class de la fleche 
@@ -473,7 +473,7 @@ export function Profile () {
 						onClick={() => navigate('/')}
 
 						className="	group inline-flex items-center gap-2 mb-8
-									text-stone-900 hover:text-stone-700
+									text-primary hover:text-primary-light
 									transition-colors animate-slide-in-left">
 						<span className="text-2xl group-hover:-translate-x-1 transition-transform">←</span>
 						<span className="text-xs uppercase tracking-[0.3em] font-bold">Retour en cuisine</span>
@@ -483,20 +483,20 @@ export function Profile () {
 					{/*flex container : pour la gestion des alignements avec les enfants*/}
 					<header className="mb-12 animate-slide-in-left">
 						<div className="flex items-center gap-3 mb-3">
-							<div className="text-xs uppercase tracking-[0.4em] font-bold text-stone-700">gauche</div>
-							<div className="flex-1 h-px bg-stone-900/30"/>
-							<div className="text-xs uppercase tracking-[0.3em] font-bold text-stone-700">Droite</div>
+							<div className="text-xs uppercase tracking-[0.4em] font-bold text-primary-light">gauche</div>
+							<div className="flex-1 h-px bg-primary/30"/>
+							<div className="text-xs uppercase tracking-[0.3em] font-bold text-primary-light">Droite</div>
 						</div>
-						<h1 className="	font-caprasimo text-stone-900 leading-[0.85]
+						<h1 className="	font-caprasimo text-primary leading-[0.85]
 										text-7xl sm:text-8xl lg:text-[10rem]
 										tracking-tighter">
 							Profile
 						</h1>
-						<div className="mt-4 h-1 bg-stone-900"/>
-						<p className="mt-4 text-stone-700 italic max-w-2xl text-sm sm:text-base">
+						<div className="mt-4 h-1 bg-primary"/>
+						<p className="mt-4 text-primary-light italic max-w-2xl text-sm sm:text-base">
 							Le récapitulatif de toute ta carrière de chef :
 						</p>
-						<p className="mt-2 text-stone-700 italic max-w-4xl text-sm sm:text-base">
+						<p className="mt-2 text-primary-light italic max-w-4xl text-sm sm:text-base">
 							Victoires, smashs, séries et records obtenus, tout ce que tu as obtenu
 							au fil des services en salle est là.
 						</p>

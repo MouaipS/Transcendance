@@ -113,13 +113,13 @@ export function ChatCard() {
 	if(!activeFriend) {
 
 		if (isLoading)
-            return <div className="text-amber-200/70 italic">Chargement...</div>
+            return <div className="text--200/70 italic">Chargement...</div>
         if (error)
             return <div className="text-red-400 italic">Erreur de chargement</div>
         if (friends.length === 0) {
 			return (
                 <div className="flex flex-col items-center text-center justify-center h-full min-h-32 gap-2">
-                    <p className="text-base text-amber-300">
+                    <p className="text-base text-secondary">
                         Pas encore de contacts dans ton carnet, chef !
                     </p>
                 </div>
@@ -129,19 +129,19 @@ export function ChatCard() {
 
 		return (
 			<div className="flex flex-col gap-2">
-				<p className="text-amber-300 text-xs uppercase tracking-[0.2em] mb-1">
+				<p className="text-secondary text-xs uppercase tracking-[0.2em] mb-1">
 					Tes contacts
 				</p>
 				{friends.map(f => (
 					<button
 						key={f.user_id}
 						onClick={() => setActiveFriend(f)}
-						className="flex items-center gap-3 border-2 border-stone-900 bg-amber-50 px-3 py-2
-							hover:bg-amber-100 hover:-translate-y-0.5 transition-all">
-						<span className="font-caprasimo text-lg text-stone-900">
+						className="flex items-center gap-3 border-2 border-primary bg-background px-3 py-2
+							hover:bg-secondary-light hover:-translate-y-0.5 transition-all">
+						<span className="font-caprasimo text-lg text-primary">
 							{f.username}
 						</span>
-						<span className="ml-auto text-stone-700 font-bold">→</span>
+						<span className="ml-auto text-primary-light font-bold">→</span>
 					</button>
 				))}
 			</div>
@@ -155,12 +155,12 @@ export function ChatCard() {
             <div className="flex items-center justify-between mb-2">
                 <button
                     onClick={() => setActiveFriend(null)}
-                    className="text-amber-300 text-sm font-bold hover:text-amber-200">
+                    className="text-secondary text-sm font-bold hover:text-amber-200">
                     ← {activeFriend.username}
                 </button>
                 <span
                     title={isConnected ? "Connecté" : "Déconnecté"}
-                    className={`h-2 w-2 rounded-full border border-stone-900
+                    className={`h-2 w-2 rounded-full border border-primary
                         ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}
                 />
             </div>
@@ -177,9 +177,9 @@ export function ChatCard() {
                             <div
                                 key={m.id}
                                 className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
-                                <div className={`max-w-[85%] px-2 py-1 border-2 border-stone-900 text-sm
-                                    ${mine ? 'bg-amber-300' : 'bg-amber-50'}`}>
-                                    <span className="text-stone-900">{m.content}</span>
+                                <div className={`max-w-[85%] px-2 py-1 border-2 border-primary text-sm
+                                    ${mine ? 'bg-secondary' : 'bg-background'}`}>
+                                    <span className="text-primary">{m.content}</span>
                                 </div>
                             </div>
                         )
@@ -187,7 +187,7 @@ export function ChatCard() {
                 )}
 				<div ref={messageEndRef} />
             </div>
-            <div className="flex gap-1 mt-2 pt-2 border-t border-amber-300/30">
+            <div className="flex gap-1 mt-2 pt-2 border-t border-secondary/30">
                 <input
 					ref={inputRef}
                     type="text"
@@ -197,13 +197,13 @@ export function ChatCard() {
                     placeholder={isConnected ? "Ton message..." : "Connexion en cours..."}
                     disabled={!isConnected}                                          // ◄── ajout
                     maxLength={1000}
-                    className="flex-1 px-2 py-1 bg-amber-50 border-2 border-stone-900 text-xs text-stone-900
+                    className="flex-1 px-2 py-1 bg-background border-2 border-primary text-xs text-primary
                         focus:outline-none focus:bg-white disabled:opacity-50"
                 />
                 <button
                     onClick={sendMessage}
                     disabled={!draft.trim() || !isConnected}                         // ◄── modifié
-                    className="px-2 py-1 border-2 border-stone-900 bg-amber-300 text-stone-900
+                    className="px-2 py-1 border-2 border-primary bg-secondary text-primary
                         text-[10px] font-bold uppercase tracking-[0.2em]
                         hover:bg-amber-200 disabled:opacity-40">
                     Envoi

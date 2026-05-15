@@ -76,26 +76,26 @@ export function Home () {
   	}, []);
 
 	return <>
-	<div className="relative w-full h-screen overflow-hidden bg-amber-50">
+	<div className="theme-france relative w-full h-screen overflow-hidden bg-background">
 
-    <h1 className="font-caprasimo text-center text-3xl  tracking-tight text-stone-900 pt-6">
+    <h1 className="font-caprasimo text-center text-3xl  tracking-tight text-primary pt-6">
       VEGEBATTLE
     </h1>
     <div className="flex gap-8 px-8 pt-6 h-[calc(100vh-100p)]">
       <div className="flex flex-col w-90 shrink-0 min-h-0">
         <button
           onClick={() => navigate('/profile')}
-          className="flex items-center gap-4 border-2 border-stone-900 bg-amber-50/80 hover:bg-amber-100 hover:-translate-y-0.5 transition-all">
+          className="flex items-center gap-4 border-2 border-primary bg-background/80 hover:bg-secondary-light hover:-translate-y-0.5 transition-all">
             <img
               src="src/components/images/default_avatar.webp"
-              className="h-14 w-14 object-cover border-r-2 border-stone-900"
+              className="h-14 w-14 object-cover border-r-2 border-primary"
             />
           <div className="flex flex-col items-start pr-4 py-1">
 					  <span className=" text-[10px] uppercase tracking-[0.3em] 
-						                  font-bold text-stone-700">
+						                  font-bold text-primary-light">
 						Chef en service
 					  </span>
-					  <span className=" font-caprasimo text-2xl text-stone-900 
+					  <span className=" font-caprasimo text-2xl text-primary 
                   						leading-none">
 						{username}
 					</span>
@@ -103,14 +103,14 @@ export function Home () {
         </button>
         <CardStack/>
         <button
-          className=" self-start bg-stone-900 px-4 py-2 text-xs font-bold 
-					            uppercase tracking-[0.3em] text-amber-50 
-					            border-2 border-stone-900"
+          className=" self-start bg-primary px-4 py-2 text-xs font-bold 
+					            uppercase tracking-[0.3em] text-background 
+					            border-2 border-primary"
           onClick={logout}>
             Log out
         </button>
       </div>
-      <div className="relative flex-1 border-2 border-stone-900 bg-amber-50/60 overflow-hidden">
+      <div className="relative flex-1 border-2 border-primary bg-background/60 overflow-hidden">
         <Game/>
       </div>
     </div>

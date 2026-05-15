@@ -5,15 +5,15 @@ import { ChatCard } from '../tools/ChatCard'
 const queryClient = new QueryClient()
 
 const RulesCard = () => (
-	<div className="text-sm text-amber-300 text-justify space-y-2">
+	<div className="text-sm text-secondary text-justify space-y-2">
 		<p>
-			Objectif : <span className="font-caprasimo text-amber-300">
+			Objectif : <span className="font-caprasimo text-secondary">
 				accumuler le plus de points
 			</span> en remportant des plis.</p>
 		<p>
 			Façons de gagner un pli :
 		</p>
-		<ul className="list-disc ml-6 space-y-2 text-amber-300">
+		<ul className="list-disc ml-6 space-y-2 text-secondary">
 			<li>Smasher en cas de paire</li>
 			<li>Smasher en cas de sandwich</li>
 			<li>Smasher un combo</li>
@@ -38,9 +38,9 @@ const StatsCard = () => {
 
 	const Row = ({ label, value }) => (
 		<div className="flex items-center justify-between 
-			border-2 border-stone-900 bg-amber-50 px-4 py-2">
-			<span className="font-bold text-xs uppercase tracking-[0.2em] text-stone-700">{label}</span>
-			<span className="font-caprasimo text-xl text-stone-900">{value}</span>
+			border-2 border-primary bg-background px-4 py-2">
+			<span className="font-bold text-xs uppercase tracking-[0.2em] text-primary-light">{label}</span>
+			<span className="font-caprasimo text-xl text-primary">{value}</span>
 		</div>
 	)
 
@@ -69,10 +69,10 @@ const RecipesCard = () => {
 	return <div className="space-y-3">
 		{recipes.map((r, i) => (
 			<div key ={i}>
-				<p className="font-caprasimo text-lg text-amber-300">
+				<p className="font-caprasimo text-lg text-secondary">
 					{r.name} :
 				</p>
-				<ul className="ml-4 text-sm text-amber-300">
+				<ul className="ml-4 text-sm text-secondary">
 					{r.ingredients.map((ing, j) => (
 						<li key={j}>
 							|→ {ing}
@@ -100,10 +100,10 @@ const BrigadeCard = () => {
 
 	if(member.length === 0) {
 		return <div className="flex flex-col items-center text-center justify-center h-full min-h-32 gap-4 py-4">
-			<p className="text-base text-amber-300">T'as besoin de recruter des membres dans ta brigade, chef !</p>
+			<p className="text-base text-secondary">T'as besoin de recruter des membres dans ta brigade, chef !</p>
 			<button
 				onClick={() => navigate('/profile', {state: {tab: 'friends'}})}
-				className="bg-amber-300 border-2 border-stone-900 px-4 py-2 text-xs text-stone-900 font-bold uppercase hover:bg-state-100 transition-all">
+				className="bg-secondary border-2 border-primary px-4 py-2 text-xs text-primary font-bold uppercase hover:bg-state-100 transition-all">
 					Gérer les amis
 			</button>
 		</div>
@@ -111,10 +111,10 @@ const BrigadeCard = () => {
 
 	return <div className="flex flex-col gap-2">
 		{member.map((m, i) => (
-			<div key={i} className="flex items-center gap-3 border-2 border-stone-900 bg-amber-50 px-3 py-2">
-				<span className={`h-3 w-3 rounded-full order border-stone-900 ${statusColor[m.status]}`}></span>
-				<span className="font-caprasimo text-lg text-stone-900">{m.name}</span>
-				<span className="ml-auto text-xs uppercase tracking-[0.2em] text-stone-700 font-bold">{m.status}</span>
+			<div key={i} className="flex items-center gap-3 border-2 border-primary bg-background px-3 py-2">
+				<span className={`h-3 w-3 rounded-full order border-primary ${statusColor[m.status]}`}></span>
+				<span className="font-caprasimo text-lg text-primary">{m.name}</span>
+				<span className="ml-auto text-xs uppercase tracking-[0.2em] text-primary-light font-bold">{m.status}</span>
 			</div>
 		))}
 	</div>
