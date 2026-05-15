@@ -16,5 +16,6 @@ export async function avatarRoute(request : FastifyRequest, reply : FastifyReply
 	{
 		return reply.code(404).send({ message: 'User not found' })
 	}
+	console.log(dbUser.avatarUrl);
 	return reply.send({ avatarUrl: dbUser.avatarUrl })
 }

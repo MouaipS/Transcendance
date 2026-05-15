@@ -34,7 +34,7 @@ export async function linker(server: FastifyInstance)
 	server.post('/api/refresh/logout', async (request, reply) => { return logoutRoute(request, reply)});
 	server.post('/api/refresh', async (request, reply) => { return refreshRoute(request, reply)}); 									// logout route
 	server.get('/api/home', {onRequest : [authenticate]}, async (request, reply) => { return homePageRoute(request, reply)});	// homePage display route
-	server.post('/api/avatar', {onRequest : [authenticate]}, async (request, reply) => {return avatarRoute(request, reply)});
+	server.get('/api/avatar', {onRequest : [authenticate]}, async (request, reply) => {return avatarRoute(request, reply)});
 
 	//HTTP settings route
 	server.post('/api/settings/avatar', {onRequest : [authenticate]}, async (request, reply) => {return avatarUploadRoute(request, reply)});
