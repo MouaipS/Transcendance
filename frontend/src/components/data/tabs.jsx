@@ -12,7 +12,7 @@ const FetchStats = () => {
 	const { data, error, isLoading } = useQuery({
 		queryKey: ['stats'],
 		queryFn: () => 
-			fetch('https://localhost:8443/api/home')
+			fetch('/api/home')
 			.then(res => res.json())
 	})
 	if (isLoading) return <div>Chargement...</div>
@@ -34,7 +34,7 @@ const FetchRecipes = () => {
 	const { data, error, isLoading } = useQuery({
 		queryKey: ['recipes'],
 		queryFn: () => 
-			fetch('https://localhost:8443/api/home')
+			fetch('/api/home')
 			.then(res => res.json())
 	})
 	if (isLoading) return <div>Chargement...</div>
