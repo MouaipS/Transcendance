@@ -434,16 +434,20 @@ const UsernameChange = ({username}) =>
 	const handleUserChange = async (e) =>
 	{
 		console.log(newUsername);
-//		try {
-//		  const res = await fetch('/api/userUpdate', {
-//			method: 'POST',
-//			body: formData, 									//no need of content type only the forData for multipart
-//		  })
-//		  const data = await res.json()
-//		} catch (err) {
-//		  console.error(err)
-//		}
-//	  }
+		try {
+		  const res = await fetch('/api/settings/username', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				newusername : newUsername,
+				username : username,
+			}),
+			credentials: 'include',
+		  })
+		  const data = await res.json()
+		} catch (err) {
+		  console.error(err)
+		}
 	}
 	return (
 		<div className="border-2 border-stone-900 bg-amber-50/60 p-4

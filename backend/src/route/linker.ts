@@ -5,6 +5,7 @@ import {logoutRoute} from "../route/authentication/logout.js"
 import {refreshRoute} from "../route/authentication/refresh.js"
 import {homePageRoute} from "../route/pages/homePage.js"
 import {avatarUploadRoute} from "../route/pages/avatarUpload.js"
+import {usernameChange} from "../route/pages/usernameChange.js"
 import {avatarRoute} from "../route/pages/avatar.js"
 import { joinGameHTTP , createGameHTTP, gameSocketRoute } from './game/websocket.js'
 import { allFriendsRoute } from './friends/friends.js'
@@ -38,6 +39,7 @@ export async function linker(server: FastifyInstance)
 
 	//HTTP settings route
 	server.post('/api/settings/avatar', {onRequest : [authenticate]}, async (request, reply) => {return avatarUploadRoute(request, reply)});
+	server.post('/api/settings/username', {onRequest : [authenticate]}, async (request, reply) => {return usernameChange(request, reply)});
 	
 	//HTTP game routes
 	server.post<{Body:any}>('/api/game/join', async (request, reply) => { return joinGameHTTP(request, reply)});								// public random game route

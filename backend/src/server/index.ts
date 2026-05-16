@@ -26,7 +26,6 @@ server.register(websocket, {
 server.register(multipart, {limits: {fileSize: 5 * 1024 * 1024}}); //file upload plugin size param
 
 server.register(fastifyStatic, {root: path.join(process.cwd(), 'uploads'), prefix:'/',}) //this will set the path to the folder
-//fs.mkdirSync(path.join(process.cwd(), 'uploads', 'avatars'), { recursive: true }) //this will create the avatar folder
 
 
 const cookieSecret = process.env.COOKIE_SECRET!

@@ -3,7 +3,6 @@ import { prisma } from "../../server/prisma.js"
 
 export async function avatarRoute(request : FastifyRequest, reply : FastifyReply)
 {
-	console.log("la avatar route");
 	const user = request.user as { username: string }
 
 	const dbUser = await prisma.user.findUnique(
