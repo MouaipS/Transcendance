@@ -52,21 +52,67 @@ function buildDecks(): Card[][]
     return decks
 }
 
+function randomBotName() : string
+{
+    let     botName: string = "Bot"
+    const   nums = "0123456789"
+
+    for (let i = 0; i < 5; i++)
+    {
+        botName += nums[Math.floor(Math.random() * nums.length)]
+    }
+    return botName
+}
+
+function    createPlayers(lobby : Lobby, decks : Card[][]) : Player[]
+{
+    const players: Player[] = []
+    let i = 0
+    while (i < lobby.nb_players)
+    {  
+        const player: Player = {
+            id: i,
+            bot: false,
+            username: lobby.users[i],
+            deck: decks[i],
+            score: 0,
+            card: undefined,
+            stats: {victory: 0, defeat: 1},
+            ws: lobby.ws[i]
+        }
+        players.push(player)
+        i++
+    }
+    
+    //if room not full, fill with bots
+    while (lobby.nb_players < 4)
+    {
+        const player: Player = {
+            id: i,
+            bot: true,
+            username: randomBotName(),
+            deck: decks[i],
+            score: 0,
+            card: undefined,
+            stats: {victory: 0, defeat: 1},
+            ws: undefined
+        }
+        players.push(player)
+        i++
+    }
+    return players
+}
+
 //receive Lobby {owner: string; code: string; nb_players: number; users: string[]; ws: set<ws>}
 //  -> set a game instance in the games Map <code, Game>
 export function setGame(lobby: Lobby)
 {
     const decks: Card[][] = buildDecks()
-
-    const p1: Player = {id: 0, bot: false, username: lobby.users[0], deck: decks[0], score: 0, card: undefined, stats: {victory: 0, defeat: 1}, ws: lobby.ws[0]}
-    const p2: Player = {id: 1, bot: false, username: lobby.users[1], deck: decks[1], score: 0, card: undefined, stats: {victory: 0, defeat: 1}, ws: lobby.ws[1]}
-    const p3: Player = {id: 2, bot: false, username: lobby.users[2], deck: decks[2], score: 0, card: undefined, stats: {victory: 0, defeat: 1}, ws: lobby.ws[2]}
-    const p4: Player = {id: 3, bot: false, username: lobby.users[3], deck: decks[3], score: 0, card: undefined, stats: {victory: 0, defeat: 1}, ws: lobby.ws[3]}
-
+    
     const game: Game = {
         owner: lobby.owner,
         code: lobby.code,
-        players: [p1, p2, p3, p4],
+        players: createPlayers(lobby, decks),
         discard: [],
         discard_value: 0,
         ws: lobby.ws

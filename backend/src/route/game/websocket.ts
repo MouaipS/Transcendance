@@ -157,7 +157,7 @@ function newPlayerEvent(lobby : Lobby)
 
 // SMASH : Manage smash events
 //Receive message : {type, code, username}
-function smashEvent(message: any)
+export function smashEvent(message: any)
 {
   if (smash_available === false)
     return

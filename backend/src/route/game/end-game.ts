@@ -42,5 +42,9 @@ export function endGame(game : Game)
    })))
 
   //Store player's stats and game stats in DB
-  game.players.forEach(player => sendStatstoDB(player, game))
+   for (let i = 0; i < 4; i++)
+   {
+      if (game.players[i].bot == false)
+        sendStatstoDB(game.players[i], game)
+   }
 }

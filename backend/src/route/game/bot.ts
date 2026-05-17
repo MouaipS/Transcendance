@@ -1,4 +1,4 @@
-import { Game , Player , Card , smash_available } from "./websocket.js"
+import { Game , Player , smashEvent , smash_available } from "./websocket.js"
 import { randomInt } from "./game-utils.js"
 
 
@@ -13,7 +13,7 @@ export function triggerBotSmash(game : Game)
             setTimeout(() =>
                 {
                     if(smash_available)
-                        game.players[i].ws.send(JSON.stringify({type: 'SMASH', code: game.code, username: game.players[i].username}))
+                        smashEvent(JSON.stringify({type: 'SMASH', code: game.code, username: game.players[i].username}))
                 }, reactionTime);
         }
     }
