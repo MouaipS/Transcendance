@@ -122,3 +122,8 @@ export function lastPlayerName(game: Game) : String
   const lastPlayer = game.players.filter(player => player.deck.length !== 0)
   return lastPlayer[0].username
 }
+
+export function randomInt(min : number , max : number) : number
+{
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}

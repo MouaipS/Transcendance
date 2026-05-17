@@ -11,6 +11,17 @@ interface JoinRequestBody {
   code: string;
 }
 
+/**
+ * Fonctionnement des Lobbies :
+ * 
+ * Lobbies[] stocke toutes les games en attente de lancement, la première
+ * case Lobbies[0] est réservée a la Game publique qu'on rejoint en
+ * cliquant sur le bouton Join Public Game. Le reste sont les Game créees
+ * par les utilisateurs via la génération d'un code aléatoire. 
+ * Dès qu'une game est ready (4 joueurs), elle est lancée via la fonction
+ * startGame().
+ */
+
 export function generateGameCode(): string {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
   const nums = "0123456789"
@@ -71,7 +82,7 @@ export async function createGameHTTP(request : FastifyRequest<{Body: CreationReq
     code = generateGameCode()
   }
 
-  const lobby: Lobby = {owner: username, code: code, nb_players: 1, users: [username, "Player2", "Player3", "Player4"], ws: new Set<WebSocket>}
+  const lobby: Lobby = {owner: username, code: code, nb_players: 1, users: [username, "Player2", "Player3", "Player4"], ws: []}
   lobbies.push(lobby)
   return reply.status(200).send(lobby);
 }

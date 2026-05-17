@@ -1,3 +1,4 @@
+import { codeAlreadyExists } from "./lobby.js"
 import { Game, Player , Card, Lobby , addGame} from "./websocket.js"
 import { lobbies } from "./websocket.js"
 
@@ -57,13 +58,14 @@ export function setGame(lobby: Lobby)
 {
     const decks: Card[][] = buildDecks()
 
-    const p1: Player = {id: 0, username:lobby.users[0], deck: decks[0], score: 0, card: undefined, stats: {victory: 0, defeat: 1}}
-    const p2: Player = {id: 1, username:lobby.users[1], deck: decks[1], score: 0, card: undefined, stats: {victory: 0, defeat: 1}}
-    const p3: Player = {id: 2, username:lobby.users[2], deck: decks[2], score: 0, card: undefined, stats: {victory: 0, defeat: 1}}
-    const p4: Player = {id: 3, username:lobby.users[3], deck: decks[3], score: 0, card: undefined, stats: {victory: 0, defeat: 1}}
+    const p1: Player = {id: 0, bot: false, username: lobby.users[0], deck: decks[0], score: 0, card: undefined, stats: {victory: 0, defeat: 1}, ws: lobby.ws[0]}
+    const p2: Player = {id: 1, bot: false, username: lobby.users[1], deck: decks[1], score: 0, card: undefined, stats: {victory: 0, defeat: 1}, ws: lobby.ws[1]}
+    const p3: Player = {id: 2, bot: false, username: lobby.users[2], deck: decks[2], score: 0, card: undefined, stats: {victory: 0, defeat: 1}, ws: lobby.ws[2]}
+    const p4: Player = {id: 3, bot: false, username: lobby.users[3], deck: decks[3], score: 0, card: undefined, stats: {victory: 0, defeat: 1}, ws: lobby.ws[3]}
 
     const game: Game = {
         owner: lobby.owner,
+        code: lobby.code,
         players: [p1, p2, p3, p4],
         discard: [],
         discard_value: 0,
@@ -78,7 +80,7 @@ export function launchGame(lobby : Lobby)
   const index = lobbies.findIndex(lob => lob === lobby)
   if (index === 0)
   {
-    const newLobby: Lobby = {owner: "public", code: '', nb_players: 0, users: ["Player1", "Player2", "Player3", "Player4"], ws: new Set<WebSocket>()}
+    const newLobby: Lobby = {owner: "public", code: '', nb_players: 0, users: ["Player1", "Player2", "Player3", "Player4"], ws: []}
     lobbies.splice(index, 1, newLobby)
   }
   else

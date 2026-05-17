@@ -4,18 +4,7 @@ import { launchGame } from "./start-game.js"
 import { isValidSmash , winTrick , drawCard , isHead , whichHead, endTrick , findPreviousPlayer , findNextPlayer } from "./game-utils.js"
 import { generateGameCode } from "./lobby.js"
 import { endGame } from "./end-game.js"
-
-/**
- * Fonctionnement des Lobbies :
- * 
- * Lobbies[] stocke toutes les games en attente de lancement, la première
- * case Lobbies[0] est réservée a la Game publique qu'on rejoint en
- * cliquant sur le bouton Join Public Game. Le reste sont les Game créees
- * par les utilisateurs via la génération d'un code aléatoire. 
- * Dès qu'une game est ready (4 joueurs), elle est lancée via la fonction
- * startGame().
- */
-
+import { triggerBotSmash } from "./bot.js"
 
 export interface Card {
   name: string;
@@ -31,27 +20,31 @@ export interface Stats {
 
 export interface Player {
     id: number;
+    bot: boolean;
     username: string;
     deck: Card[];
     score: number;
-    card: Card | undefined
-    stats: Stats
+    card: Card | undefined;
+    stats: Stats;
+    ws: WebSocket;
 }
+
 
 export interface Lobby {
   owner: string;
   code: string;
   nb_players: number;
   users: string[];
-  ws: Set<WebSocket>;
+  ws: WebSocket[];
 }
 
 export interface Game {
     owner: string;
+    code: string;
     players: Player[];
     discard: Card[];
     discard_value: number
-    ws: Set<WebSocket>    //we use a Set because only unique values
+    ws: WebSocket[];    //we use a Set because only unique values
     winner?: Player;
 }
 
@@ -62,7 +55,7 @@ const TIME : number = 10
 let time = TIME
 const PENALTY: number = 5
 
-let smash_available = true    //  False after someone smash (to avoid multiple smash). Available when a new card is drawn 
+export let smash_available = true    //  False after someone smash (to avoid multiple smash). Available when a new card is drawn 
 let pos = 0                   //  position of the player who plays
 let headOn = false            //  true when game is in "Head Mode"
 
@@ -72,7 +65,7 @@ export const lobbies: Lobby[] = [{
   code: '',
   nb_players: 0,
   users: ["Player1", "Player2", "Player3", "Player4"],
-  ws: new Set<WebSocket>()
+  ws: []
 }];
 
 export function addGame(code: string, game: Game)
@@ -80,10 +73,8 @@ export function addGame(code: string, game: Game)
     games.set(code, game)
     gameRoutine(game)
 }
-/*
-TIMER
-Launch the game timer and send time for display
-*/
+/* TIMER
+Launch the game timer and send time for display */
 function launchTimer(lobby : Lobby)
 {
   time = TIME
@@ -99,10 +90,8 @@ function launchTimer(lobby : Lobby)
   time = TIME
 }
 
-/*
-ROUTINE
-Manage cards draw and basic rules of the game : head system, trick win/loss (without smash) 
-*/
+/* ROUTINE
+Manage cards draw and basic rules of the game : head system, trick win/loss (without smash) */
 function gameRoutine(game : Game)
 {
   let trickEnd = false
@@ -124,7 +113,8 @@ function gameRoutine(game : Game)
     pos = findNextPlayer(game, pos)
     const card = drawCard(game, game.players[pos % 4])
     smash_available = true
-
+    if (isValidSmash(game.discard))
+      triggerBotSmash(game)
     // if card drawed is a head, switch to Head Mode
     if (isHead(card))
     {
@@ -149,10 +139,7 @@ function gameRoutine(game : Game)
   }, 2000)
 }
 
-/*
-NEW PLAYER
-Send the New Player to all lobby players 
-*/
+//NEW PLAYER : Send the New Player to all lobby players 
 function newPlayerEvent(lobby : Lobby)
 {
   lobby.ws?.forEach(websocket => websocket.send(JSON.stringify({
@@ -168,10 +155,7 @@ function newPlayerEvent(lobby : Lobby)
   }
 }
 
-/*
-SMASH
-Manage smash events
-*/
+// SMASH : Manage smash events
 //Receive message : {type, code, username}
 function smashEvent(message: any)
 {
@@ -218,9 +202,10 @@ export function gameSocketRoute(websocket:  WebSocket, request: FastifyRequest)
   const lobby = lobbies.find(lobby => lobby.code === code)
   if (!lobby) 
     return websocket.close()
-  lobby.ws.add(websocket)
+  lobby.ws.push(websocket)
   if (lobby.nb_players === 4)
     launchGame(lobby)
+  //REPLACE par un message START
   
   //WEBSOCKET.ON 
   // Defines the behaviour of the new websocket
