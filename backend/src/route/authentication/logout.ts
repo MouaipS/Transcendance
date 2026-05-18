@@ -2,7 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify'
 import { prisma } from "../../server/prisma.js"
 
 interface tokenLogOut {
-	username: string;
+	id: string;
 }
 
 export async function logoutRoute(request: FastifyRequest, reply: FastifyReply) {
@@ -14,13 +14,13 @@ export async function logoutRoute(request: FastifyRequest, reply: FastifyReply) 
 		const decoded = await request.server.jwt.verify(refreshToken) as tokenLogOut
 
         const foundUser = await prisma.user.findFirst({ 
-            where: { username: decoded.username }   
+            where: { id: decoded.id }   
         });
 
 		if (!foundUser) return reply.code(403).send({ message: "Logout: Invalid refresh token"})
 
 		await prisma.user.update({
-			where: { username: foundUser.username },
+			where: { id: foundUser.id },
 			data: { 
 				RefreshToken: {
 					set: [...foundUser.RefreshToken.filter(rt => rt !== refreshToken)]

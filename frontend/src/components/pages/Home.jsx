@@ -13,7 +13,8 @@ export function Home () {
 
 	const navigate = useNavigate()
 	const [username, setUsername] = useState('login ?')
-  const [diff, setDiff] = useState(0)
+	const [diff, setDiff] = useState(0)
+	const [avatarUrl, setAvatarUrl] = useState(0);
 
   const logout = async () => {
     fetch("/api/refresh/logout", {
@@ -72,7 +73,25 @@ export function Home () {
 				navigate("/login")
 			}
 		}
+		const fetchAvatar = async () => 
+		{
+			try 
+			{
+				const res = await fetch("/api/avatar", 
+				{
+					method: "GET",
+					credentials: "include"
+				})
+				if (res.ok)
+					{
+						const data = await res.json()
+						setAvatarUrl(data.avatarUrl)
+					}
+			}
+			catch (err) {console.error("avatar fetch failed", err)}
+		}
     	fetchProfile();
+		fetchAvatar();
   	}, []);
 
 	return <>
@@ -87,7 +106,8 @@ export function Home () {
           onClick={() => navigate('/profile')}
           className="flex items-center gap-4 border-2 border-stone-900 bg-amber-50/80 hover:bg-amber-100 hover:-translate-y-0.5 transition-all">
             <img
-              src="src/components/images/default_avatar.webp"
+              src={ avatarUrl || "src/components/images/default_avatar.webp"}
+
               className="h-14 w-14 object-cover border-r-2 border-stone-900"
             />
           <div className="flex flex-col items-start pr-4 py-1">

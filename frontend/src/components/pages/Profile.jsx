@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect , useRef} from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { QueryClient, QueryClientProvider, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import carotImg        from '../images/carot.png'
@@ -233,7 +233,7 @@ const ProfilContent = () => {
 			<Tabs actifTab={actifTab} onChange={setActifTab} />
 			{actifTab ==='friends' && <FriendsTab/>}
 			{actifTab ==='stats' && <FetchStats stats={s}/>}
-			{actifTab ==='settings' && <SettingsTab/>}
+			{actifTab ==='settings' && <SettingsTab username={data.username}/>}
 		</div>
 	)
 }
@@ -370,11 +370,154 @@ const FriendsTab = () => {
 	)
 }
 
-const SettingsTab = () => {
+const AvatarUpload = ({ username }) => {
+	const [preview, setPreview] = useState(null) 			//avatar preview 
+	const [status, setStatus] = useState('') 				//use effect if the updload is taking some time
+	const [error, setError] = useState('')
+	const inputRef = useRef(null) 							// the ref to call the button
+
+  const handleFileChange = async (e) => { 					//the actual logic that opens the file explorer
+    const file = e.target.files[0] 							//the index 0 is the first file chosen in the file explorer (in case of multifile choice)
+    if (!file) return 										//if the user cancelled the avatar change
+
+    setPreview(URL.createObjectURL(file)) 					//the preview when the avatar is chosen
+
+    const formData = new FormData() 						//this is where we set the format to send files over http, the multipart plugin will read from that in the backend
+    formData.append('file', file)
+
+    try {
+      setStatus('Uploading...')
+      const res = await fetch('/api/settings/avatar', {
+        method: 'POST',
+        body: formData, 									//no need of content type only the forData for multipart
+      })
+	  if (!res.ok)
+	  {
+		setStatus('')
+		setError("Upload Failed")
+	  }
+	  else
+	  {
+		setStatus("Avatar Uploaded")
+	  	setError('')
+	  }
+    } catch (err) {
+	  setStatus('')
+      setError('Upload failed.')
+      console.error(err)
+    }
+  }
+	  return (
+    <div className="border-2 border-stone-900 bg-amber-50/60 p-4
+                    flex flex-col gap-3 mb-4 animate-slide-in-left">
+
+      <img
+        src={preview || 'src/components/images/default_avatar.webp'}
+        alt="avatar"
+        className="h-20 w-20 object-cover border-2 border-stone-900"
+		style={{alignSelf: 'center'}}
+      />
+		  <input
+			type="file"
+			accept="image/*"
+			ref={inputRef}
+			onChange={handleFileChange}
+			style={{ display: 'none' }}
+		  />
+
+      <button
+        onClick={() => inputRef.current.click()}
+        className="px-6 py-3 border-2 border-stone-900 bg-amber-300
+                   font-bold text-xs uppercase tracking-[0.3em] text-stone-900
+                   hover:-translate-y-0.5 transition-all
+                   disabled:opacity-50 disabled:cursor-not-allowed">
+        Change avatar
+      </button>
+	 {status && (
+               <p className="text-xs uppercase tracking-[0.2em] text-green-700 font-bold">{status}</p>
+           )}
+	 {error && (
+               <p className="text-xs uppercase tracking-[0.2em] text-red-700 font-bold">{error}</p>
+           )}
+      </div>
+  )
+}
+
+const UsernameChange = ({username}) =>
+{
+	const [newUsername, setNewUsername] = useState("");
+	const [error, setError] = useState("");
+	const [success, setSuccess] = useState("");
+
+	const handleUserChange = async (e) =>
+	{
+		try {
+		  const res = await fetch('/api/settings/username', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				newusername : newUsername,
+				username : username,
+			}),
+			credentials: 'include',
+		  })
+		  	const data = await res.json()
+			if (!res.ok)
+			{
+			  setSuccess("")
+			  if (data.code === "SHORT")
+			  	setError("The username is too short")
+			  if (data.code === "EXIST")
+			  	setError("This username is already taken")
+			}
+			else
+			{
+				setSuccess("Username changed succesfully")
+			  	setError("")
+			}
+		} catch (err) {
+		  console.error(err)
+		}
+	}
+	return (
+		<div className="border-2 border-stone-900 bg-amber-50/60 p-4
+                        flex flex-col gap-3 mb-4 animate-slide-in-left">
+			<div className="flex flex-col sm:flex-row gap-3">
+				<input
+					id = "inputUsername"
+					type="text"
+					value={newUsername}
+					onChange={(e) => setNewUsername(e.target.value)}
+					className="flex-grow px-4 py-3 bg-amber-50 border-2 border-stone-900
+                                font-caprasimo text-lg text-stone-900
+                                focus:outline-none focus:bg-white"
+					placeholder="Username"
+				/>
+				<button
+          			onClick={handleUserChange}
+					className="px-10 py-3 border-2 border-stone-900 bg-amber-300
+                                font-bold text-xs uppercase tracking-[0.3em] text-stone-900
+                                hover:-translate-y-0.5 transition-all
+                                disabled:opacity-50 disabled:cursor-not-allowed">
+					Change Username
+				</button>
+			</div>
+		 {error && (
+                <p className="text-xs uppercase tracking-[0.2em] text-red-700 font-bold">{error}</p>
+            )}
+		 {success && (
+                <p className="text-xs uppercase tracking-[0.2em] text-green-700 font-bold">{success}</p>
+            )}
+		</div>
+	)
+}
+
+const SettingsTab = ({username}) => {
 	return (
 		<div>
-			<SectionTitle number="II" icon={cuttingboardImg} subtitle={"page temporaire"}>SETTINGS</SectionTitle>
-			<p>test setting</p>
+			<SectionTitle number="II" icon={cuttingboardImg} subtitle={"Petit relooking ?"}>SETTINGS</SectionTitle>
+			<AvatarUpload currentUser={username} />
+			<UsernameChange currentUser={username}/>
 		</div>
 	)
 }

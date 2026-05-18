@@ -2,7 +2,7 @@ import { prisma } from "../../server/prisma.js"
 import { FastifyRequest, FastifyReply } from 'fastify'
 
 interface tokenDecoded {
-	username: string;
+	id : string;
 }
 
 export async function refreshRoute(request: FastifyRequest, reply: FastifyReply) {
@@ -20,7 +20,7 @@ export async function refreshRoute(request: FastifyRequest, reply: FastifyReply)
             try {
                 const decoded = await request.server.jwt.verify(refreshToken) as tokenDecoded
                 await prisma.user.update({
-                    where: { username: decoded.username},
+                    where: { username: decoded.id},
                     data: { RefreshToken: { set: [] }}
                 });
                 return reply.code(401).send({ message: "refreshToken Hacked. DB cleared"})
@@ -29,8 +29,8 @@ export async function refreshRoute(request: FastifyRequest, reply: FastifyReply)
         }
 
         const accessToken = await reply.jwtSign({
-            username: foundUser.username,
-            id: foundUser.id
+            id: foundUser.id,
+			username : foundUser.username
         }, {   
             expiresIn: 60 * 15
         });
@@ -38,6 +38,7 @@ export async function refreshRoute(request: FastifyRequest, reply: FastifyReply)
         console.log("access token")
         const newRefreshToken = await reply.jwtSign({
             username: foundUser.username,
+			id : foundUser.id
         }, {
             expiresIn: 60 * 60
         });
