@@ -27,7 +27,7 @@ export async function avatarUploadRoute(request : FastifyRequest, reply : Fastif
 	{
 		if (oldFile.startsWith(username + '.') && oldFile !== filename) 
 		{
-			fs.unlinkSync(path.join(AVATARS_DIR, oldFile)) // this 
+			fs.unlinkSync(path.join(AVATARS_DIR, oldFile))
 		}
 	}
 	await pipeline(data.file, fs.createWriteStream(filePath))//this is where the file is written. data.file is a readable stream, fs.createWriteStream(filePath) is a writable stream(destination)
