@@ -1,6 +1,5 @@
 import { Game, Player , Card, Lobby , addGame} from "./websocket.js"
-
-//GLOBAL VARIABLES
+import { lobbies } from "./websocket.js"
 
 const DECK_CONFIG: Card[] = [
     {name:"1", value: 1, nb: 4},
@@ -12,10 +11,6 @@ const DECK_CONFIG: Card[] = [
     {name:"C", value: 1, nb: 2},
     {name:"D", value: 1, nb: 2},
 ]
-
-export const PENALTY: number = 5
-
-
 
 function createSuperDeck(): Card[]
 {
@@ -75,4 +70,17 @@ export function setGame(lobby: Lobby)
         ws: lobby.ws
     }
     addGame(lobby.code, game)
+}
+
+export function launchGame(lobby : Lobby)
+{
+  setGame(lobby)
+  const index = lobbies.findIndex(lob => lob === lobby)
+  if (index === 0)
+  {
+    const newLobby: Lobby = {owner: "public", code: '', nb_players: 0, users: ["Player1", "Player2", "Player3", "Player4"], ws: new Set<WebSocket>()}
+    lobbies.splice(index, 1, newLobby)
+  }
+  else
+    lobbies.splice(index, 1)
 }

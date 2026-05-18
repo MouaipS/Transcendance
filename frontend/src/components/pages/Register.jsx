@@ -42,7 +42,7 @@ export function Register() {
 			return
 		}
 
-		fetch('https://localhost:8443/api/register',
+		fetch('/api/register',
 		{
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
