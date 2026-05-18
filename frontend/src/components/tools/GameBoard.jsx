@@ -6,11 +6,18 @@ export function GameBoard ({ gameState }) {
 
 	return <>
 	<div className="flex flex-col">
-    <p className="px-5 py-5 absolute text-2xl font-semibold">{gameState.code}</p>
 
-    <p className="px-10 py-20 absolute">{gameState.timer}</p>
+    <div className="px-5">
+      <p className="py-5 absolute text-2xl font-semibold">{gameState.code}</p>
 
-    <div className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center">
+      <p className="px-10 py-20">{gameState.timer}</p>
+
+      {gameState.owner && <button 
+        className="bg-stone-900 py-4 px-12 text-amber-50 font-caprasimo text-3xl"
+        onClick={gameState.Start}>Start</button>}
+    </div>
+
+    <div className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
       <PlayerUI players={gameState.players[0]}
                 decks={gameState.decks[0]}
                 score={gameState.score[0]}
@@ -71,7 +78,7 @@ export function GameBoard ({ gameState }) {
       />
     </div>
 
-    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center">
+    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
       <PlayerUI players={gameState.players[2]}
                 decks={gameState.decks[2]}
                 score={gameState.score[2]}

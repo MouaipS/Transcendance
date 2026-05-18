@@ -5,7 +5,7 @@ export const useGameSocket = (socketRef, config) => {
 		code, username, cards, deck,
 		setPlayers, setDecks, setScore, setTimer, 
 		setDiscard, setPlayer, setPage, setSmasher, 
-		setFail, setSuccess, setWinner, setEnd
+		setFail, setSuccess, setWinner, setEnd, setOwner
 	} = config
 
 	const connect = () => {
@@ -25,6 +25,7 @@ export const useGameSocket = (socketRef, config) => {
 					break
 
 				case 'DRAW':
+					setOwner(false)
 					setSuccess(false)
 					setFail(false)
 					updatePlayerState(data)

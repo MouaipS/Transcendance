@@ -1,11 +1,12 @@
-const packs = ["src/components/images/paquet_top.png",
-			   "src/components/images/paquet_right.png", 
-			   "src/components/images/paquet_bottom.png", 
-			   "src/components/images/paquet_left.png"]
+const packs = ["src/components/images/Cards/cardDos.png",
+			   "src/components/images/Cards/paquet_right.png", 
+			   "src/components/images/Cards/paquet_bottom.png", 
+			   "src/components/images/Cards/paquet_left.png"]
 
 export const PlayerUI = ({ players, decks, score, player, index }) => {
 	
 	const background = (player === index ? "bg-yellow-400" : "bg-white")
+	const angle = index * 90 + 180
 	
 	return <>
 	<button
@@ -24,8 +25,9 @@ export const PlayerUI = ({ players, decks, score, player, index }) => {
 	<div className="relative flex items-center justify-center">
 	<img
 		alt="paquet de cartes"
-		src={packs[index]}
+		src="src/components/images/Cards/cardDos.png"
 		className="h-30"
+		style={{ transform: `rotate(${angle}deg)` }}
 	/>
 	
 	<span className="absolute text-white font-bold text-2xl shadow-sm">

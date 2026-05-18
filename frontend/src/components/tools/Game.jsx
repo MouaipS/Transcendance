@@ -3,20 +3,8 @@ import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-quer
 import { GameBoard } from "./GameBoard.jsx"
 import { Lobby } from "./Lobby.jsx";
 import { useGameSocket } from "./useGameSocket.jsx";
+import { deck } from "../data/GameCards.jsx";
 
-
-const deck = [
-  { name: "1", src: "src/components/images/card1.png" },
-  { name: "2", src: "src/components/images/card2.png" },
-  { name: "3", src: "src/components/images/card3.png" },
-  { name: "4", src: "src/components/images/card4.png" },
-  { name: "5", src: "src/components/images/card5.png" },
-  { name: "6", src: "src/components/images/card6.png" },
-  { name: "A", src: "src/components/images/cardA.png" },
-  { name: "B", src: "src/components/images/cardB.png" },
-  { name: "C", src: "src/components/images/cardC.png" },
-  { name: "D", src: "src/components/images/cardD.png" },
-]
 
 let cards = []
 
@@ -38,6 +26,7 @@ export function Game () {
   const [fail, setFail] = useState(false)
   const [discard, setDiscard] = useState(0)
   const [player, setPlayer] = useState(0)
+  const [owner, setOwner] = useState(false)
 
   const socketRef = useRef(null)
 
@@ -73,7 +62,7 @@ export function Game () {
     code, username, cards, deck,
     setPlayers, setDecks, setScore, setTimer,
     setDiscard, setPlayer, setPage, setSmasher,
-    setFail, setSuccess, setWinner, setEnd
+    setFail, setSuccess, setWinner, setEnd, setOwner
   })  
 
   const handleJoin = async (e) => {
@@ -116,6 +105,7 @@ export function Game () {
     setPlayers(data.users)
 
     connect()
+    setOwner(true)
   }
 
   useEffect(() => {
@@ -133,6 +123,11 @@ export function Game () {
     }
   }, [username])
 
+  const Start = () => {
+    if (socketRef.current?.readyState === WebSocket.OPEN) {
+      socketRef.current.send(JSON.stringify({ type: 'START', code, username }))
+    }
+  }
 
   const Replay = () => {
 
@@ -163,7 +158,7 @@ export function Game () {
   }, [])
 
   const angle = player * 90 + 180
-  const gameState = { players, code, timer, decks, score, cards, discard, end, fail, success, angle, smasher, winner, player, Replay }
+  const gameState = { players, code, timer, decks, score, cards, discard, end, fail, success, angle, smasher, winner, player, Replay, owner, Start }
 
 	return <>
 		{page === 0 && 
