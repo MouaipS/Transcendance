@@ -430,6 +430,8 @@ const AvatarUpload = ({ username }) => {
 const UsernameChange = ({username}) =>
 {
 	const [newUsername, setNewUsername] = useState("");
+	const [error, setError] = useState("");
+	const [success, setSuccess] = useState("");
 
 	const handleUserChange = async (e) =>
 	{
@@ -443,7 +445,20 @@ const UsernameChange = ({username}) =>
 			}),
 			credentials: 'include',
 		  })
-		  const data = await res.json()
+		  	const data = await res.json()
+			if (!res.ok)
+			{
+			  setSuccess("")
+			  if (data.code === "SHORT")
+			  	setError("The username is too short")
+			  if (data.code === "EXIST")
+			  	setError("This username is already taken")
+			}
+			else
+			{
+				setSuccess("Username changed succesfully")
+			  	setError("")
+			}
 		} catch (err) {
 		  console.error(err)
 		}
@@ -453,6 +468,7 @@ const UsernameChange = ({username}) =>
                         flex flex-col gap-3 mb-4 animate-slide-in-left">
 			<div className="flex flex-col sm:flex-row gap-3">
 				<input
+					id = "inputUsername"
 					type="text"
 					value={newUsername}
 					onChange={(e) => setNewUsername(e.target.value)}
@@ -470,6 +486,12 @@ const UsernameChange = ({username}) =>
 					Change Username
 				</button>
 			</div>
+		 {error && (
+                <p className="text-xs uppercase tracking-[0.2em] text-red-700 font-bold">{error}</p>
+            )}
+		 {success && (
+                <p className="text-xs uppercase tracking-[0.2em] text-green-700 font-bold">{success}</p>
+            )}
 		</div>
 	)
 }

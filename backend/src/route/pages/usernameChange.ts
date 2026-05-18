@@ -4,15 +4,13 @@ import { prisma } from "../../server/prisma.js"
 export async function usernameChange(request : FastifyRequest, reply : FastifyReply)
 {
 	const {id} = request.user as {id : string};
-	const {username} = request.body as {username : string}
 	const { newusername : newUsername } = request.body as { newusername: string };
-	console.log("la username change route de ses mort");
-	console.log("username : ", username)
-	console.log("new username : ", newUsername)
+	if (newUsername.length < 3)
+		return reply.code(409).send({error : "Username must be at least 3 character long", code :"SHORT"})
 	const findUser = await prisma.user.findUnique({
 		where: {username : newUsername}
 	});
-	if (findUser) return reply.code(409).send({error: "Username is already is used"});
+	if (findUser) return reply.code(409).send({error: "Username is already is used", code : "EXIST"});
 	await prisma.user.update(
 	{
   		where: { id: id},
