@@ -373,6 +373,7 @@ const FriendsTab = () => {
 const AvatarUpload = ({ username }) => {
 	const [preview, setPreview] = useState(null) 			//avatar preview 
 	const [status, setStatus] = useState('') 				//use effect if the updload is taking some time
+	const [error, setError] = useState('')
 	const inputRef = useRef(null) 							// the ref to call the button
 
   const handleFileChange = async (e) => { 					//the actual logic that opens the file explorer
@@ -390,9 +391,19 @@ const AvatarUpload = ({ username }) => {
         method: 'POST',
         body: formData, 									//no need of content type only the forData for multipart
       })
-      const data = await res.json()
+	  if (!res.ok)
+	  {
+		setStatus('')
+		setError("Upload Failed")
+	  }
+	  else
+	  {
+		setStatus("Avatar Uploaded")
+	  	setError('')
+	  }
     } catch (err) {
-      setStatus('Upload failed.')
+	  setStatus('')
+      setError('Upload failed.')
       console.error(err)
     }
   }
@@ -406,23 +417,28 @@ const AvatarUpload = ({ username }) => {
         className="h-20 w-20 object-cover border-2 border-stone-900"
 		style={{alignSelf: 'center'}}
       />
+		  <input
+			type="file"
+			accept="image/*"
+			ref={inputRef}
+			onChange={handleFileChange}
+			style={{ display: 'none' }}
+		  />
 
-      <input
-        type="file"
-        accept="image/*"
-        ref={inputRef}
-        onChange={handleFileChange}
-        style={{ display: 'none' }}
-      />
-
-        <button
-          onClick={() => inputRef.current.click()}
-          className="px-6 py-3 border-2 border-stone-900 bg-amber-300
-                     font-bold text-xs uppercase tracking-[0.3em] text-stone-900
-                     hover:-translate-y-0.5 transition-all
-                     disabled:opacity-50 disabled:cursor-not-allowed">
-          Change avatar
-        </button>
+      <button
+        onClick={() => inputRef.current.click()}
+        className="px-6 py-3 border-2 border-stone-900 bg-amber-300
+                   font-bold text-xs uppercase tracking-[0.3em] text-stone-900
+                   hover:-translate-y-0.5 transition-all
+                   disabled:opacity-50 disabled:cursor-not-allowed">
+        Change avatar
+      </button>
+	 {status && (
+               <p className="text-xs uppercase tracking-[0.2em] text-green-700 font-bold">{status}</p>
+           )}
+	 {error && (
+               <p className="text-xs uppercase tracking-[0.2em] text-red-700 font-bold">{error}</p>
+           )}
       </div>
   )
 }

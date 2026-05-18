@@ -106,8 +106,7 @@ export function Home () {
           onClick={() => navigate('/profile')}
           className="flex items-center gap-4 border-2 border-stone-900 bg-amber-50/80 hover:bg-amber-100 hover:-translate-y-0.5 transition-all">
             <img
-              //src="src/components/images/default_avatar.webp"
-              src={avatarUrl}
+              src={ avatarUrl || "src/components/images/default_avatar.webp"}
 
               className="h-14 w-14 object-cover border-r-2 border-stone-900"
             />
