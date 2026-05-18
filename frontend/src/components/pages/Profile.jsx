@@ -433,7 +433,6 @@ const UsernameChange = ({username}) =>
 
 	const handleUserChange = async (e) =>
 	{
-		console.log(newUsername);
 		try {
 		  const res = await fetch('/api/settings/username', {
 			method: 'POST',

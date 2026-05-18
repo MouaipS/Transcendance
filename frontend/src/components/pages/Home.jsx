@@ -85,7 +85,6 @@ export function Home () {
 				if (res.ok)
 					{
 						const data = await res.json()
-						console.log(data.avatarUrl)
 						setAvatarUrl(data.avatarUrl)
 					}
 			}

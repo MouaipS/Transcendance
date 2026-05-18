@@ -3,11 +3,11 @@ import { prisma } from "../../server/prisma.js"
 
 export async function avatarRoute(request : FastifyRequest, reply : FastifyReply)
 {
-	const user = request.user as { username: string }
+	const user = request.user as { id: string }
 
 	const dbUser = await prisma.user.findUnique(
 	{
-    	where: { username: user.username },
+    	where: { id: user.id },
     	select: { avatarUrl: true },
   	})
 

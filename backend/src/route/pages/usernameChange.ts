@@ -3,7 +3,8 @@ import { prisma } from "../../server/prisma.js"
 
 export async function usernameChange(request : FastifyRequest, reply : FastifyReply)
 {
-	const {username} = request.user as {username : string};
+	const {id} = request.user as {id : string};
+	const {username} = request.body as {username : string}
 	const { newusername : newUsername } = request.body as { newusername: string };
 	console.log("la username change route de ses mort");
 	console.log("username : ", username)
@@ -14,7 +15,7 @@ export async function usernameChange(request : FastifyRequest, reply : FastifyRe
 	if (findUser) return reply.code(409).send({error: "Username is already is used"});
 	await prisma.user.update(
 	{
-  		where: { username: username},
+  		where: { id: id},
   		data: { username: newUsername},
 	});
 	return reply.code(200).send({message : "Username changed"});

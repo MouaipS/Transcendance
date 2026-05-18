@@ -31,8 +31,8 @@ export async function registerRoute(request : FastifyRequest<{Body: RegisterBody
 
 	//3. Set the AccessToken
 	const accessToken = await reply.jwtSign({
-			username: user.username,
-			id: user.id
+			id: user.id,
+			username: user.username
 		}, { 
 			expiresIn: 60 * 15
 		}
@@ -40,7 +40,8 @@ export async function registerRoute(request : FastifyRequest<{Body: RegisterBody
 
 	//4. Set the RefreshToken
 	const refreshToken = await reply.jwtSign({
-		username: user.username 
+		username: user.username,
+		id: user.id
 	}, {
 		expiresIn: 60 * 60
 	});

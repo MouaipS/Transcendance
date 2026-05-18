@@ -8,8 +8,8 @@ export async function avatarUploadRoute(request : FastifyRequest, reply : Fastif
 {
 	const AVATARS_DIR = path.join(process.cwd(), 'uploads', 'avatars');
 	fs.mkdirSync(AVATARS_DIR, { recursive: true }); //build and create the file if it doesn't exist
-	console.log(AVATARS_DIR);
-	const user = request.user as { username: string }
+	const user = request.user as { id: string }
+	const username = request.user as {username : string}
 	const data = await request.file()//read the uploaded file from the multipart request body
 	if (!data)
 	{
@@ -21,11 +21,11 @@ export async function avatarUploadRoute(request : FastifyRequest, reply : Fastif
 	}
 	//LOGIC TO REPLACE FILE NAME BY USERNAME
 	const ext = path.extname(data.filename) || '.png';
-	const filename = `${user.username}${ext}`;
+	const filename = `${username.username}${ext}`;
 	const filePath = path.join(AVATARS_DIR, filename);
 	for (const oldFile of fs.readdirSync(AVATARS_DIR)) 
 	{
-		if (oldFile.startsWith(user.username + '.') && oldFile !== filename) 
+		if (oldFile.startsWith(username + '.') && oldFile !== filename) 
 		{
 			fs.unlinkSync(path.join(AVATARS_DIR, oldFile)) // this 
 		}
@@ -33,7 +33,7 @@ export async function avatarUploadRoute(request : FastifyRequest, reply : Fastif
 	await pipeline(data.file, fs.createWriteStream(filePath))//this is where the file is written. data.file is a readable stream, fs.createWriteStream(filePath) is a writable stream(destination)
 	//pipeline connects them and waits until the whole file has been written.
 	await prisma.user.update({
-	  where: { username: user.username },
+	  where: { id: user.id },
 	  data: { avatarUrl: `/avatars/${filename}` },
 	})
 	return reply.send({ avatarUrl: `/avatars/${filename}` });

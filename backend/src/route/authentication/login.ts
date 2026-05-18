@@ -25,8 +25,8 @@ export async function loginRoute(request : FastifyRequest<{Body: LoginBody}>, re
 
 	//3. Set the AccessToken
 	const accessToken = await reply.jwtSign({
-		username: findUser.username,
-		id: findUser.id
+		id: findUser.id,
+		username : findUser.username
 	}, { 
 		expiresIn: 60 * 15
 	});
@@ -34,7 +34,8 @@ export async function loginRoute(request : FastifyRequest<{Body: LoginBody}>, re
 
 	//4. Set the RefreshToken
 	const refreshToken = await reply.jwtSign({	
-		username: findUser.username 
+		username: findUser.username,
+		id : findUser.id
 	}, {	
 		expiresIn: 60 * 60,
 	}); 

@@ -3,10 +3,11 @@ import { prisma } from "../../server/prisma.js"
 
 export async function homePageRoute(request : FastifyRequest, reply : FastifyReply) 
 {
-    const {username} = request.user as {username: string}
+    //const {username} = request.user as {username: string}
+    const {id} = request.user as {id: string}
     const stats = await prisma.user.findUnique({
 		where: {
-			username: username,
+			id: id
 		},
         select: {
 			//permet au front de savoir l'identité de l'expediteur
